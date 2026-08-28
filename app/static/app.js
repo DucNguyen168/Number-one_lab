@@ -12,6 +12,8 @@ const state = {
   currentSort: 'rank',     // 'rank' | 'number' | 'days'
   countdownTimer: null,
   autoRefreshTimer: null,
+  smartRefreshTimer: null, // Smart auto-refresh timer
+  smartRefreshSeenDate: null, // Ngày kết quả đã phát hiện
   detailCache: new Map(),
   // Exclude recent numbers feature
   excludeRecentEnabled: false,
@@ -1214,8 +1216,82 @@ document.addEventListener('keydown', (event) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// INIT
+// SMART AUTO-REFRESH — Tự động cập nhật sau khi có kết quả XSMB
 // ═══════════════════════════════════════════════════════════
+
+/**
+ * Khởng giờ polling: 18:15 – 21:00 giờ Việt Nam.
+ * Cứ 2 phút gọi /api/results/latest một lần.
+ * Nếu kết quả hôm nay xuất hiện lần đầu → refresh dashboard + toast.
+ * Dừng polling khi ra khỏi khung giờ hoặc đã nhận kết quả.
+ */
+function startSmartAutoRefresh() {
+  function isInRefreshWindow() {
+    const now = new Date();
+    // Convert to UTC+7 (Việt Nam)
+    const vnOffset = 7 * 60;
+    const utcMin = now.getUTCHours() * 60 + now.getUTCMinutes();
+    const vnMin = (utcMin + vnOffset) % (24 * 60);
+    // 18:15 = 1095 phút, 21:00 = 1260 phút
+    return vnMin >= 1095 && vnMin < 1260;
+  }
+
+  function todayVN() {
+    const now = new Date();
+    const vnTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+    return vnTime.toISOString().slice(0, 10);
+  }
+
+  async function poll() {
+    // Dừng nếu ngoài khung giờ
+    if (!isInRefreshWindow()) {
+      state.smartRefreshTimer = setTimeout(poll, 5 * 60 * 1000); // thử lại sau 5 phút
+      return;
+    }
+
+    const today = todayVN();
+
+    try {
+      const result = await api('/api/results/latest');
+      if (result && result.draw_date === today) {
+        // Kết quả hôm nay đã xuất hiện!
+        if (state.smartRefreshSeenDate !== today) {
+          state.smartRefreshSeenDate = today;
+          // Refresh toàn bộ dashboard
+          await refreshDashboard();
+          // Reload exclude-recent nếu đang bật
+          if (state.excludeRecentEnabled) {
+            await loadRecentNumbers(state.excludeRecentDays);
+            updateExcludeRecentChips();
+            renderNumberGrid(state.latestPrediction);
+          }
+          toast(`✅ Kết quả ngày ${today} vừa cập nhật! Giải đặc biệt: ${result.special_prize}`, 'success');
+        }
+      }
+    } catch (err) {
+      // Không throw — để polling tiếp tục
+      console.warn('Smart refresh poll failed:', err);
+    }
+
+    // Tiếp tục poll mỗi 2 phút
+    state.smartRefreshTimer = setTimeout(poll, 2 * 60 * 1000);
+  }
+
+  // Khởi động: nếu đang trong khung giờ thì poll ngay, ngược lại đợi đến đó
+  if (isInRefreshWindow()) {
+    poll();
+  } else {
+    // Tính số ms đến 18:15 VN tiếp theo
+    const now = new Date();
+    const vnNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+    const vnToday1815 = new Date(vnNow);
+    vnToday1815.setUTCHours(11, 15, 0, 0); // 18:15 VN = 11:15 UTC
+    let msUntilWindow = vnToday1815.getTime() - now.getTime();
+    if (msUntilWindow < 0) msUntilWindow += 24 * 60 * 60 * 1000; // ngày mai
+    state.smartRefreshTimer = setTimeout(poll, msUntilWindow);
+  }
+}
+
 (async () => {
   initThemeToggle();
   initPageNavigation();
@@ -1223,6 +1299,7 @@ document.addEventListener('keydown', (event) => {
   initSortButtons();
   initExcludeRecentToggle();
   startCountdown();
+  startSmartAutoRefresh(); // Tự động cập nhật kết quả sau 18:15
 
   try {
     await loadHealth();

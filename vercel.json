@@ -14,8 +14,20 @@
   ],
   "crons": [
     {
-      "path": "/api/sync/current",
+      "path": "/api/auto-daily",
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/auto-daily",
       "schedule": "35 11 * * *"
+    },
+    {
+      "path": "/api/sync/current",
+      "schedule": "50 11 * * *"
+    },
+    {
+      "path": "/api/sync/current",
+      "schedule": "10 12 * * *"
     }
   ]
 }

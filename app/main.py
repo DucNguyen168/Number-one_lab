@@ -213,6 +213,78 @@ def recent_last_two(
     }
 
 
+@app.post("/api/auto-daily")
+def auto_daily(request: Request) -> dict[str, Any]:
+    """Endpoint tổng hợp dùng cho Vercel Cron Jobs:
+    1. Đồng bộ kết quả năm hiện tại
+    2. Đánh giá tất cả prediction pending
+    3. Tạo dự đoán 2 số cho ngày tiếp theo (nếu chưa có)
+    4. Tạo dự đoán 1 số cho ngày tiếp theo (nếu chưa có)
+    """
+    db = _db(request)
+    today = settings.local_today()
+
+    # Bước 1: Sync kết quả
+    collector = KqxsCollector(db, settings)
+    sync_result: dict[str, Any] = {}
+    sync_error: str | None = None
+    try:
+        sync_result = collector.sync_year(today.year)
+    except CollectorSourcesUnavailable as exc:
+        sync_error = str(exc)
+    except httpx.HTTPError as exc:
+        sync_error = f"Source request failed: {exc}"
+
+    # Bước 2: Đánh giá prediction pending
+    evaluation = evaluate_pending_predictions(db)
+    digit_evaluation = evaluate_pending_digit_predictions(db)
+
+    # Bước 3 & 4: Tạo dự đoán cho ngày tiếp theo
+    # Nếu hôm nay đã có kết quả → dự đoán cho ngày mai
+    target = today
+    if db.draw_results.find_one({"draw_date": today.isoformat()}):
+        target = today + timedelta(days=1)
+
+    pred_result: dict[str, Any] = {}
+    pred_error: str | None = None
+    digit_pred_result: dict[str, Any] = {}
+    digit_pred_error: str | None = None
+
+    try:
+        prediction, pred_created = create_prediction(
+            db, target, settings.auto_prediction_count
+        )
+        pred_result = {
+            "created": pred_created,
+            "prediction_date": str(target),
+            "selected_count": settings.auto_prediction_count,
+        }
+    except ValueError as exc:
+        pred_error = str(exc)
+
+    try:
+        digit_prediction, digit_created = create_digit_prediction(db, target)
+        digit_pred_result = {
+            "created": digit_created,
+            "prediction_date": str(target),
+        }
+    except ValueError as exc:
+        digit_pred_error = str(exc)
+
+    return serialize_document({
+        "ok": True,
+        "target_date": str(target),
+        "sync": sync_result,
+        "sync_error": sync_error,
+        "evaluation": evaluation,
+        "digit_evaluation": digit_evaluation,
+        "prediction": pred_result,
+        "prediction_error": pred_error,
+        "digit_prediction": digit_pred_result,
+        "digit_prediction_error": digit_pred_error,
+    })
+
+
 @app.post("/api/predictions/generate")
 def generate_prediction(
     request: Request,
