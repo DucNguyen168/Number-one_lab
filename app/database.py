@@ -61,6 +61,15 @@ class MongoDatabase:
         self.db.collector_runs.create_index(
             [("started_at", DESCENDING)], name="collector_started_at"
         )
+        self.db.collector_runs.create_index(
+            [
+                ("source", ASCENDING),
+                ("type", ASCENDING),
+                ("status", ASCENDING),
+                ("year", ASCENDING),
+            ],
+            name="collector_completed_years",
+        )
 
     def close(self) -> None:
         self.client.close()

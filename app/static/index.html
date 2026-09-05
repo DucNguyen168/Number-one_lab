@@ -105,9 +105,9 @@
 
           <div class="control-group standalone-control">
             <h3>Dữ liệu kết quả</h3>
-            <p>Backfill tổng hợp lịch sử từ KQXS và Xổ Số Đại Phát; đồng bộ ngày còn đối chiếu trang KQXS Miền Bắc mới nhất rồi tự đánh giá prediction pending.</p>
+            <p>Backfill nhanh chỉ tải năm còn thiếu và luôn cập nhật năm hiện tại. Các nguồn được tải song song, dữ liệu MongoDB được ghi theo lô rồi tự đánh giá prediction pending.</p>
             <div class="button-row">
-              <button id="backfill-btn" class="button secondary">⬇ Backfill 2019–nay</button>
+              <button id="backfill-btn" class="button secondary">⬇ Bổ sung dữ liệu 2019–nay</button>
               <button id="sync-btn" class="button primary">🔄 Đồng bộ năm hiện tại</button>
               <button id="evaluate-btn" class="button ghost">✓ Đối chiếu pending</button>
             </div>
@@ -457,6 +457,6 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="/static/app.js?v=20260828-1" defer></script>
+    <script src="/static/app.js?v=20260905-1" defer></script>
   </body>
 </html>

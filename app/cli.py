@@ -43,6 +43,11 @@ def build_parser() -> argparse.ArgumentParser:
     backfill = subparsers.add_parser("backfill", help="Import yearly results")
     backfill.add_argument("--start-year", type=int, default=2019)
     backfill.add_argument("--end-year", type=int, default=settings.local_today().year)
+    backfill.add_argument(
+        "--force",
+        action="store_true",
+        help="Re-download completed historical years instead of using the sync cache",
+    )
 
     subparsers.add_parser("sync", help="Sync the current year and evaluate predictions")
 
@@ -84,7 +89,7 @@ def main() -> None:
     try:
         if args.command == "backfill":
             result = KqxsCollector(mongo.db, settings).sync_range(
-                args.start_year, args.end_year
+                args.start_year, args.end_year, force=args.force
             )
         elif args.command == "sync":
             result = {

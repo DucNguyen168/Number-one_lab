@@ -1,3 +1,5 @@
+import hashlib
+from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -5,6 +7,7 @@ import httpx
 import pytest
 
 from app.services.collector import (
+    CollectedDraw,
     KqxsCollector,
     parse_kqxs_recent_html,
     parse_xosodaiphat_year_html,
@@ -96,6 +99,24 @@ class _CollectorRuns:
         self.updates.append(update)
 
 
+class _DrawResults:
+    def __init__(self, existing: list[dict[str, object]] | None = None) -> None:
+        self.existing = existing or []
+        self.find_calls: list[tuple[dict[str, object], dict[str, object]]] = []
+        self.bulk_calls: list[tuple[list[object], bool]] = []
+
+    def find(
+        self,
+        query: dict[str, object],
+        projection: dict[str, object],
+    ) -> list[dict[str, object]]:
+        self.find_calls.append((query, projection))
+        return self.existing
+
+    def bulk_write(self, operations: list[object], ordered: bool) -> None:
+        self.bulk_calls.append((operations, ordered))
+
+
 def test_sync_year_uses_fallback_when_one_source_times_out(monkeypatch) -> None:
     collector_runs = _CollectorRuns()
     config = SimpleNamespace(local_today=lambda: SimpleNamespace(year=2026))
@@ -137,3 +158,108 @@ def test_sync_year_uses_fallback_when_one_source_times_out(monkeypatch) -> None:
         "completed",
     ]
     assert collector_runs.updates[-1]["$set"]["status"] == "partial"
+
+
+def test_store_source_draws_reads_once_and_writes_one_batch() -> None:
+    draw_results = _DrawResults()
+    collector = KqxsCollector(SimpleNamespace(draw_results=draw_results), SimpleNamespace())
+    fetched_at = datetime.now(timezone.utc)
+
+    result = collector._store_source_draws(
+        draws=[
+            CollectedDraw("2026-09-01", "12345", "45"),
+            CollectedDraw("2026-09-02", "00006", "06"),
+        ],
+        source_name="KQXS yearly",
+        source_key="kqxs_year",
+        source_url="https://example.test/results",
+        page_checksum="page-checksum",
+        fetched_at=fetched_at,
+    )
+
+    assert len(draw_results.find_calls) == 1
+    assert len(draw_results.bulk_calls) == 1
+    assert len(draw_results.bulk_calls[0][0]) == 2
+    assert result == {
+        "inserted": 2,
+        "matched": 0,
+        "conflicts": 0,
+        "unchanged": 0,
+        "write_operations": 2,
+    }
+
+
+def test_store_source_draws_does_not_rewrite_unchanged_snapshot() -> None:
+    row_checksum = hashlib.sha256(b"2026-09-01|12345").hexdigest()
+    draw_results = _DrawResults(
+        [
+            {
+                "draw_date": "2026-09-01",
+                "special_prize": "12345",
+                "status": "observed",
+                "sources": {
+                    "kqxs_year": {"record_checksum": row_checksum},
+                },
+            }
+        ]
+    )
+    collector = KqxsCollector(SimpleNamespace(draw_results=draw_results), SimpleNamespace())
+
+    result = collector._store_source_draws(
+        draws=[CollectedDraw("2026-09-01", "12345", "45")],
+        source_name="KQXS yearly",
+        source_key="kqxs_year",
+        source_url="https://example.test/results",
+        page_checksum="page-checksum",
+        fetched_at=datetime.now(timezone.utc),
+    )
+
+    assert draw_results.bulk_calls == []
+    assert result == {
+        "inserted": 0,
+        "matched": 1,
+        "conflicts": 0,
+        "unchanged": 1,
+        "write_operations": 0,
+    }
+
+
+def test_sync_range_skips_completed_history_unless_forced(monkeypatch) -> None:
+    config = SimpleNamespace(
+        local_today=lambda: SimpleNamespace(year=2026),
+        skip_completed_history=True,
+        backfill_workers=2,
+    )
+    collector = KqxsCollector(SimpleNamespace(), config)
+    called: list[int] = []
+
+    monkeypatch.setattr(
+        collector,
+        "_completed_historical_years",
+        lambda years: {2019, 2020},
+    )
+
+    def sync_year(year: int) -> dict[str, object]:
+        called.append(year)
+        return {"year": year, "status": "completed"}
+
+    monkeypatch.setattr(collector, "sync_year", sync_year)
+
+    incremental = collector.sync_range(2019, 2021)
+
+    assert [item["status"] for item in incremental] == [
+        "skipped",
+        "skipped",
+        "completed",
+    ]
+    assert called == [2021]
+
+    called.clear()
+    forced = collector.sync_range(2019, 2021, force=True)
+
+    assert [item["status"] for item in forced] == [
+        "completed",
+        "completed",
+        "completed",
+    ]
+    assert sorted(called) == [2019, 2020, 2021]

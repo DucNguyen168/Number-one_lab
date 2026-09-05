@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import date
+import logging
+from collections.abc import Awaitable, Callable
+from datetime import date, timedelta
 from typing import Any
 
 from pymongo.database import Database
@@ -14,6 +16,9 @@ from app.services.evaluation import (
     evaluate_pending_predictions,
 )
 from app.services.prediction import create_prediction
+
+
+logger = logging.getLogger(__name__)
 
 
 class DailyScheduler:
@@ -44,24 +49,78 @@ class DailyScheduler:
         digit_evaluation = await asyncio.to_thread(
             evaluate_pending_digit_predictions, self.db
         )
+        next_prediction: dict[str, Any] | None = None
+        if self.config.auto_prediction:
+            result_exists = await asyncio.to_thread(
+                self.db.draw_results.find_one,
+                {
+                    "draw_date": target.isoformat(),
+                    "status": {"$ne": "conflict"},
+                },
+                {"_id": 1},
+            )
+            if result_exists is not None:
+                next_prediction = await self._generate_prediction(
+                    target + timedelta(days=1)
+                )
         return {
             "sync": sync_result,
             "evaluation": evaluation,
             "digit_evaluation": digit_evaluation,
+            "next_prediction": next_prediction,
         }
 
-    async def _generate_prediction(self, target: date) -> None:
-        await asyncio.to_thread(
+    async def _generate_prediction(self, target: date) -> dict[str, Any]:
+        _, two_digit_created = await asyncio.to_thread(
             create_prediction, self.db, target, self.config.auto_prediction_count
         )
-        await asyncio.to_thread(create_digit_prediction, self.db, target)
+        _, one_digit_created = await asyncio.to_thread(
+            create_digit_prediction, self.db, target
+        )
+        outcome = {
+            "prediction_date": target.isoformat(),
+            "selected_count": self.config.auto_prediction_count,
+            "two_digit_created": two_digit_created,
+            "one_digit_created": one_digit_created,
+        }
+        logger.info(
+            "automatic prediction %s ready (two-digit created=%s, one-digit created=%s)",
+            target.isoformat(),
+            two_digit_created,
+            one_digit_created,
+        )
+        return outcome
+
+    async def _run_with_retries(
+        self,
+        label: str,
+        operation: Callable[[], Awaitable[Any]],
+    ) -> bool:
+        for attempt in range(1, self.config.scheduler_retry_attempts + 1):
+            try:
+                await operation()
+                return True
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                logger.exception(
+                    "%s failed (attempt %s/%s)",
+                    label,
+                    attempt,
+                    self.config.scheduler_retry_attempts,
+                )
+                if attempt < self.config.scheduler_retry_attempts:
+                    await asyncio.sleep(
+                        self.config.scheduler_retry_delay_seconds * attempt
+                    )
+        return False
 
     async def _run(self) -> None:
         if self.config.sync_on_startup:
-            try:
-                await self._sync_and_evaluate(self.config.local_today())
-            except Exception:
-                pass
+            await self._run_with_retries(
+                "startup result sync",
+                lambda: self._sync_and_evaluate(self.config.local_today()),
+            )
 
         while True:
             now = self.config.local_now()
@@ -75,21 +134,21 @@ class DailyScheduler:
                 and self.config.prediction_time <= current_time < first_sync
                 and prediction_token not in self._completed_tokens
             ):
-                try:
-                    await self._generate_prediction(today)
-                except Exception:
-                    pass
-                finally:
+                succeeded = await self._run_with_retries(
+                    f"prediction {today.isoformat()}",
+                    lambda: self._generate_prediction(today),
+                )
+                if succeeded:
                     self._completed_tokens.add(prediction_token)
 
             if current_time in self.config.result_sync_times:
                 sync_token = f"sync:{today.isoformat()}:{current_time}"
                 if sync_token not in self._completed_tokens:
-                    try:
-                        await self._sync_and_evaluate(today)
-                    except Exception:
-                        pass
-                    finally:
+                    succeeded = await self._run_with_retries(
+                        f"result sync {today.isoformat()} {current_time}",
+                        lambda: self._sync_and_evaluate(today),
+                    )
+                    if succeeded:
                         self._completed_tokens.add(sync_token)
 
             cutoff = today.isoformat()

@@ -1115,13 +1115,19 @@ function initSortButtons() {
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════
 el('backfill-btn').addEventListener('click', () => runAction(
-  el('backfill-btn'), '⬇ Đang tải lịch sử…',
+  el('backfill-btn'), '⬇ Đang kiểm tra và bổ sung dữ liệu…',
   () => api('/api/sync/backfill?start_year=2019', { method: 'POST' }),
   (result) => {
     const fallback = result.source_failures
       ? ` · ${result.source_failures} lượt nguồn lỗi, đã dùng nguồn dự phòng`
       : ` · ${result.source_successes} lượt nguồn thành công`;
-    return `Đã xử lý ${result.records_received} kết quả, thêm mới ${result.inserted}${fallback}.`;
+    const skipped = result.skipped_years
+      ? ` · bỏ qua ${result.skipped_years} năm đã đầy đủ`
+      : '';
+    const failed = result.failed_years
+      ? ` · ${result.failed_years} năm chưa đồng bộ được`
+      : '';
+    return `Đã nhận ${result.records_received} kết quả, thêm ${result.inserted}, ghi ${result.write_operations} thay đổi${skipped}${failed}${fallback}.`;
   },
 ));
 
@@ -1132,7 +1138,10 @@ el('sync-btn').addEventListener('click', () => runAction(
     const sourceState = result.sync.source_failures
       ? `${result.sync.source_successes} nguồn thành công, ${result.sync.source_failures} nguồn lỗi (fallback đã hoạt động)`
       : `${result.sync.source_successes} nguồn thành công`;
-    return `Đồng bộ ${result.sync.records_received} kết quả · ${sourceState} · đối chiếu ${result.evaluation.evaluated} bộ 2 số và ${result.digit_evaluation?.evaluated || 0} bộ 1 số.`;
+    const duration = result.sync.duration_ms != null
+      ? ` · ${(result.sync.duration_ms / 1000).toFixed(1)} giây`
+      : '';
+    return `Đồng bộ ${result.sync.records_received} kết quả · ghi ${result.sync.write_operations ?? '—'} thay đổi · ${sourceState}${duration} · đối chiếu ${result.evaluation.evaluated} bộ 2 số và ${result.digit_evaluation?.evaluated || 0} bộ 1 số.`;
   },
 ));
 

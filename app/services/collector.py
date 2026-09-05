@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import hashlib
 import re
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from html.parser import HTMLParser
-from typing import Any
+from time import perf_counter
+from typing import Any, Callable
 
 import httpx
+from pymongo import UpdateOne
 from pymongo.database import Database
 
 from app.config import Settings
@@ -270,6 +274,8 @@ def parse_kqxs_recent_html(html: str, year: int) -> list[CollectedDraw]:
 
 class KqxsCollector:
     source_name = "multi_source"
+    _year_locks_guard = threading.Lock()
+    _year_locks: dict[int, threading.Lock] = {}
 
     def __init__(self, db: Database, config: Settings) -> None:
         self.db = db
@@ -296,9 +302,12 @@ class KqxsCollector:
     ) -> tuple[str, str]:
         timeout = httpx.Timeout(
             self.config.http_timeout_seconds,
-            connect=min(self.config.http_timeout_seconds, 10),
+            connect=min(
+                self.config.http_timeout_seconds,
+                self.config.http_connect_timeout_seconds,
+            ),
         )
-        transport = httpx.HTTPTransport(retries=1)
+        transport = httpx.HTTPTransport(retries=self.config.http_retries)
         with httpx.Client(
             timeout=timeout,
             transport=transport,
@@ -315,6 +324,11 @@ class KqxsCollector:
             if not response.text.strip():
                 raise ValueError(f"{response.url.host} returned an empty response")
             return response.text, str(response.url)
+
+    @classmethod
+    def _lock_for_year(cls, year: int) -> threading.Lock:
+        with cls._year_locks_guard:
+            return cls._year_locks.setdefault(year, threading.Lock())
 
     def fetch_year(self, year: int) -> tuple[str, str]:
         params = {
@@ -349,12 +363,36 @@ class KqxsCollector:
         page_checksum: str,
         fetched_at: datetime,
     ) -> dict[str, int]:
-        counters = {"inserted": 0, "matched": 0, "conflicts": 0}
+        counters = {
+            "inserted": 0,
+            "matched": 0,
+            "conflicts": 0,
+            "unchanged": 0,
+            "write_operations": 0,
+        }
+        if not draws:
+            return counters
+
+        draw_dates = [draw.draw_date for draw in draws]
+        existing_by_date = {
+            item["draw_date"]: item
+            for item in self.db.draw_results.find(
+                {"draw_date": {"$in": draw_dates}},
+                {
+                    "draw_date": 1,
+                    "special_prize": 1,
+                    "status": 1,
+                    "sources": 1,
+                    "conflicts": 1,
+                },
+            )
+        }
+        operations: list[UpdateOne] = []
         for draw in draws:
             row_checksum = hashlib.sha256(
                 f"{draw.draw_date}|{draw.special_prize}".encode()
             ).hexdigest()
-            existing = self.db.draw_results.find_one({"draw_date": draw.draw_date})
+            existing = existing_by_date.get(draw.draw_date)
             source_snapshot = {
                 "name": source_name,
                 "url": source_url,
@@ -363,31 +401,47 @@ class KqxsCollector:
                 "record_checksum": row_checksum,
             }
             if existing is None:
-                self.db.draw_results.insert_one(
-                    {
-                        "draw_date": draw.draw_date,
-                        "special_prize": draw.special_prize,
-                        "last_two": draw.last_two,
-                        "status": "observed",
-                        "sources": {source_key: source_snapshot},
-                        "created_at": fetched_at,
-                        "updated_at": fetched_at,
-                    }
+                document = {
+                    "draw_date": draw.draw_date,
+                    "special_prize": draw.special_prize,
+                    "last_two": draw.last_two,
+                    "status": "observed",
+                    "sources": {source_key: source_snapshot},
+                    "created_at": fetched_at,
+                    "updated_at": fetched_at,
+                }
+                operations.append(
+                    UpdateOne(
+                        {"draw_date": draw.draw_date},
+                        {"$setOnInsert": document},
+                        upsert=True,
+                    )
                 )
+                existing_by_date[draw.draw_date] = document
                 counters["inserted"] += 1
                 continue
 
             if existing.get("special_prize") == draw.special_prize:
-                self.db.draw_results.update_one(
-                    {"_id": existing["_id"]},
-                    {
-                        "$set": {
-                            f"sources.{source_key}": source_snapshot,
-                            "updated_at": fetched_at,
-                        }
-                    },
-                )
                 counters["matched"] += 1
+                existing_snapshot = (existing.get("sources") or {}).get(source_key)
+                if (
+                    existing_snapshot
+                    and existing_snapshot.get("record_checksum") == row_checksum
+                ):
+                    counters["unchanged"] += 1
+                    continue
+                operations.append(
+                    UpdateOne(
+                        {"draw_date": draw.draw_date},
+                        {
+                            "$set": {
+                                f"sources.{source_key}": source_snapshot,
+                                "updated_at": fetched_at,
+                            }
+                        },
+                    )
+                )
+                existing.setdefault("sources", {})[source_key] = source_snapshot
                 continue
 
             conflict = {
@@ -401,6 +455,16 @@ class KqxsCollector:
                 and item.get("observed_special_prize") == draw.special_prize
                 for item in existing.get("conflicts", [])
             )
+            existing_snapshot = (existing.get("sources") or {}).get(source_key)
+            if (
+                already_recorded
+                and existing.get("status") == "conflict"
+                and existing_snapshot
+                and existing_snapshot.get("record_checksum") == row_checksum
+            ):
+                counters["conflicts"] += 1
+                counters["unchanged"] += 1
+                continue
             update: dict[str, Any] = {
                 "$set": {
                     "status": "conflict",
@@ -410,11 +474,114 @@ class KqxsCollector:
             }
             if not already_recorded:
                 update["$push"] = {"conflicts": conflict}
-            self.db.draw_results.update_one({"_id": existing["_id"]}, update)
+                existing.setdefault("conflicts", []).append(conflict)
+            operations.append(
+                UpdateOne({"draw_date": draw.draw_date}, update)
+            )
+            existing["status"] = "conflict"
+            existing.setdefault("sources", {})[source_key] = source_snapshot
             counters["conflicts"] += 1
+
+        if operations:
+            self.db.draw_results.bulk_write(operations, ordered=True)
+        counters["write_operations"] = len(operations)
         return counters
 
+    def _source_specs(
+        self, year: int
+    ) -> list[
+        tuple[
+            str,
+            str,
+            Callable[[], tuple[str, str]],
+            Callable[[str, int], list[CollectedDraw]],
+        ]
+    ]:
+        specs = [
+            (
+                "KQXS yearly",
+                "kqxs_year",
+                lambda: self.fetch_year(year),
+                parse_year_html,
+            ),
+            (
+                "Xổ Số Đại Phát yearly",
+                "xosodaiphat_year",
+                lambda: self.fetch_xosodaiphat_year(year),
+                parse_xosodaiphat_year_html,
+            ),
+        ]
+        if year == self.config.local_today().year:
+            specs.append(
+                (
+                    "KQXS recent",
+                    "kqxs_recent",
+                    self.fetch_kqxs_recent,
+                    parse_kqxs_recent_html,
+                )
+            )
+        return specs
+
+    @staticmethod
+    def _collect_source(
+        index: int,
+        year: int,
+        spec: tuple[
+            str,
+            str,
+            Callable[[], tuple[str, str]],
+            Callable[[str, int], list[CollectedDraw]],
+        ],
+    ) -> tuple[int, dict[str, Any] | None, dict[str, Any]]:
+        source_name, source_key, fetcher, parser = spec
+        source_started_at = datetime.now(timezone.utc)
+        timer = perf_counter()
+        try:
+            html, source_url = fetcher()
+            page_checksum = hashlib.sha256(html.encode("utf-8")).hexdigest()
+            draws = parser(html, year)
+            if not draws:
+                raise ValueError(
+                    f"{source_name} returned no draw results for year {year}"
+                )
+            payload = {
+                "name": source_name,
+                "key": source_key,
+                "url": source_url,
+                "checksum": page_checksum,
+                "draws": draws,
+            }
+            summary = {
+                "name": source_name,
+                "key": source_key,
+                "status": "completed",
+                "source_url": source_url,
+                "records_received": len(draws),
+                "page_checksum": page_checksum,
+                "duration_ms": round((perf_counter() - timer) * 1_000),
+                "started_at": source_started_at,
+                "finished_at": datetime.now(timezone.utc),
+            }
+            return index, payload, summary
+        except Exception as exc:
+            summary = {
+                "name": source_name,
+                "key": source_key,
+                "status": "failed",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+                "duration_ms": round((perf_counter() - timer) * 1_000),
+                "started_at": source_started_at,
+                "finished_at": datetime.now(timezone.utc),
+            }
+            return index, None, summary
+
     def sync_year(self, year: int) -> dict[str, Any]:
+        with self._lock_for_year(year):
+            return self._sync_year_locked(year)
+
+    def _sync_year_locked(self, year: int) -> dict[str, Any]:
+        timer = perf_counter()
         started_at = datetime.now(timezone.utc)
         run = {
             "type": "year_sync",
@@ -426,74 +593,30 @@ class KqxsCollector:
         run_id = self.db.collector_runs.insert_one(run).inserted_id
         source_summaries: list[dict[str, Any]] = []
         try:
-            source_specs: list[tuple[str, str, Any, Any]] = [
-                (
-                    "KQXS yearly",
-                    "kqxs_year",
-                    lambda: self.fetch_year(year),
-                    parse_year_html,
-                ),
-                (
-                    "Xổ Số Đại Phát yearly",
-                    "xosodaiphat_year",
-                    lambda: self.fetch_xosodaiphat_year(year),
-                    parse_xosodaiphat_year_html,
-                ),
-            ]
-            if year == self.config.local_today().year:
-                source_specs.append(
-                    (
-                        "KQXS recent",
-                        "kqxs_recent",
-                        self.fetch_kqxs_recent,
-                        parse_kqxs_recent_html,
-                    )
-                )
+            source_specs = self._source_specs(year)
+            ordered_results: list[
+                tuple[dict[str, Any] | None, dict[str, Any]] | None
+            ] = [None] * len(source_specs)
+            with ThreadPoolExecutor(
+                max_workers=len(source_specs),
+                thread_name_prefix=f"xsmb-source-{year}",
+            ) as executor:
+                futures = [
+                    executor.submit(self._collect_source, index, year, spec)
+                    for index, spec in enumerate(source_specs)
+                ]
+                for future in as_completed(futures):
+                    index, payload, summary = future.result()
+                    ordered_results[index] = (payload, summary)
 
             payloads: list[dict[str, Any]] = []
-            for source_name, source_key, fetcher, parser in source_specs:
-                source_started_at = datetime.now(timezone.utc)
-                try:
-                    html, source_url = fetcher()
-                    page_checksum = hashlib.sha256(html.encode("utf-8")).hexdigest()
-                    draws = parser(html, year)
-                    if not draws:
-                        raise ValueError(
-                            f"{source_name} returned no draw results for year {year}"
-                        )
-                    payloads.append(
-                        {
-                            "name": source_name,
-                            "key": source_key,
-                            "url": source_url,
-                            "checksum": page_checksum,
-                            "draws": draws,
-                        }
-                    )
-                    source_summaries.append(
-                        {
-                            "name": source_name,
-                            "key": source_key,
-                            "status": "completed",
-                            "source_url": source_url,
-                            "records_received": len(draws),
-                            "page_checksum": page_checksum,
-                            "started_at": source_started_at,
-                            "finished_at": datetime.now(timezone.utc),
-                        }
-                    )
-                except Exception as exc:
-                    source_summaries.append(
-                        {
-                            "name": source_name,
-                            "key": source_key,
-                            "status": "failed",
-                            "error_type": type(exc).__name__,
-                            "error": str(exc),
-                            "started_at": source_started_at,
-                            "finished_at": datetime.now(timezone.utc),
-                        }
-                    )
+            for result in ordered_results:
+                if result is None:
+                    continue
+                payload, summary = result
+                source_summaries.append(summary)
+                if payload is not None:
+                    payloads.append(payload)
 
             if not payloads:
                 errors = "; ".join(
@@ -504,7 +627,14 @@ class KqxsCollector:
                     f"All result sources failed for {year}. {errors}"
                 )
 
-            counters = {"inserted": 0, "matched": 0, "conflicts": 0}
+            fetch_finished = perf_counter()
+            counters = {
+                "inserted": 0,
+                "matched": 0,
+                "conflicts": 0,
+                "unchanged": 0,
+                "write_operations": 0,
+            }
             unique_dates: set[str] = set()
             fetched_at = datetime.now(timezone.utc)
             for payload in payloads:
@@ -518,7 +648,7 @@ class KqxsCollector:
                     fetched_at=fetched_at,
                 )
                 for key in counters:
-                    counters[key] += source_counters[key]
+                    counters[key] += source_counters.get(key, 0)
 
             finished_at = datetime.now(timezone.utc)
             source_failures = sum(
@@ -539,6 +669,13 @@ class KqxsCollector:
                 "source_failures": source_failures,
                 "fallback_used": source_failures > 0,
                 "sources": source_summaries,
+                "fetch_duration_ms": round(
+                    (fetch_finished - timer) * 1_000
+                ),
+                "write_duration_ms": round(
+                    (perf_counter() - fetch_finished) * 1_000
+                ),
+                "duration_ms": round((perf_counter() - timer) * 1_000),
                 "page_checksum": hashlib.sha256(
                     checksum_material.encode("utf-8")
                 ).hexdigest(),
@@ -562,7 +699,111 @@ class KqxsCollector:
             )
             raise
 
-    def sync_range(self, start_year: int, end_year: int) -> list[dict[str, Any]]:
+    def _completed_historical_years(self, years: list[int]) -> set[int]:
+        if not years or not self.config.skip_completed_history:
+            return set()
+        documents = self.db.collector_runs.find(
+            {
+                "type": "year_sync",
+                "source": self.source_name,
+                "year": {"$in": years},
+                "status": "completed",
+            },
+            {"_id": 0, "year": 1},
+        )
+        return {
+            int(document["year"])
+            for document in documents
+            if isinstance(document.get("year"), int)
+        }
+
+    @staticmethod
+    def _skipped_year(year: int) -> dict[str, Any]:
+        now = datetime.now(timezone.utc)
+        return {
+            "year": year,
+            "source": "cache",
+            "records_received": 0,
+            "source_records_received": 0,
+            "inserted": 0,
+            "matched": 0,
+            "conflicts": 0,
+            "unchanged": 0,
+            "write_operations": 0,
+            "source_successes": 0,
+            "source_failures": 0,
+            "fallback_used": False,
+            "sources": [],
+            "started_at": now,
+            "finished_at": now,
+            "duration_ms": 0,
+            "status": "skipped",
+            "skip_reason": "historical year already synchronized",
+        }
+
+    def _failed_year(self, year: int, exc: Exception) -> dict[str, Any]:
+        now = datetime.now(timezone.utc)
+        return {
+            "year": year,
+            "source": "multi_source",
+            "records_received": 0,
+            "source_records_received": 0,
+            "inserted": 0,
+            "matched": 0,
+            "conflicts": 0,
+            "unchanged": 0,
+            "write_operations": 0,
+            "source_successes": 0,
+            "source_failures": len(self._source_specs(year)),
+            "fallback_used": True,
+            "sources": [],
+            "started_at": now,
+            "finished_at": now,
+            "duration_ms": 0,
+            "status": "failed",
+            "error": str(exc),
+        }
+
+    def sync_range(
+        self, start_year: int, end_year: int, *, force: bool = False
+    ) -> list[dict[str, Any]]:
         if start_year > end_year:
             raise ValueError("start_year must be before or equal to end_year")
-        return [self.sync_year(year) for year in range(start_year, end_year + 1)]
+        years = list(range(start_year, end_year + 1))
+        current_year = self.config.local_today().year
+        historical_years = [year for year in years if year < current_year]
+        completed = (
+            set()
+            if force
+            else self._completed_historical_years(historical_years)
+        )
+        results: dict[int, dict[str, Any]] = {
+            year: self._skipped_year(year) for year in completed
+        }
+        pending = [year for year in years if year not in completed]
+
+        if pending:
+            with ThreadPoolExecutor(
+                max_workers=min(self.config.backfill_workers, len(pending)),
+                thread_name_prefix="xsmb-backfill",
+            ) as executor:
+                futures = {
+                    executor.submit(self.sync_year, year): year for year in pending
+                }
+                for future in as_completed(futures):
+                    year = futures[future]
+                    try:
+                        results[year] = future.result()
+                    except Exception as exc:
+                        results[year] = self._failed_year(year, exc)
+
+        ordered = [results[year] for year in years]
+        if ordered and all(item["status"] == "failed" for item in ordered):
+            errors = "; ".join(
+                f"{item['year']}: {item.get('error', 'unknown error')}"
+                for item in ordered
+            )
+            raise CollectorSourcesUnavailable(
+                f"All requested years failed. {errors}"
+            )
+        return ordered

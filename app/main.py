@@ -139,6 +139,7 @@ def sync_backfill(
     request: Request,
     start_year: Annotated[int, Query(ge=2019)] = 2019,
     end_year: Annotated[int | None, Query(ge=2019)] = None,
+    force: Annotated[bool, Query()] = False,
 ) -> dict[str, Any]:
     current_year = settings.local_today().year
     final_year = end_year or current_year
@@ -149,19 +150,38 @@ def sync_backfill(
     db = _db(request)
     collector = KqxsCollector(db, settings)
     try:
-        runs = collector.sync_range(start_year, final_year)
+        runs = collector.sync_range(start_year, final_year, force=force)
         evaluation = evaluate_pending_predictions(db)
         digit_evaluation = evaluate_pending_digit_predictions(db)
         return serialize_document(
             {
                 "years": len(runs),
-                "records_received": sum(run["records_received"] for run in runs),
-                "inserted": sum(run["inserted"] for run in runs),
-                "matched": sum(run["matched"] for run in runs),
-                "conflicts": sum(run["conflicts"] for run in runs),
-                "source_successes": sum(run["source_successes"] for run in runs),
-                "source_failures": sum(run["source_failures"] for run in runs),
-                "fallback_used": any(run["fallback_used"] for run in runs),
+                "completed_years": sum(
+                    run["status"] == "completed" for run in runs
+                ),
+                "partial_years": sum(run["status"] == "partial" for run in runs),
+                "skipped_years": sum(run["status"] == "skipped" for run in runs),
+                "failed_years": sum(run["status"] == "failed" for run in runs),
+                "records_received": sum(
+                    run.get("records_received", 0) for run in runs
+                ),
+                "inserted": sum(run.get("inserted", 0) for run in runs),
+                "matched": sum(run.get("matched", 0) for run in runs),
+                "unchanged": sum(run.get("unchanged", 0) for run in runs),
+                "write_operations": sum(
+                    run.get("write_operations", 0) for run in runs
+                ),
+                "conflicts": sum(run.get("conflicts", 0) for run in runs),
+                "source_successes": sum(
+                    run.get("source_successes", 0) for run in runs
+                ),
+                "source_failures": sum(
+                    run.get("source_failures", 0) for run in runs
+                ),
+                "fallback_used": any(
+                    run.get("fallback_used", False) for run in runs
+                ),
+                "force": force,
                 "runs": runs,
                 "evaluation": evaluation,
                 "digit_evaluation": digit_evaluation,

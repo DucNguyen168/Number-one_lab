@@ -50,6 +50,10 @@ lần đồng bộ vẫn hoàn tất ở trạng thái `partial`; API chỉ tr�
 không dùng được. Kết quả của từng nguồn được lưu trong `draw_results.sources`, còn tóm
 tắt thành công/thất bại được lưu trong `collector_runs.sources`.
 
+Các nguồn của cùng một năm được tải song song. MongoDB được đọc một lần và ghi bằng
+`bulk_write`; những bản ghi có checksum không đổi sẽ không bị ghi lại. Backfill mặc
+định bỏ qua các năm lịch sử đã có lần đồng bộ hoàn tất và chỉ cập nhật năm hiện tại.
+
 ## Yêu cầu
 
 - Python 3.12 trở lên.
@@ -80,6 +84,13 @@ Nhập toàn bộ lịch sử hiện có từ 2019 đến năm hiện tại:
 
 ```powershell
 .\.venv\Scripts\python.exe -m app.cli backfill --start-year 2019
+```
+
+Các lần chạy sau dùng chế độ gia tăng nên thường chỉ tải năm hiện tại. Chỉ dùng
+`--force` khi cần kiểm tra lại toàn bộ nguồn lịch sử:
+
+```powershell
+.\.venv\Scripts\python.exe -m app.cli backfill --start-year 2019 --force
 ```
 
 Khởi động API và dashboard:
@@ -151,7 +162,11 @@ Có thể đổi URL nguồn và timeout trong `.env`:
 ```dotenv
 KQXS_BASE_URL=https://www.kqxs.vn
 XOSODAIPHAT_BASE_URL=https://xosodaiphat.com
-HTTP_TIMEOUT_SECONDS=20
+HTTP_TIMEOUT_SECONDS=12
+HTTP_CONNECT_TIMEOUT_SECONDS=5
+HTTP_RETRIES=1
+BACKFILL_WORKERS=4
+SKIP_COMPLETED_HISTORY=true
 ```
 
 ## Scheduler hằng ngày
@@ -161,6 +176,9 @@ Mặc định scheduler:
 - Tạo đồng thời prediction 65 số và prediction Top‑1 chữ số cuối lúc `17:30` theo giờ `Asia/Ho_Chi_Minh`.
 - Đồng bộ kết quả lúc `18:35`, `18:50` và `19:10`.
 - Sau mỗi lần đồng bộ, tự đánh giá prediction cùng ngày.
+- Ngay khi xác nhận đã có kết quả hợp lệ của hôm nay, tự khóa prediction 65 số và
+  prediction Top‑1 cho ngày mai. Nếu snapshot ngày mai đã tồn tại thì giữ nguyên,
+  không tạo trùng và không ghi đè.
 
 Có thể thay đổi trong `.env`:
 
@@ -168,10 +186,18 @@ Có thể thay đổi trong `.env`:
 AUTO_PREDICTION_COUNT=65
 PREDICTION_TIME=17:30
 RESULT_SYNC_TIMES=18:35,18:50,19:10
+SYNC_ON_STARTUP=true
+SCHEDULER_RETRY_ATTEMPTS=3
+SCHEDULER_RETRY_DELAY_SECONDS=5
 ```
 
 Scheduler chỉ hoạt động trong thời gian ứng dụng đang chạy. Nếu cần chạy bền vững,
 dùng Windows Task Scheduler, NSSM hoặc container/service manager để giữ API hoạt động.
+Khi `SYNC_ON_STARTUP=true`, scheduler tự đồng bộ năm hiện tại ngay sau khi server chạy.
+Nếu kết quả hôm nay đã tồn tại, lượt khởi động này cũng tự kiểm tra và tạo prediction
+cho ngày mai; lịch `17:30` vẫn là phương án dự phòng nếu ứng dụng được bật trước giờ quay.
+Mỗi mốc lỗi được thử lại theo `SCHEDULER_RETRY_ATTEMPTS` thay vì bị đánh dấu hoàn tất
+ngay ở lần lỗi đầu tiên.
 
 ## Mô hình hiện tại
 
