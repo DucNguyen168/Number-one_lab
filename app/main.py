@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import secrets
 from contextlib import asynccontextmanager
 from datetime import date, timedelta
 from pathlib import Path
@@ -7,7 +9,7 @@ from typing import Annotated, Any
 
 import httpx
 from bson import ObjectId
-from fastapi import Body, FastAPI, HTTPException, Query, Request
+from fastapi import Body, FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -22,6 +24,7 @@ from app.models import (
 )
 from app.services.backtest import run_walk_forward_backtest
 from app.services.collector import CollectorSourcesUnavailable, KqxsCollector
+from app.services.cron_lock import CronAlreadyRunning, mongo_cron_lease
 from app.services.digit_backtest import run_digit_walk_forward_backtest
 from app.services.digit_prediction import (
     DIGIT_MODEL_VERSION,
@@ -39,6 +42,20 @@ from app.services.scheduler import DailyScheduler
 STATIC_DIR = Path(__file__).parent / "static"
 
 
+def _in_process_scheduler_enabled() -> bool:
+    return settings.enable_scheduler and not settings.is_vercel
+
+
+def _authorize_cron_request(request: Request) -> None:
+    cron_secret = os.getenv("CRON_SECRET", "").strip()
+    if not cron_secret:
+        return
+    authorization = request.headers.get("authorization", "")
+    expected = f"Bearer {cron_secret}"
+    if not secrets.compare_digest(authorization, expected):
+        raise HTTPException(status_code=401, detail="Invalid cron authorization")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     mongo = MongoDatabase(settings)
@@ -47,7 +64,7 @@ async def lifespan(app: FastAPI):
     scheduler = DailyScheduler(mongo.db, settings)
     app.state.mongo = mongo
     app.state.scheduler = scheduler
-    if settings.enable_scheduler:
+    if _in_process_scheduler_enabled():
         scheduler.start()
     try:
         yield
@@ -89,7 +106,8 @@ def health(request: Request) -> dict[str, Any]:
         "version": __version__,
         "mongodb": mongo_ok,
         "database": settings.mongodb_database,
-        "scheduler_enabled": settings.enable_scheduler,
+        "scheduler_enabled": _in_process_scheduler_enabled(),
+        "automation_mode": "vercel_cron" if settings.is_vercel else "scheduler",
         "model_version": MODEL_VERSION,
         "digit_model_version": DIGIT_MODEL_VERSION,
     }
@@ -233,15 +251,32 @@ def recent_last_two(
     }
 
 
-@app.post("/api/auto-daily")
-def auto_daily(request: Request) -> dict[str, Any]:
+@app.api_route("/api/auto-daily", methods=["GET", "POST"])
+def auto_daily(request: Request, response: Response) -> dict[str, Any]:
+    _authorize_cron_request(request)
+    response.headers["Cache-Control"] = "no-store, max-age=0"
+    db = _db(request)
+    try:
+        with mongo_cron_lease(db, "auto-daily"):
+            result = _run_auto_daily(db)
+    except CronAlreadyRunning:
+        return {
+            "ok": True,
+            "status": "already_running",
+            "message": "Another automatic reconciliation is still running.",
+        }
+    if result.get("sync_error"):
+        response.status_code = 502
+    return result
+
+
+def _run_auto_daily(db: Any) -> dict[str, Any]:
     """Endpoint tổng hợp dùng cho Vercel Cron Jobs:
     1. Đồng bộ kết quả năm hiện tại
     2. Đánh giá tất cả prediction pending
     3. Tạo dự đoán 2 số cho ngày tiếp theo (nếu chưa có)
     4. Tạo dự đoán 1 số cho ngày tiếp theo (nếu chưa có)
     """
-    db = _db(request)
     today = settings.local_today()
 
     # Bước 1: Sync kết quả
@@ -261,39 +296,58 @@ def auto_daily(request: Request) -> dict[str, Any]:
 
     # Bước 3 & 4: Tạo dự đoán cho ngày tiếp theo
     # Nếu hôm nay đã có kết quả → dự đoán cho ngày mai
-    target = today
-    if db.draw_results.find_one({"draw_date": today.isoformat()}):
+    target: date | None = today
+    today_result = db.draw_results.find_one(
+        {
+            "draw_date": today.isoformat(),
+            "status": {"$ne": "conflict"},
+        },
+        {"_id": 1},
+    )
+    if today_result:
         target = today + timedelta(days=1)
+    else:
+        first_sync = min(settings.result_sync_times, default="18:35")
+        if settings.local_now().strftime("%H:%M") >= first_sync:
+            target = None
 
     pred_result: dict[str, Any] = {}
     pred_error: str | None = None
     digit_pred_result: dict[str, Any] = {}
     digit_pred_error: str | None = None
 
-    try:
-        prediction, pred_created = create_prediction(
-            db, target, settings.auto_prediction_count
-        )
-        pred_result = {
-            "created": pred_created,
-            "prediction_date": str(target),
-            "selected_count": settings.auto_prediction_count,
-        }
-    except ValueError as exc:
-        pred_error = str(exc)
+    if target is None:
+        pred_error = "Today's result is not available; waiting for the next cron run."
+        digit_pred_error = pred_error
+    elif settings.auto_prediction:
+        try:
+            prediction, pred_created = create_prediction(
+                db, target, settings.auto_prediction_count
+            )
+            pred_result = {
+                "created": pred_created,
+                "prediction_date": str(target),
+                "selected_count": settings.auto_prediction_count,
+            }
+        except ValueError as exc:
+            pred_error = str(exc)
 
-    try:
-        digit_prediction, digit_created = create_digit_prediction(db, target)
-        digit_pred_result = {
-            "created": digit_created,
-            "prediction_date": str(target),
-        }
-    except ValueError as exc:
-        digit_pred_error = str(exc)
+        try:
+            digit_prediction, digit_created = create_digit_prediction(db, target)
+            digit_pred_result = {
+                "created": digit_created,
+                "prediction_date": str(target),
+            }
+        except ValueError as exc:
+            digit_pred_error = str(exc)
+    else:
+        pred_error = "Automatic prediction is disabled."
+        digit_pred_error = pred_error
 
     return serialize_document({
-        "ok": True,
-        "target_date": str(target),
+        "ok": sync_error is None,
+        "status": "completed" if sync_error is None else "source_failed",
+        "target_date": str(target) if target else None,
         "sync": sync_result,
         "sync_error": sync_error,
         "evaluation": evaluation,

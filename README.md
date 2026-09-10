@@ -199,6 +199,25 @@ cho ngày mai; lịch `17:30` vẫn là phương án dự phòng nếu ứng d�
 Mỗi mốc lỗi được thử lại theo `SCHEDULER_RETRY_ATTEMPTS` thay vì bị đánh dấu hoàn tất
 ngay ở lần lỗi đầu tiên.
 
+### Tự động hóa khi deploy Vercel
+
+Vercel chạy FastAPI dưới dạng serverless Function, vì vậy scheduler trong RAM không
+được dùng trên Vercel. Biến hệ thống `VERCEL=1` được nhận diện tự động và ứng dụng dùng
+Vercel Cron gọi `GET /api/auto-daily` thay thế. Các mốc trong `vercel.json` là UTC:
+
+- `30 10 * * *`: chuẩn bị prediction lúc 17:30 giờ Việt Nam.
+- `35 11 * * *`, `50 11 * * *`, `10 12 * * *`: đồng bộ/đối chiếu sau kỳ quay và
+  tạo prediction ngày mai ngay khi kết quả hôm nay xuất hiện.
+
+Endpoint cron dùng MongoDB lease để tránh hai invocation chạy chồng nhau và có thể bảo
+vệ bằng biến môi trường `CRON_SECRET`. Hãy tạo chuỗi ngẫu nhiên tối thiểu 16 ký tự tại
+Vercel **Project Settings → Environment Variables**, áp dụng cho Production rồi redeploy.
+Vercel tự gửi giá trị này dưới header `Authorization: Bearer ...`.
+
+Trên gói Hobby, cron chỉ đảm bảo chạy trong giờ đã cấu hình, có thể lệch tối đa 59 phút;
+gói Pro có độ chính xác theo phút. Sau mỗi lần sửa `vercel.json` phải tạo production
+deployment mới thì lịch cron mới được cập nhật.
+
 ## Mô hình hiện tại
 
 `frequency_ensemble_v1` kết hợp phân phối tần suất có làm trơn của các cửa sổ:

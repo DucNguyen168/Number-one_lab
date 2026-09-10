@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "builds": [
     {
@@ -15,18 +16,18 @@
   "crons": [
     {
       "path": "/api/auto-daily",
-      "schedule": "0 11 * * *"
+      "schedule": "30 10 * * *"
     },
     {
       "path": "/api/auto-daily",
       "schedule": "35 11 * * *"
     },
     {
-      "path": "/api/sync/current",
+      "path": "/api/auto-daily",
       "schedule": "50 11 * * *"
     },
     {
-      "path": "/api/sync/current",
+      "path": "/api/auto-daily",
       "schedule": "10 12 * * *"
     }
   ]

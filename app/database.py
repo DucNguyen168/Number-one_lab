@@ -70,6 +70,11 @@ class MongoDatabase:
             ],
             name="collector_completed_years",
         )
+        self.db.cron_locks.create_index(
+            [("expires_at", ASCENDING)],
+            expireAfterSeconds=0,
+            name="cron_lock_expiry",
+        )
 
     def close(self) -> None:
         self.client.close()

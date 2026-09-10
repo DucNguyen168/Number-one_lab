@@ -46,6 +46,7 @@ class Settings:
     prediction_time: str
     result_sync_times: tuple[str, ...]
     ai_configured: bool
+    is_vercel: bool
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -91,6 +92,10 @@ class Settings:
             prediction_time=os.getenv("PREDICTION_TIME", "17:30"),
             result_sync_times=sync_times,
             ai_configured=bool(os.getenv("AI_API_KEY", "").strip()),
+            is_vercel=(
+                _as_bool(os.getenv("VERCEL"), False)
+                or bool(os.getenv("VERCEL_ENV") or os.getenv("VERCEL_URL"))
+            ),
         )
 
     @property
