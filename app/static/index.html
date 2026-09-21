@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Công cụ phân tích dữ liệu lịch sử và tạo dự đoán XSMB — backtest nghiêm ngặt, không rò rỉ tương lai." />
     <title>XSMB Research Lab</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20260828-1" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260922-2" />
   </head>
   <body>
     <div class="page-shell">
@@ -200,6 +200,32 @@
               <div id="excluded-recent-chips" class="excluded-recent-chips" style="display:none"></div>
             </div>
             <div class="cutoff-info" id="cutoff-info"></div>
+          </div>
+
+          <!-- Export bar -->
+          <div class="export-bar" id="export-bar" style="display:none;">
+            <div class="export-bar-left">
+              <span class="export-bar-label">
+                <span class="export-bar-icon">📋</span>
+                Xuất dãy số Top
+                <select id="export-top-select" class="export-top-select" aria-label="Chọn top để xuất">
+                  <option value="all">Tất cả</option>
+                  <option value="10">Top 10</option>
+                  <option value="15">Top 15</option>
+                  <option value="20">Top 20</option>
+                  <option value="25">Top 25</option>
+                  <option value="30">Top 30</option>
+                  <option value="40">Top 40</option>
+                  <option value="50">Top 50</option>
+                </select>
+                — <span id="export-count-label" class="export-count-label">0 số</span>:
+              </span>
+              <span id="export-number-string" class="export-number-string">—</span>
+            </div>
+            <button id="copy-selected-btn" class="button copy-btn copy-btn-red" type="button" aria-label="Copy dãy số vào clipboard">
+              <span class="copy-btn-icon">⧉</span>
+              Copy
+            </button>
           </div>
 
           <!-- Grid view: all + selected -->
@@ -457,6 +483,6 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="/static/app.js?v=20260905-1" defer></script>
+    <script src="/static/app.js?v=20260922-2" defer></script>
   </body>
 </html>

@@ -1,0 +1,172 @@
+{
+  "input": "C:\\Users\\Admin\\Downloads\\Number_one\\reports\\profitability_research\\KE_HOACH_NGHIEN_CUU_LOI_NHUAN_60_80_SO.docx",
+  "fonts_by_char_count": {
+    "Garamond": 11755,
+    "Play": 52,
+    "Arial": 31
+  },
+  "direct_run_formatting_runs": 249,
+  "direct_paragraph_formatting_paragraphs": 97,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 1,
+      "text": "K\u1ebe HO\u1ea0CH NGHI\u00caN C\u1ee8U\nT\u1ed0I \u01afU L\u1ee2I NHU\u1eacN D\u00c0N 60 V\u00c0 80 S\u1ed0",
+      "style": "Title"
+    },
+    {
+      "para_index": 3,
+      "text": "D\u1eef li\u1ec7u:\tXSMB hai s\u1ed1 cu\u1ed1i t\u1eeb 01/01/2019 \u0111\u1ebfn 05/09/2026",
+      "style": "normal"
+    },
+    {
+      "para_index": 4,
+      "text": "M\u1ee9c m\u00f4 ph\u1ecfng:\t10.000 \u0111\u1ed3ng m\u1ed7i s\u1ed1; tr\u00fang nh\u1eadn t\u1ed5ng c\u1ed9ng 999.000 \u0111\u1ed3ng",
+      "style": "normal"
+    },
+    {
+      "para_index": 5,
+      "text": "Tr\u1ea1ng th\u00e1i:\tK\u1ebf ho\u1ea1ch nghi\u00ean c\u1ee9u; ch\u01b0a ch\u1ee9ng minh c\u00f3 l\u1ee3i th\u1ebf t\u01b0\u01a1ng lai",
+      "style": "normal"
+    },
+    {
+      "para_index": 81,
+      "text": "[1] A Reality Check for Data Snooping. Halbert White, Econometrica 68(5), 2000",
+      "style": "normal"
+    },
+    {
+      "para_index": 83,
+      "text": "[3] Time-Series Models \u2014 Analytic posterior. Stan User\u2019s Guide 2.35",
+      "style": "normal"
+    },
+    {
+      "para_index": 86,
+      "text": "[6] REST API quickstart \u2014 model limits. Prior Labs, accessed 05/09/2026",
+      "style": "normal"
+    },
+    {
+      "para_index": 88,
+      "text": "[8] On Calibration of Modern Neural Networks. Chuan Guo et al., ICML 2017",
+      "style": "normal"
+    },
+    {
+      "para_index": 94,
+      "text": "Chi\u1ebfn l\u01b0\u1ee3c",
+      "style": "normal"
+    },
+    {
+      "para_index": 95,
+      "text": "\u0110\u00fang c\u01b0\u1ee3c",
+      "style": "normal"
+    },
+    {
+      "para_index": 96,
+      "text": "T\u1ef7 l\u1ec7",
+      "style": "normal"
+    },
+    {
+      "para_index": 97,
+      "text": "L\u00e3i r\u00f2ng",
+      "style": "normal"
+    },
+    {
+      "para_index": 98,
+      "text": "ROI",
+      "style": "normal"
+    },
+    {
+      "para_index": 99,
+      "text": "Drawdown",
+      "style": "normal"
+    },
+    {
+      "para_index": 142,
+      "text": "Chi\u1ebfn l\u01b0\u1ee3c",
+      "style": "normal"
+    },
+    {
+      "para_index": 143,
+      "text": "\u0110\u00fang c\u01b0\u1ee3c",
+      "style": "normal"
+    },
+    {
+      "para_index": 144,
+      "text": "T\u1ef7 l\u1ec7",
+      "style": "normal"
+    },
+    {
+      "para_index": 145,
+      "text": "L\u00e3i r\u00f2ng",
+      "style": "normal"
+    },
+    {
+      "para_index": 146,
+      "text": "ROI",
+      "style": "normal"
+    },
+    {
+      "para_index": 147,
+      "text": "Drawdown",
+      "style": "normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "K\u1ebe HO\u1ea0CH NGHI\u00caN C\u1ee8U\nT\u1ed0I \u01afU L\u1ee2I NHU\u1eacN D\u00c0N 60 V\u00c0 80 S\u1ed0",
+        "style": "Title"
+      },
+      {
+        "para_index": 2,
+        "text": "M\u1ee5c ti\u00eau:\tT\u1ed1i \u0111a h\u00f3a l\u1ee3i nhu\u1eadn k\u1ef3 v\u1ecdng c\u00f3 ki\u1ec3m \u0111\u1ecbnh, kh\u00f4ng t\u1ed1i \u01b0u ri\u00eang k\u1ebft qu\u1ea3 l\u1ecbch s\u1eed",
+        "style": "normal"
+      },
+      {
+        "para_index": 3,
+        "text": "D\u1eef li\u1ec7u:\tXSMB hai s\u1ed1 cu\u1ed1i t\u1eeb 01/01/2019 \u0111\u1ebfn 05/09/2026",
+        "style": "normal"
+      },
+      {
+        "para_index": 4,
+        "text": "M\u1ee9c m\u00f4 ph\u1ecfng:\t10.000 \u0111\u1ed3ng m\u1ed7i s\u1ed1; tr\u00fang nh\u1eadn t\u1ed5ng c\u1ed9ng 999.000 \u0111\u1ed3ng",
+        "style": "normal"
+      },
+      {
+        "para_index": 5,
+        "text": "Tr\u1ea1ng th\u00e1i:\tK\u1ebf ho\u1ea1ch nghi\u00ean c\u1ee9u; ch\u01b0a ch\u1ee9ng minh c\u00f3 l\u1ee3i th\u1ebf t\u01b0\u01a1ng lai",
+        "style": "normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 1,
+        "run_text": "K\u1ebe HO\u1ea0CH NGHI\u00caN C\u1ee8U\nT\u1ed0I \u01afU L\u1ee2I NHU\u1eacN D\u00c0N 60 V\u00c0 80 S\u1ed0",
+        "style": "Title"
+      },
+      {
+        "para_index": 2,
+        "run_text": "M\u1ee5c ti\u00eau:\t",
+        "style": "normal"
+      },
+      {
+        "para_index": 2,
+        "run_text": "T\u1ed1i \u0111a h\u00f3a l\u1ee3i nhu\u1eadn k\u1ef3 v\u1ecdng c\u00f3 ki\u1ec3m \u0111\u1ecbnh, kh\u00f4ng t\u1ed1i \u01b0u ri\u00eang k\u1ebft qu\u1ea3 l\u1ecbch s\u1eed",
+        "style": "normal"
+      },
+      {
+        "para_index": 3,
+        "run_text": "D\u1eef li\u1ec7u:\t",
+        "style": "normal"
+      },
+      {
+        "para_index": 3,
+        "run_text": "XSMB hai s\u1ed1 cu\u1ed1i t\u1eeb 01/01/2019 \u0111\u1ebfn 05/09/2026",
+        "style": "normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

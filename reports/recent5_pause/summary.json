@@ -1,0 +1,219 @@
+{
+  "start": "2025-09-06",
+  "end": "2026-09-05",
+  "total_observed": 361,
+  "missing_dates": [
+    "2026-02-16",
+    "2026-02-17",
+    "2026-02-18",
+    "2026-02-19"
+  ],
+  "excluded_conflicts": 0,
+  "input_sha256": "526687a0bc3e17af06e736e0245a552567148344e649f61e1abab3dd256ebd0c",
+  "baseline_top60": {
+    "days": 361,
+    "hits": 191,
+    "misses": 170,
+    "skipped": 0,
+    "hit_rate": 0.5290858725761773,
+    "wilson_95": [
+      0.4775598444618382,
+      0.5799994035136523
+    ],
+    "longest_loss_streak_across_participating_days": 7
+  },
+  "exclude5_every_day": {
+    "days": 361,
+    "hits": 196,
+    "misses": 165,
+    "skipped": 0,
+    "hit_rate": 0.5429362880886427,
+    "wilson_95": [
+      0.4913659789688619,
+      0.5936024347092431
+    ],
+    "longest_loss_streak_across_participating_days": 7
+  },
+  "exclude5_pause": {
+    "days": 196,
+    "hits": 101,
+    "misses": 95,
+    "skipped": 165,
+    "hit_rate": 0.5153061224489796,
+    "wilson_95": [
+      0.44572109152729084,
+      0.5843027085160395
+    ],
+    "longest_loss_streak_across_participating_days": 7
+  },
+  "sensitivity_last5draws_pause": {
+    "days": 196,
+    "hits": 101,
+    "misses": 95,
+    "skipped": 165,
+    "hit_rate": 0.5153061224489796,
+    "wilson_95": [
+      0.44572109152729084,
+      0.5843027085160395
+    ],
+    "longest_loss_streak_across_participating_days": 7
+  },
+  "monthly": {
+    "2025-09": {
+      "days": 25,
+      "hits": 11,
+      "misses": 14,
+      "skipped": 0,
+      "hit_rate": 0.44,
+      "wilson_95": [
+        0.26665638881067344,
+        0.6293266813020123
+      ],
+      "longest_loss_streak_across_participating_days": 3
+    },
+    "2025-10": {
+      "days": 31,
+      "hits": 15,
+      "misses": 16,
+      "skipped": 0,
+      "hit_rate": 0.4838709677419355,
+      "wilson_95": [
+        0.31970251562417307,
+        0.651596045519712
+      ],
+      "longest_loss_streak_across_participating_days": 5
+    },
+    "2025-11": {
+      "days": 30,
+      "hits": 15,
+      "misses": 15,
+      "skipped": 0,
+      "hit_rate": 0.5,
+      "wilson_95": [
+        0.33154125640533766,
+        0.6684587435946623
+      ],
+      "longest_loss_streak_across_participating_days": 3
+    },
+    "2025-12": {
+      "days": 31,
+      "hits": 17,
+      "misses": 14,
+      "skipped": 0,
+      "hit_rate": 0.5483870967741935,
+      "wilson_95": [
+        0.37772167637354503,
+        0.7083826401947998
+      ],
+      "longest_loss_streak_across_participating_days": 3
+    },
+    "2026-01": {
+      "days": 31,
+      "hits": 14,
+      "misses": 17,
+      "skipped": 0,
+      "hit_rate": 0.45161290322580644,
+      "wilson_95": [
+        0.29161735980520015,
+        0.6222783236264549
+      ],
+      "longest_loss_streak_across_participating_days": 5
+    },
+    "2026-02": {
+      "days": 24,
+      "hits": 17,
+      "misses": 7,
+      "skipped": 0,
+      "hit_rate": 0.7083333333333334,
+      "wilson_95": [
+        0.5083230633550337,
+        0.8508535180303913
+      ],
+      "longest_loss_streak_across_participating_days": 2
+    },
+    "2026-03": {
+      "days": 31,
+      "hits": 18,
+      "misses": 13,
+      "skipped": 0,
+      "hit_rate": 0.5806451612903226,
+      "wilson_95": [
+        0.4076626249536972,
+        0.7358445693268778
+      ],
+      "longest_loss_streak_across_participating_days": 5
+    },
+    "2026-04": {
+      "days": 30,
+      "hits": 13,
+      "misses": 17,
+      "skipped": 0,
+      "hit_rate": 0.43333333333333335,
+      "wilson_95": [
+        0.2737748557646652,
+        0.6080269299918639
+      ],
+      "longest_loss_streak_across_participating_days": 7
+    },
+    "2026-05": {
+      "days": 31,
+      "hits": 18,
+      "misses": 13,
+      "skipped": 0,
+      "hit_rate": 0.5806451612903226,
+      "wilson_95": [
+        0.4076626249536972,
+        0.7358445693268778
+      ],
+      "longest_loss_streak_across_participating_days": 3
+    },
+    "2026-06": {
+      "days": 30,
+      "hits": 19,
+      "misses": 11,
+      "skipped": 0,
+      "hit_rate": 0.6333333333333333,
+      "wilson_95": [
+        0.4551356365479487,
+        0.7812607919389929
+      ],
+      "longest_loss_streak_across_participating_days": 3
+    },
+    "2026-07": {
+      "days": 31,
+      "hits": 16,
+      "misses": 15,
+      "skipped": 0,
+      "hit_rate": 0.5161290322580645,
+      "wilson_95": [
+        0.348403954480288,
+        0.6802974843758269
+      ],
+      "longest_loss_streak_across_participating_days": 3
+    },
+    "2026-08": {
+      "days": 31,
+      "hits": 20,
+      "misses": 11,
+      "skipped": 0,
+      "hit_rate": 0.6451612903225806,
+      "wilson_95": [
+        0.46947954064368874,
+        0.788833409061346
+      ],
+      "longest_loss_streak_across_participating_days": 3
+    },
+    "2026-09": {
+      "days": 5,
+      "hits": 3,
+      "misses": 2,
+      "skipped": 0,
+      "hit_rate": 0.6,
+      "wilson_95": [
+        0.2307242812760128,
+        0.882379225767352
+      ],
+      "longest_loss_streak_across_participating_days": 2
+    }
+  }
+}

@@ -527,12 +527,97 @@ function renderNumberGrid(prediction) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// EXPORT / COPY — Xuất dãy số đã chọn
+// ═══════════════════════════════════════════════════════════
+function updateSelectedExport(prediction) {
+  const exportBar = el('export-bar');
+  const exportStr = el('export-number-string');
+  if (!prediction || !prediction.numbers || prediction.numbers.length === 0) {
+    if (exportBar) exportBar.style.display = 'none';
+    return;
+  }
+
+  // Lấy scores đã sắp xếp theo rank để lọc top N chính xác
+  const scores = prediction.scores || [];
+  const selected = new Set(prediction.numbers);
+
+  // Lấy tập số đang bị loại bởi exclude-recent toggle
+  const excludedByRecent = state.excludeRecentEnabled ? getExcludedRecentSet() : new Set();
+
+  // Số đã chọn, chưa bị loại, sắp theo rank
+  const selectedByRank = scores
+    .filter(s => selected.has(s.number) && !excludedByRecent.has(s.number))
+    .sort((a, b) => a.rank - b.rank);
+
+  // Đọc top N từ select
+  const topSelect = el('export-top-select');
+  const topVal = topSelect ? topSelect.value : 'all';
+  const limit = topVal === 'all' ? selectedByRank.length : parseInt(topVal, 10);
+  const toExport = selectedByRank.slice(0, limit);
+
+  const count = toExport.length;
+  const excluded = excludedByRecent.size;
+  exportStr.textContent = count > 0 ? toExport.map(s => s.number).join(',') : '—';
+
+  // Cập nhật label số lượng
+  const countLabel = el('export-count-label');
+  if (countLabel) {
+    countLabel.textContent = excluded > 0
+      ? `${count} số (đã bỏ ${excluded} bị loại)`
+      : `${count} số`;
+  }
+
+  if (exportBar) exportBar.style.display = '';
+}
+
+function initExportBar() {
+  const topSelect = el('export-top-select');
+  const copyBtn = el('copy-selected-btn');
+  const exportStr = el('export-number-string');
+
+  if (topSelect) {
+    topSelect.addEventListener('change', () => {
+      updateSelectedExport(state.latestPrediction);
+    });
+  }
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      const text = exportStr ? exportStr.textContent : '';
+      if (!text || text === '—') return;
+      try {
+        await navigator.clipboard.writeText(text);
+        const origHTML = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<span class="copy-btn-icon">✓</span> Đã copy!';
+        copyBtn.classList.add('copy-success');
+        setTimeout(() => {
+          copyBtn.innerHTML = origHTML;
+          copyBtn.classList.remove('copy-success');
+        }, 1800);
+        showToast(`✅ Đã copy ${text.split(',').length} số vào clipboard!`);
+      } catch {
+        // Fallback cho trình duyệt không hỗ trợ clipboard API
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;opacity:0;';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast(`✅ Đã copy ${text.split(',').length} số vào clipboard!`);
+      }
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // LATEST PREDICTION
 // ═══════════════════════════════════════════════════════════
 async function loadLatestPrediction() {
   const prediction = await api('/api/predictions/latest');
   state.latestPrediction = prediction;
   renderNumberGrid(prediction);
+  updateSelectedExport(prediction);
 
   const meta = el('prediction-meta');
   meta.replaceChildren();
@@ -1068,6 +1153,7 @@ function initExcludeRecentToggle() {
     }
     updateExcludeRecentChips();
     renderNumberGrid(state.latestPrediction);
+    updateSelectedExport(state.latestPrediction);
   }
 
   toggle.addEventListener('change', applyToggle);
@@ -1078,6 +1164,7 @@ function initExcludeRecentToggle() {
     await loadRecentNumbers(state.excludeRecentDays);
     updateExcludeRecentChips();
     renderNumberGrid(state.latestPrediction);
+    updateSelectedExport(state.latestPrediction);
   });
 }
 
@@ -1093,6 +1180,7 @@ function initTabs() {
       // Toolbar only useful for all/selected
       el('grid-toolbar').style.display = state.currentTab === 'excluded' ? 'none' : '';
       renderNumberGrid(state.latestPrediction);
+      updateSelectedExport(state.latestPrediction);
     });
   });
 }
@@ -1107,6 +1195,7 @@ function initSortButtons() {
       btn.classList.add('active');
       state.currentSort = btn.dataset.sort;
       renderNumberGrid(state.latestPrediction);
+      updateSelectedExport(state.latestPrediction);
     });
   });
 }
@@ -1273,6 +1362,7 @@ function startSmartAutoRefresh() {
             await loadRecentNumbers(state.excludeRecentDays);
             updateExcludeRecentChips();
             renderNumberGrid(state.latestPrediction);
+            updateSelectedExport(state.latestPrediction);
           }
           toast(`✅ Kết quả ngày ${today} vừa cập nhật! Giải đặc biệt: ${result.special_prize}`, 'success');
         }
@@ -1307,6 +1397,7 @@ function startSmartAutoRefresh() {
   initTabs();
   initSortButtons();
   initExcludeRecentToggle();
+  initExportBar();
   startCountdown();
   startSmartAutoRefresh(); // Tự động cập nhật kết quả sau 18:15
 

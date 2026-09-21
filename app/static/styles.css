@@ -1078,3 +1078,156 @@ footer a:hover { text-decoration: underline; }
   .number-grid { grid-template-columns: repeat(5, 1fr); gap: 5px; }
   .number-cell { font-size: 0.8rem; }
 }
+
+/* ── Export Bar ─────────────────────────────────────────── */
+.export-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--violet-soft);
+  border: 1.5px solid color-mix(in srgb, var(--violet) 30%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  transition: background 0.2s;
+}
+
+[data-theme="dark"] .export-bar {
+  background: color-mix(in srgb, var(--violet) 12%, var(--panel));
+  border-color: color-mix(in srgb, var(--violet) 40%, transparent);
+}
+
+.export-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.export-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--violet);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.export-bar-icon {
+  font-size: 0.88rem;
+}
+
+.export-top-select {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--violet);
+  background: color-mix(in srgb, var(--violet) 10%, var(--panel));
+  border: 1.5px solid color-mix(in srgb, var(--violet) 35%, transparent);
+  border-radius: 6px;
+  padding: 2px 6px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.export-top-select:focus {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--violet) 20%, transparent);
+}
+
+.export-number-string {
+  font-size: 0.78rem;
+  font-family: 'JetBrains Mono', 'Fira Mono', ui-monospace, monospace;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  word-break: break-all;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+[data-theme="dark"] .export-number-string {
+  color: var(--muted);
+}
+
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.copy-btn:active {
+  transform: scale(0.96);
+}
+
+.copy-btn-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.copy-btn.copy-success {
+  background: var(--green) !important;
+  border-color: var(--green) !important;
+}
+
+@media (max-width: 640px) {
+  .export-bar { flex-direction: column; align-items: flex-start; }
+  .export-bar-left { width: 100%; }
+  .copy-btn { width: 100%; justify-content: center; }
+}
+
+/* ── Export count label ─────────────────────────────────── */
+.export-count-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--violet);
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
+  padding: 1px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+}
+
+/* ── iPhone 18 Titanium Red button ─────────────────────── */
+.copy-btn-red {
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 40%, #ff5252 70%, #c0392b 100%);
+  border: none;
+  color: #fff;
+  box-shadow:
+    0 2px 8px rgba(192, 57, 43, 0.45),
+    0 1px 2px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.18);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  transition: filter 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.copy-btn-red:hover {
+  filter: brightness(1.08);
+  box-shadow:
+    0 4px 16px rgba(231, 76, 60, 0.55),
+    0 1px 4px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.22);
+}
+
+.copy-btn-red:active {
+  transform: scale(0.96);
+  filter: brightness(0.93);
+}
+
+.copy-btn-red.copy-success {
+  background: linear-gradient(135deg, #059669 0%, #10b981 60%, #34d399 100%) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(5,150,105,0.4) !important;
+}

@@ -1,0 +1,5944 @@
+{
+  "dataset": {
+    "input_path": "C:\\Users\\Admin\\Downloads\\Number_one\\reports\\recent5_pause\\input_snapshot.json",
+    "input_sha256": "8078474323e36520602e02a86692db7d73ff7bbd434f28e09ec8ca084c13ef37",
+    "total": 2752,
+    "first": "2019-01-01",
+    "last": "2026-09-05",
+    "by_year": {
+      "2019": 361,
+      "2020": 340,
+      "2021": 361,
+      "2022": 361,
+      "2023": 361,
+      "2024": 363,
+      "2025": 361,
+      "2026": 244
+    },
+    "missing_calendar_dates": [
+      "2019-02-04",
+      "2019-02-05",
+      "2019-02-06",
+      "2019-02-07",
+      "2020-01-24",
+      "2020-01-25",
+      "2020-01-26",
+      "2020-01-27",
+      "2020-04-01",
+      "2020-04-02",
+      "2020-04-03",
+      "2020-04-04",
+      "2020-04-05",
+      "2020-04-06",
+      "2020-04-07",
+      "2020-04-08",
+      "2020-04-09",
+      "2020-04-10",
+      "2020-04-11",
+      "2020-04-12",
+      "2020-04-13",
+      "2020-04-14",
+      "2020-04-15",
+      "2020-04-16",
+      "2020-04-17",
+      "2020-04-18",
+      "2020-04-19",
+      "2020-04-20",
+      "2020-04-21",
+      "2020-04-22",
+      "2021-02-11",
+      "2021-02-12",
+      "2021-02-13",
+      "2021-02-14",
+      "2022-01-31",
+      "2022-02-01",
+      "2022-02-02",
+      "2022-02-03",
+      "2023-01-21",
+      "2023-01-22",
+      "2023-01-23",
+      "2023-01-24",
+      "2024-02-09",
+      "2024-02-10",
+      "2024-02-11",
+      "2025-01-28",
+      "2025-01-29",
+      "2025-01-30",
+      "2025-01-31",
+      "2026-02-16",
+      "2026-02-17",
+      "2026-02-18",
+      "2026-02-19"
+    ],
+    "first_test": "2020-01-05",
+    "test_observations": 2387,
+    "latest_start": "2025-09-06",
+    "chi_square_uniform_99df": 90.51453488372093,
+    "config": {
+      "stake_per_number": 10000,
+      "gross_payout": 999000,
+      "grid": {
+        "60": [
+          0,
+          5,
+          10,
+          20,
+          30,
+          38,
+          40
+        ],
+        "80": [
+          0,
+          5,
+          10,
+          20
+        ]
+      },
+      "pause_initial_state": "active at start of each reported evaluation window",
+      "gaps": "advance only on observed draws; do not impute missing results",
+      "status": "exploratory only; no untouched holdout claim"
+    }
+  },
+  "metrics": [
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1384,
+      "misses": 1003,
+      "skipped": 0,
+      "hit_rate": 0.5798072894847088,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 1432200000,
+      "gross_vnd": 1382616000,
+      "net_vnd": -49584000,
+      "roi": -0.03462086300795978,
+      "mean_net_per_observed_draw": -20772.51780477587,
+      "wilson_95": [
+        0.5598935196293268,
+        0.5994646003306358
+      ],
+      "ci_net_per_bet": [
+        -40666.37389030261,
+        -1134.8642696948955
+      ],
+      "max_drawdown_vnd": 64674000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 191,
+      "misses": 170,
+      "skipped": 0,
+      "hit_rate": 0.5290858725761773,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 190809000,
+      "net_vnd": -25791000,
+      "roi": -0.11907202216066481,
+      "mean_net_per_observed_draw": -71443.2132963989,
+      "wilson_95": [
+        0.4775598444618382,
+        0.5799994035136523
+      ],
+      "ci_net_per_bet": [
+        -122917.71538262366,
+        -20580.595889861346
+      ],
+      "max_drawdown_vnd": 28173000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 210,
+      "misses": 126,
+      "skipped": 0,
+      "hit_rate": 0.625,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 201600000,
+      "gross_vnd": 209790000,
+      "net_vnd": 8190000,
+      "roi": 0.040625,
+      "mean_net_per_observed_draw": 24375.0,
+      "wilson_95": [
+        0.5720963005261835,
+        0.675077779680198
+      ],
+      "ci_net_per_bet": [
+        -28475.79577434261,
+        74402.7019005178
+      ],
+      "max_drawdown_vnd": 7866000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 200,
+      "misses": 161,
+      "skipped": 0,
+      "hit_rate": 0.554016620498615,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 199800000,
+      "net_vnd": -16800000,
+      "roi": -0.07756232686980609,
+      "mean_net_per_observed_draw": -46537.396121883656,
+      "wilson_95": [
+        0.5024392346734583,
+        0.6044565115667382
+      ],
+      "ci_net_per_bet": [
+        -98063.20456121519,
+        3852.055055171484
+      ],
+      "max_drawdown_vnd": 22512000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 207,
+      "misses": 154,
+      "skipped": 0,
+      "hit_rate": 0.5734072022160664,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 206793000,
+      "net_vnd": -9807000,
+      "roi": -0.045277008310249306,
+      "mean_net_per_observed_draw": -27166.204986149583,
+      "wilson_95": [
+        0.5218786043067756,
+        0.6233899739170812
+      ],
+      "ci_net_per_bet": [
+        -78643.27429753123,
+        22766.583943164092
+      ],
+      "max_drawdown_vnd": 13239000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 208,
+      "misses": 153,
+      "skipped": 0,
+      "hit_rate": 0.5761772853185596,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 207792000,
+      "net_vnd": -8808000,
+      "roi": -0.040664819944598335,
+      "mean_net_per_observed_draw": -24398.891966759,
+      "wilson_95": [
+        0.5246620652120955,
+        0.6260883461522841
+      ],
+      "ci_net_per_bet": [
+        -75862.59685311664,
+        25462.25780613185
+      ],
+      "max_drawdown_vnd": 14289000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 221,
+      "misses": 142,
+      "skipped": 0,
+      "hit_rate": 0.6088154269972452,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 217800000,
+      "gross_vnd": 220779000,
+      "net_vnd": 2979000,
+      "roi": 0.013677685950413224,
+      "mean_net_per_observed_draw": 8206.611570247935,
+      "wilson_95": [
+        0.5577236310149849,
+        0.65762825493042
+      ],
+      "ci_net_per_bet": [
+        -42834.09261603013,
+        56970.62667548959
+      ],
+      "max_drawdown_vnd": 8274000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 211,
+      "misses": 150,
+      "skipped": 0,
+      "hit_rate": 0.5844875346260388,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 210789000,
+      "net_vnd": -5811000,
+      "roi": -0.02682825484764543,
+      "mean_net_per_observed_draw": -16096.952908587258,
+      "wilson_95": [
+        0.5330221456727123,
+        0.6341737651132359
+      ],
+      "ci_net_per_bet": [
+        -67510.87647296034,
+        33539.59134812257
+      ],
+      "max_drawdown_vnd": 9642000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k0_daily",
+      "n": 60,
+      "k": 0,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 127,
+      "misses": 117,
+      "skipped": 0,
+      "hit_rate": 0.5204918032786885,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 146400000,
+      "gross_vnd": 126873000,
+      "net_vnd": -19527000,
+      "roi": -0.1333811475409836,
+      "mean_net_per_observed_draw": -80028.68852459016,
+      "wilson_95": [
+        0.4579768574571226,
+        0.5823715170544828
+      ],
+      "ci_net_per_bet": [
+        -142481.11940033454,
+        -18210.854462571675
+      ],
+      "max_drawdown_vnd": 21711000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1384,
+      "hits": 795,
+      "misses": 589,
+      "skipped": 1003,
+      "hit_rate": 0.5744219653179191,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 830400000,
+      "gross_vnd": 794205000,
+      "net_vnd": -36195000,
+      "roi": -0.04358742774566474,
+      "mean_net_per_observed_draw": -15163.38500209468,
+      "wilson_95": [
+        0.5482025829835317,
+        0.6002293569118557
+      ],
+      "ci_net_per_bet": [
+        -52345.61959945178,
+        -370.8724450560985
+      ],
+      "max_drawdown_vnd": 42603000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 191,
+      "hits": 94,
+      "misses": 97,
+      "skipped": 170,
+      "hit_rate": 0.49214659685863876,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 114600000,
+      "gross_vnd": 93906000,
+      "net_vnd": -20694000,
+      "roi": -0.18057591623036648,
+      "mean_net_per_observed_draw": -57324.09972299169,
+      "wilson_95": [
+        0.42210340904754706,
+        0.5624994572101893
+      ],
+      "ci_net_per_bet": [
+        -178318.6943615005,
+        -38063.04224702087
+      ],
+      "max_drawdown_vnd": 22683000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 210,
+      "hits": 130,
+      "misses": 80,
+      "skipped": 126,
+      "hit_rate": 0.6190476190476191,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 126000000,
+      "gross_vnd": 129870000,
+      "net_vnd": 3870000,
+      "roi": 0.030714285714285715,
+      "mean_net_per_observed_draw": 11517.857142857143,
+      "wilson_95": [
+        0.5517861297302177,
+        0.6820319534223339
+      ],
+      "ci_net_per_bet": [
+        -48765.65639951255,
+        81349.92146891158
+      ],
+      "max_drawdown_vnd": 4239000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 200,
+      "hits": 106,
+      "misses": 94,
+      "skipped": 161,
+      "hit_rate": 0.53,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 120000000,
+      "gross_vnd": 105894000,
+      "net_vnd": -14106000,
+      "roi": -0.11755,
+      "mean_net_per_observed_draw": -39074.79224376731,
+      "wilson_95": [
+        0.4609168291500183,
+        0.5979524512673458
+      ],
+      "ci_net_per_bet": [
+        -139544.0876791317,
+        -2645.5011839215877
+      ],
+      "max_drawdown_vnd": 15054000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 207,
+      "hits": 123,
+      "misses": 84,
+      "skipped": 154,
+      "hit_rate": 0.5942028985507246,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 124200000,
+      "gross_vnd": 122877000,
+      "net_vnd": -1323000,
+      "roi": -0.010652173913043479,
+      "mean_net_per_observed_draw": -3664.8199445983378,
+      "wilson_95": [
+        0.5261828952369696,
+        0.6587902130792973
+      ],
+      "ci_net_per_bet": [
+        -74343.28765826742,
+        58131.422866218025
+      ],
+      "max_drawdown_vnd": 10233000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 208,
+      "hits": 120,
+      "misses": 88,
+      "skipped": 153,
+      "hit_rate": 0.5769230769230769,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 124800000,
+      "gross_vnd": 119880000,
+      "net_vnd": -4920000,
+      "roi": -0.03942307692307692,
+      "mean_net_per_observed_draw": -13628.808864265928,
+      "wilson_95": [
+        0.508984522377142,
+        0.642071839196941
+      ],
+      "ci_net_per_bet": [
+        -91524.46214523516,
+        41429.767357744044
+      ],
+      "max_drawdown_vnd": 13041000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 221,
+      "hits": 140,
+      "misses": 81,
+      "skipped": 142,
+      "hit_rate": 0.6334841628959276,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 132600000,
+      "gross_vnd": 139860000,
+      "net_vnd": 7260000,
+      "roi": 0.05475113122171946,
+      "mean_net_per_observed_draw": 20000.0,
+      "wilson_95": [
+        0.5681791676178255,
+        0.6942279538688355
+      ],
+      "ci_net_per_bet": [
+        -32389.01154979237,
+        93533.72591496666
+      ],
+      "max_drawdown_vnd": 8037000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 212,
+      "hits": 116,
+      "misses": 96,
+      "skipped": 149,
+      "hit_rate": 0.5471698113207547,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 127200000,
+      "gross_vnd": 115884000,
+      "net_vnd": -11316000,
+      "roi": -0.0889622641509434,
+      "mean_net_per_observed_draw": -31346.260387811635,
+      "wilson_95": [
+        0.4799186767911654,
+        0.6127419274749251
+      ],
+      "ci_net_per_bet": [
+        -120561.24188562576,
+        12129.185547450092
+      ],
+      "max_drawdown_vnd": 12105000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k0_pause",
+      "n": 60,
+      "k": 0,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 127,
+      "hits": 61,
+      "misses": 66,
+      "skipped": 117,
+      "hit_rate": 0.48031496062992124,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 76200000,
+      "gross_vnd": 60939000,
+      "net_vnd": -15261000,
+      "roi": -0.2002755905511811,
+      "mean_net_per_observed_draw": -62545.08196721312,
+      "wilson_95": [
+        0.3952840957619168,
+        0.5665017170449244
+      ],
+      "ci_net_per_bet": [
+        -205111.18833384512,
+        -34064.784672120586
+      ],
+      "max_drawdown_vnd": 17250000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1376,
+      "misses": 1011,
+      "skipped": 0,
+      "hit_rate": 0.5764558022622539,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 1432200000,
+      "gross_vnd": 1374624000,
+      "net_vnd": -57576000,
+      "roi": -0.040201089233347295,
+      "mean_net_per_observed_draw": -24120.653540008378,
+      "wilson_95": [
+        0.5565261981100167,
+        0.5961397173371916
+      ],
+      "ci_net_per_bet": [
+        -44030.328088093316,
+        -4456.422380145523
+      ],
+      "max_drawdown_vnd": 70161000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 196,
+      "misses": 165,
+      "skipped": 0,
+      "hit_rate": 0.5429362880886427,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 195804000,
+      "net_vnd": -20796000,
+      "roi": -0.09601108033240997,
+      "mean_net_per_observed_draw": -57606.64819944598,
+      "wilson_95": [
+        0.4913659789688619,
+        0.5936024347092431
+      ],
+      "ci_net_per_bet": [
+        -109125.38701010693,
+        -6991.167725466075
+      ],
+      "max_drawdown_vnd": 23979000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 209,
+      "misses": 127,
+      "skipped": 0,
+      "hit_rate": 0.6220238095238095,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 201600000,
+      "gross_vnd": 208791000,
+      "net_vnd": 7191000,
+      "roi": 0.03566964285714286,
+      "mean_net_per_observed_draw": 21401.785714285714,
+      "wilson_95": [
+        0.5690740283210486,
+        0.6722149547375621
+      ],
+      "ci_net_per_bet": [
+        -31495.045707272482,
+        71542.73978282453
+      ],
+      "max_drawdown_vnd": 4827000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 196,
+      "misses": 165,
+      "skipped": 0,
+      "hit_rate": 0.5429362880886427,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 195804000,
+      "net_vnd": -20796000,
+      "roi": -0.09601108033240997,
+      "mean_net_per_observed_draw": -57606.64819944598,
+      "wilson_95": [
+        0.4913659789688619,
+        0.5936024347092431
+      ],
+      "ci_net_per_bet": [
+        -109125.38701010693,
+        -6991.167725466075
+      ],
+      "max_drawdown_vnd": 23583000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 203,
+      "misses": 158,
+      "skipped": 0,
+      "hit_rate": 0.5623268698060941,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 202797000,
+      "net_vnd": -13803000,
+      "roi": -0.06372576177285319,
+      "mean_net_per_observed_draw": -38235.45706371191,
+      "wilson_95": [
+        0.5107608165632076,
+        0.6125804290985575
+      ],
+      "ci_net_per_bet": [
+        -89749.94425335561,
+        11967.84866945888
+      ],
+      "max_drawdown_vnd": 16236000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 205,
+      "misses": 156,
+      "skipped": 0,
+      "hit_rate": 0.5678670360110804,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 204795000,
+      "net_vnd": -11805000,
+      "roi": -0.05450138504155125,
+      "mean_net_per_observed_draw": -32700.831024930747,
+      "wilson_95": [
+        0.5163165067892365,
+        0.6179884051535746
+      ],
+      "ci_net_per_bet": [
+        -84199.8097175528,
+        17370.416748421034
+      ],
+      "max_drawdown_vnd": 14289000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 222,
+      "misses": 141,
+      "skipped": 0,
+      "hit_rate": 0.6115702479338843,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 217800000,
+      "gross_vnd": 221778000,
+      "net_vnd": 3978000,
+      "roi": 0.018264462809917354,
+      "mean_net_per_observed_draw": 10958.677685950413,
+      "wilson_95": [
+        0.5605126144940594,
+        0.6602912179309758
+      ],
+      "ci_net_per_bet": [
+        -40047.898120434606,
+        59630.926713044755
+      ],
+      "max_drawdown_vnd": 6828000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 203,
+      "misses": 158,
+      "skipped": 0,
+      "hit_rate": 0.5623268698060941,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 202797000,
+      "net_vnd": -13803000,
+      "roi": -0.06372576177285319,
+      "mean_net_per_observed_draw": -38235.45706371191,
+      "wilson_95": [
+        0.5107608165632076,
+        0.6125804290985575
+      ],
+      "ci_net_per_bet": [
+        -89749.94425335561,
+        11967.84866945888
+      ],
+      "max_drawdown_vnd": 14796000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k5_daily",
+      "n": 60,
+      "k": 5,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 138,
+      "misses": 106,
+      "skipped": 0,
+      "hit_rate": 0.5655737704918032,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 146400000,
+      "gross_vnd": 137862000,
+      "net_vnd": -8538000,
+      "roi": -0.05831967213114754,
+      "mean_net_per_observed_draw": -34991.80327868852,
+      "wilson_95": [
+        0.5028378626586881,
+        0.6262769357784491
+      ],
+      "ci_net_per_bet": [
+        -97664.97520397056,
+        25650.658842670615
+      ],
+      "max_drawdown_vnd": 11721000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1376,
+      "hits": 763,
+      "misses": 613,
+      "skipped": 1011,
+      "hit_rate": 0.5545058139534884,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 825600000,
+      "gross_vnd": 762237000,
+      "net_vnd": -63363000,
+      "roi": -0.07674781976744185,
+      "mean_net_per_observed_draw": -26545.035609551738,
+      "wilson_95": [
+        0.5281291102859335,
+        0.5805790308132622
+      ],
+      "ci_net_per_bet": [
+        -72399.01882435253,
+        -20001.548217551084
+      ],
+      "max_drawdown_vnd": 67830000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 196,
+      "hits": 101,
+      "misses": 95,
+      "skipped": 165,
+      "hit_rate": 0.5153061224489796,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 117600000,
+      "gross_vnd": 100899000,
+      "net_vnd": -16701000,
+      "roi": -0.14201530612244898,
+      "mean_net_per_observed_draw": -46263.15789473684,
+      "wilson_95": [
+        0.44572109152729084,
+        0.5843027085160395
+      ],
+      "ci_net_per_bet": [
+        -154724.62956423644,
+        -16281.594192476594
+      ],
+      "max_drawdown_vnd": 19089000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 209,
+      "hits": 125,
+      "misses": 84,
+      "skipped": 127,
+      "hit_rate": 0.5980861244019139,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 125400000,
+      "gross_vnd": 124875000,
+      "net_vnd": -525000,
+      "roi": -0.004186602870813397,
+      "mean_net_per_observed_draw": -1562.5,
+      "wilson_95": [
+        0.5304249664757921,
+        0.6622066769416681
+      ],
+      "ci_net_per_bet": [
+        -70105.4584906837,
+        61544.470264726435
+      ],
+      "max_drawdown_vnd": 7236000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 196,
+      "hits": 95,
+      "misses": 101,
+      "skipped": 165,
+      "hit_rate": 0.4846938775510204,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 117600000,
+      "gross_vnd": 94905000,
+      "net_vnd": -22695000,
+      "roi": -0.19298469387755102,
+      "mean_net_per_observed_draw": -62867.03601108033,
+      "wilson_95": [
+        0.4156972914839604,
+        0.5542789084727091
+      ],
+      "ci_net_per_bet": [
+        -184718.40580752358,
+        -46275.370435763616
+      ],
+      "max_drawdown_vnd": 23487000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 203,
+      "hits": 114,
+      "misses": 89,
+      "skipped": 158,
+      "hit_rate": 0.5615763546798029,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 121800000,
+      "gross_vnd": 113886000,
+      "net_vnd": -7914000,
+      "roi": -0.06497536945812808,
+      "mean_net_per_observed_draw": -21922.437673130193,
+      "wilson_95": [
+        0.49280222994584755,
+        0.6280632877435818
+      ],
+      "ci_net_per_bet": [
+        -107690.5722840983,
+        27435.224455838208
+      ],
+      "max_drawdown_vnd": 10230000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 205,
+      "hits": 109,
+      "misses": 96,
+      "skipped": 156,
+      "hit_rate": 0.5317073170731708,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 123000000,
+      "gross_vnd": 108891000,
+      "net_vnd": -14109000,
+      "roi": -0.11470731707317074,
+      "mean_net_per_observed_draw": -39083.102493074795,
+      "wilson_95": [
+        0.46344556669589115,
+        0.5988026098558799
+      ],
+      "ci_net_per_bet": [
+        -137017.87887080474,
+        -1796.1927539759781
+      ],
+      "max_drawdown_vnd": 17037000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 222,
+      "hits": 137,
+      "misses": 85,
+      "skipped": 141,
+      "hit_rate": 0.6171171171171171,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 133200000,
+      "gross_vnd": 136863000,
+      "net_vnd": 3663000,
+      "roi": 0.0275,
+      "mean_net_per_observed_draw": 10090.90909090909,
+      "wilson_95": [
+        0.5516975467076666,
+        0.6785524714755988
+      ],
+      "ci_net_per_bet": [
+        -48854.1508390411,
+        77873.91900412319
+      ],
+      "max_drawdown_vnd": 5211000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 204,
+      "hits": 109,
+      "misses": 95,
+      "skipped": 157,
+      "hit_rate": 0.5343137254901961,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 122400000,
+      "gross_vnd": 108891000,
+      "net_vnd": -13509000,
+      "roi": -0.11036764705882353,
+      "mean_net_per_observed_draw": -37421.05263157895,
+      "wilson_95": [
+        0.4658613771720783,
+        0.6014976573508553
+      ],
+      "ci_net_per_bet": [
+        -134604.48420509376,
+        896.1596935044508
+      ],
+      "max_drawdown_vnd": 15093000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k5_pause",
+      "n": 60,
+      "k": 5,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 138,
+      "hits": 75,
+      "misses": 63,
+      "skipped": 106,
+      "hit_rate": 0.5434782608695652,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 82800000,
+      "gross_vnd": 74925000,
+      "net_vnd": -7875000,
+      "roi": -0.09510869565217392,
+      "mean_net_per_observed_draw": -32274.590163934427,
+      "wilson_95": [
+        0.46031976683478404,
+        0.6242817319073399
+      ],
+      "ci_net_per_bet": [
+        -140140.55293205072,
+        23657.450175432605
+      ],
+      "max_drawdown_vnd": 10263000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1385,
+      "misses": 1002,
+      "skipped": 0,
+      "hit_rate": 0.5802262253875157,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 1432200000,
+      "gross_vnd": 1383615000,
+      "net_vnd": -48585000,
+      "roi": -0.03392333472978634,
+      "mean_net_per_observed_draw": -20354.000837871805,
+      "wilson_95": [
+        0.5603145004616781,
+        0.5998801450623787
+      ],
+      "ci_net_per_bet": [
+        -40245.814038783545,
+        -719.7350826836191
+      ],
+      "max_drawdown_vnd": 65091000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 204,
+      "misses": 157,
+      "skipped": 0,
+      "hit_rate": 0.5650969529085873,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 203796000,
+      "net_vnd": -12804000,
+      "roi": -0.05911357340720222,
+      "mean_net_per_observed_draw": -35468.14404432133,
+      "wilson_95": [
+        0.5135378625656368,
+        0.6152852162366513
+      ],
+      "ci_net_per_bet": [
+        -86975.67529692879,
+        14669.93102041469
+      ],
+      "max_drawdown_vnd": 20508000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 209,
+      "misses": 127,
+      "skipped": 0,
+      "hit_rate": 0.6220238095238095,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 201600000,
+      "gross_vnd": 208791000,
+      "net_vnd": 7191000,
+      "roi": 0.03566964285714286,
+      "mean_net_per_observed_draw": 21401.785714285714,
+      "wilson_95": [
+        0.5690740283210486,
+        0.6722149547375621
+      ],
+      "ci_net_per_bet": [
+        -31495.045707272482,
+        71542.73978282453
+      ],
+      "max_drawdown_vnd": 4821000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 194,
+      "misses": 167,
+      "skipped": 0,
+      "hit_rate": 0.5373961218836565,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 193806000,
+      "net_vnd": -22794000,
+      "roi": -0.10523545706371192,
+      "mean_net_per_observed_draw": -63141.274238227146,
+      "wilson_95": [
+        0.48583881326324324,
+        0.5881659341338159
+      ],
+      "ci_net_per_bet": [
+        -114647.02555001999,
+        -12422.23180031788
+      ],
+      "max_drawdown_vnd": 25182000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 200,
+      "misses": 161,
+      "skipped": 0,
+      "hit_rate": 0.554016620498615,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 199800000,
+      "net_vnd": -16800000,
+      "roi": -0.07756232686980609,
+      "mean_net_per_observed_draw": -46537.396121883656,
+      "wilson_95": [
+        0.5024392346734583,
+        0.6044565115667382
+      ],
+      "ci_net_per_bet": [
+        -98063.20456121519,
+        3852.055055171484
+      ],
+      "max_drawdown_vnd": 20169000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 210,
+      "misses": 151,
+      "skipped": 0,
+      "hit_rate": 0.5817174515235457,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 209790000,
+      "net_vnd": -6810000,
+      "roi": -0.0314404432132964,
+      "mean_net_per_observed_draw": -18864.265927977838,
+      "wilson_95": [
+        0.5302338315877935,
+        0.6314802460576319
+      ],
+      "ci_net_per_bet": [
+        -70296.40224379429,
+        30848.76581157418
+      ],
+      "max_drawdown_vnd": 12861000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 224,
+      "misses": 139,
+      "skipped": 0,
+      "hit_rate": 0.6170798898071626,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 217800000,
+      "gross_vnd": 223776000,
+      "net_vnd": 5976000,
+      "roi": 0.02743801652892562,
+      "mean_net_per_observed_draw": 16462.80991735537,
+      "wilson_95": [
+        0.566095561779372,
+        0.6656121636049243
+      ],
+      "ci_net_per_bet": [
+        -34470.53378240729,
+        64946.55144131929
+      ],
+      "max_drawdown_vnd": 8322000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 203,
+      "misses": 158,
+      "skipped": 0,
+      "hit_rate": 0.5623268698060941,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 202797000,
+      "net_vnd": -13803000,
+      "roi": -0.06372576177285319,
+      "mean_net_per_observed_draw": -38235.45706371191,
+      "wilson_95": [
+        0.5107608165632076,
+        0.6125804290985575
+      ],
+      "ci_net_per_bet": [
+        -89749.94425335561,
+        11967.84866945888
+      ],
+      "max_drawdown_vnd": 14790000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k10_daily",
+      "n": 60,
+      "k": 10,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 145,
+      "misses": 99,
+      "skipped": 0,
+      "hit_rate": 0.5942622950819673,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 146400000,
+      "gross_vnd": 144855000,
+      "net_vnd": -1545000,
+      "roi": -0.01055327868852459,
+      "mean_net_per_observed_draw": -6331.9672131147545,
+      "wilson_95": [
+        0.531651202436054,
+        0.653951320317331
+      ],
+      "ci_net_per_bet": [
+        -68880.44876638206,
+        53297.36899701378
+      ],
+      "max_drawdown_vnd": 9249000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1386,
+      "hits": 767,
+      "misses": 619,
+      "skipped": 1001,
+      "hit_rate": 0.5533910533910534,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 831600000,
+      "gross_vnd": 766233000,
+      "net_vnd": -65367000,
+      "roi": -0.0786038961038961,
+      "mean_net_per_observed_draw": -27384.583158776706,
+      "wilson_95": [
+        0.5271066983614247,
+        0.5793802675156624
+      ],
+      "ci_net_per_bet": [
+        -73420.40833693673,
+        -21199.112751853303
+      ],
+      "max_drawdown_vnd": 71190000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 205,
+      "hits": 116,
+      "misses": 89,
+      "skipped": 156,
+      "hit_rate": 0.5658536585365853,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 123000000,
+      "gross_vnd": 115884000,
+      "net_vnd": -7116000,
+      "roi": -0.05785365853658537,
+      "mean_net_per_observed_draw": -19711.91135734072,
+      "wilson_95": [
+        0.49740966577937307,
+        0.6318750085973822
+      ],
+      "ci_net_per_bet": [
+        -103087.7438864063,
+        31243.13358878484
+      ],
+      "max_drawdown_vnd": 11859000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 209,
+      "hits": 124,
+      "misses": 85,
+      "skipped": 127,
+      "hit_rate": 0.5933014354066986,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 125400000,
+      "gross_vnd": 123876000,
+      "net_vnd": -1524000,
+      "roi": -0.01215311004784689,
+      "mean_net_per_observed_draw": -4535.714285714285,
+      "wilson_95": [
+        0.5256035963490937,
+        0.6576313815358075
+      ],
+      "ci_net_per_bet": [
+        -74922.00724725542,
+        56973.750154271605
+      ],
+      "max_drawdown_vnd": 7071000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 194,
+      "hits": 93,
+      "misses": 101,
+      "skipped": 167,
+      "hit_rate": 0.4793814432989691,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 116400000,
+      "gross_vnd": 92907000,
+      "net_vnd": -23493000,
+      "roi": -0.2018298969072165,
+      "mean_net_per_observed_draw": -65077.562326869804,
+      "wilson_95": [
+        0.4101677166909875,
+        0.5493958649380255
+      ],
+      "ci_net_per_bet": [
+        -190242.45102570346,
+        -51153.53092691256
+      ],
+      "max_drawdown_vnd": 23886000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 200,
+      "hits": 107,
+      "misses": 93,
+      "skipped": 161,
+      "hit_rate": 0.535,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 120000000,
+      "gross_vnd": 106893000,
+      "net_vnd": -13107000,
+      "roi": -0.109225,
+      "mean_net_per_observed_draw": -36307.47922437673,
+      "wilson_95": [
+        0.4658664687236316,
+        0.6028143584299599
+      ],
+      "ci_net_per_bet": [
+        -134599.39774509205,
+        2211.544071529992
+      ],
+      "max_drawdown_vnd": 13506000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 210,
+      "hits": 114,
+      "misses": 96,
+      "skipped": 151,
+      "hit_rate": 0.5428571428571428,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 126000000,
+      "gross_vnd": 113886000,
+      "net_vnd": -12114000,
+      "roi": -0.09614285714285714,
+      "mean_net_per_observed_draw": -33556.78670360111,
+      "wilson_95": [
+        0.47531442949248526,
+        0.6088600804424332
+      ],
+      "ci_net_per_bet": [
+        -125160.88493700721,
+        8251.220361990738
+      ],
+      "max_drawdown_vnd": 14847000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 224,
+      "hits": 132,
+      "misses": 92,
+      "skipped": 139,
+      "hit_rate": 0.5892857142857143,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 134400000,
+      "gross_vnd": 131868000,
+      "net_vnd": -2532000,
+      "roi": -0.018839285714285715,
+      "mean_net_per_observed_draw": -6975.206611570248,
+      "wilson_95": [
+        0.5238826504486056,
+        0.651678023219127
+      ],
+      "ci_net_per_bet": [
+        -76641.232201843,
+        51026.34519590787
+      ],
+      "max_drawdown_vnd": 9873000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 204,
+      "hits": 111,
+      "misses": 93,
+      "skipped": 157,
+      "hit_rate": 0.5441176470588235,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 122400000,
+      "gross_vnd": 110889000,
+      "net_vnd": -11511000,
+      "roi": -0.09404411764705882,
+      "mean_net_per_observed_draw": -31886.426592797783,
+      "wilson_95": [
+        0.47558701772861045,
+        0.6110174552294468
+      ],
+      "ci_net_per_bet": [
+        -124888.56928911817,
+        10406.437774217338
+      ],
+      "max_drawdown_vnd": 13098000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k10_pause",
+      "n": 60,
+      "k": 10,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 146,
+      "hits": 87,
+      "misses": 59,
+      "skipped": 98,
+      "hit_rate": 0.5958904109589042,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 87600000,
+      "gross_vnd": 86913000,
+      "net_vnd": -687000,
+      "roi": -0.007842465753424658,
+      "mean_net_per_observed_draw": -2815.5737704918033,
+      "wilson_95": [
+        0.5148221685482596,
+        0.6720420025587893
+      ],
+      "ci_net_per_bet": [
+        -85692.65362028871,
+        71369.96055623051
+      ],
+      "max_drawdown_vnd": 5430000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1408,
+      "misses": 979,
+      "skipped": 0,
+      "hit_rate": 0.5898617511520737,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 1432200000,
+      "gross_vnd": 1406592000,
+      "net_vnd": -25608000,
+      "roi": -0.017880184331797236,
+      "mean_net_per_observed_draw": -10728.110599078342,
+      "wilson_95": [
+        0.570001103793561,
+        0.6094336297046646
+      ],
+      "ci_net_per_bet": [
+        -30568.897310232627,
+        8824.196074959938
+      ],
+      "max_drawdown_vnd": 37857000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 216,
+      "misses": 145,
+      "skipped": 0,
+      "hit_rate": 0.5983379501385041,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 215784000,
+      "net_vnd": -816000,
+      "roi": -0.0037673130193905816,
+      "mean_net_per_observed_draw": -2260.387811634349,
+      "wilson_95": [
+        0.5469882129634214,
+        0.6476168635251414
+      ],
+      "ci_net_per_bet": [
+        -53558.77524954209,
+        46969.24666161626
+      ],
+      "max_drawdown_vnd": 13890000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 196,
+      "misses": 140,
+      "skipped": 0,
+      "hit_rate": 0.5833333333333334,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 201600000,
+      "gross_vnd": 195804000,
+      "net_vnd": -5796000,
+      "roi": -0.02875,
+      "mean_net_per_observed_draw": -17250.0,
+      "wilson_95": [
+        0.5299670399949532,
+        0.6348156801426346
+      ],
+      "ci_net_per_bet": [
+        -70562.9270450417,
+        34180.86446249194
+      ],
+      "max_drawdown_vnd": 14304000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 212,
+      "misses": 149,
+      "skipped": 0,
+      "hit_rate": 0.5872576177285319,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 211788000,
+      "net_vnd": -4812000,
+      "roi": -0.02221606648199446,
+      "mean_net_per_observed_draw": -13329.639889196676,
+      "wilson_95": [
+        0.535812086384617,
+        0.6368656575418543
+      ],
+      "ci_net_per_bet": [
+        -64723.7257017676,
+        36228.791884312406
+      ],
+      "max_drawdown_vnd": 16278000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 204,
+      "misses": 157,
+      "skipped": 0,
+      "hit_rate": 0.5650969529085873,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 203796000,
+      "net_vnd": -12804000,
+      "roi": -0.05911357340720222,
+      "mean_net_per_observed_draw": -35468.14404432133,
+      "wilson_95": [
+        0.5135378625656368,
+        0.6152852162366513
+      ],
+      "ci_net_per_bet": [
+        -86975.67529692879,
+        14669.93102041469
+      ],
+      "max_drawdown_vnd": 19365000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 209,
+      "misses": 152,
+      "skipped": 0,
+      "hit_rate": 0.5789473684210527,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 208791000,
+      "net_vnd": -7809000,
+      "roi": -0.03605263157894737,
+      "mean_net_per_observed_draw": -21631.57894736842,
+      "wilson_95": [
+        0.5274471395650513,
+        0.6287851049398512
+      ],
+      "ci_net_per_bet": [
+        -73080.30757451372,
+        28156.31983491138
+      ],
+      "max_drawdown_vnd": 9006000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 224,
+      "misses": 139,
+      "skipped": 0,
+      "hit_rate": 0.6170798898071626,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 217800000,
+      "gross_vnd": 223776000,
+      "net_vnd": 5976000,
+      "roi": 0.02743801652892562,
+      "mean_net_per_observed_draw": 16462.80991735537,
+      "wilson_95": [
+        0.566095561779372,
+        0.6656121636049243
+      ],
+      "ci_net_per_bet": [
+        -34470.53378240729,
+        64946.55144131929
+      ],
+      "max_drawdown_vnd": 8466000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 211,
+      "misses": 150,
+      "skipped": 0,
+      "hit_rate": 0.5844875346260388,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 210789000,
+      "net_vnd": -5811000,
+      "roi": -0.02682825484764543,
+      "mean_net_per_observed_draw": -16096.952908587258,
+      "wilson_95": [
+        0.5330221456727123,
+        0.6341737651132359
+      ],
+      "ci_net_per_bet": [
+        -67510.87647296034,
+        33539.59134812257
+      ],
+      "max_drawdown_vnd": 10434000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k20_daily",
+      "n": 60,
+      "k": 20,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 152,
+      "misses": 92,
+      "skipped": 0,
+      "hit_rate": 0.6229508196721312,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 146400000,
+      "gross_vnd": 151848000,
+      "net_vnd": 5448000,
+      "roi": 0.03721311475409836,
+      "mean_net_per_observed_draw": 22327.868852459018,
+      "wilson_95": [
+        0.5606775804769295,
+        0.6814126665927032
+      ],
+      "ci_net_per_bet": [
+        -39883.09710354742,
+        80731.25392611045
+      ],
+      "max_drawdown_vnd": 5613000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1409,
+      "hits": 819,
+      "misses": 590,
+      "skipped": 978,
+      "hit_rate": 0.5812633073101491,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 845400000,
+      "gross_vnd": 818181000,
+      "net_vnd": -27219000,
+      "roi": -0.03219659332860184,
+      "mean_net_per_observed_draw": -11403.016338500209,
+      "wilson_95": [
+        0.5553162317183118,
+        0.60676847960602
+      ],
+      "ci_net_per_bet": [
+        -45239.0845134065,
+        6161.711126414011
+      ],
+      "max_drawdown_vnd": 39291000,
+      "max_loss_streak_bets": 9
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 217,
+      "hits": 134,
+      "misses": 83,
+      "skipped": 144,
+      "hit_rate": 0.6175115207373272,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 130200000,
+      "gross_vnd": 133866000,
+      "net_vnd": 3666000,
+      "roi": 0.02815668202764977,
+      "mean_net_per_observed_draw": 10155.124653739613,
+      "wilson_95": [
+        0.5513375999278075,
+        0.679597299127573
+      ],
+      "ci_net_per_bet": [
+        -49213.73767212033,
+        78917.70182844542
+      ],
+      "max_drawdown_vnd": 7623000,
+      "max_loss_streak_bets": 9
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 197,
+      "hits": 115,
+      "misses": 82,
+      "skipped": 139,
+      "hit_rate": 0.583756345177665,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 118200000,
+      "gross_vnd": 114885000,
+      "net_vnd": -3315000,
+      "roi": -0.028045685279187816,
+      "mean_net_per_observed_draw": -9866.07142857143,
+      "wilson_95": [
+        0.5139627488034686,
+        0.6503459561510276
+      ],
+      "ci_net_per_bet": [
+        -86551.2139453349,
+        49695.61019487656
+      ],
+      "max_drawdown_vnd": 9849000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 212,
+      "hits": 124,
+      "misses": 88,
+      "skipped": 149,
+      "hit_rate": 0.5849056603773585,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 127200000,
+      "gross_vnd": 123876000,
+      "net_vnd": -3324000,
+      "roi": -0.026132075471698112,
+      "mean_net_per_observed_draw": -9207.756232686981,
+      "wilson_95": [
+        0.5176421308001434,
+        0.6491469568788194
+      ],
+      "ci_net_per_bet": [
+        -82875.51133065671,
+        48497.809921940556
+      ],
+      "max_drawdown_vnd": 9243000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 204,
+      "hits": 110,
+      "misses": 94,
+      "skipped": 157,
+      "hit_rate": 0.5392156862745098,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 122400000,
+      "gross_vnd": 109890000,
+      "net_vnd": -12510000,
+      "roi": -0.10220588235294117,
+      "mean_net_per_observed_draw": -34653.739612188365,
+      "wilson_95": [
+        0.4707209616966478,
+        0.6062607920438475
+      ],
+      "ci_net_per_bet": [
+        -129749.75926504884,
+        5654.531251803739
+      ],
+      "max_drawdown_vnd": 18096000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 209,
+      "hits": 114,
+      "misses": 95,
+      "skipped": 152,
+      "hit_rate": 0.5454545454545454,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 125400000,
+      "gross_vnd": 113886000,
+      "net_vnd": -11514000,
+      "roi": -0.09181818181818181,
+      "mean_net_per_observed_draw": -31894.736842105263,
+      "wilson_95": [
+        0.47773501478045216,
+        0.6115333077788585
+      ],
+      "ci_net_per_bet": [
+        -122742.7202343283,
+        10921.774471079698
+      ],
+      "max_drawdown_vnd": 12312000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 224,
+      "hits": 134,
+      "misses": 90,
+      "skipped": 139,
+      "hit_rate": 0.5982142857142857,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 134400000,
+      "gross_vnd": 133866000,
+      "net_vnd": -534000,
+      "roi": -0.003973214285714286,
+      "mean_net_per_observed_draw": -1471.0743801652893,
+      "wilson_95": [
+        0.5328781978413389,
+        0.6602385431931669
+      ],
+      "ci_net_per_bet": [
+        -67654.68035650242,
+        59578.304649973754
+      ],
+      "max_drawdown_vnd": 9240000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 211,
+      "hits": 124,
+      "misses": 87,
+      "skipped": 150,
+      "hit_rate": 0.5876777251184834,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 126600000,
+      "gross_vnd": 123876000,
+      "net_vnd": -2724000,
+      "roi": -0.02151658767772512,
+      "mean_net_per_observed_draw": -7545.706371191136,
+      "wilson_95": [
+        0.5202684356232603,
+        0.6519515828177802
+      ],
+      "ci_net_per_bet": [
+        -80251.83281236293,
+        51299.63123496238
+      ],
+      "max_drawdown_vnd": 5217000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k20_pause",
+      "n": 60,
+      "k": 20,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 153,
+      "hits": 99,
+      "misses": 54,
+      "skipped": 91,
+      "hit_rate": 0.6470588235294118,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 91800000,
+      "gross_vnd": 98901000,
+      "net_vnd": 7101000,
+      "roi": 0.07735294117647058,
+      "mean_net_per_observed_draw": 29102.45901639344,
+      "wilson_95": [
+        0.5685807725624394,
+        0.718333161663621
+      ],
+      "ci_net_per_bet": [
+        -31987.80821012298,
+        117614.82850195747
+      ],
+      "max_drawdown_vnd": 2613000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1426,
+      "misses": 961,
+      "skipped": 0,
+      "hit_rate": 0.5974025974025974,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 1432200000,
+      "gross_vnd": 1424574000,
+      "net_vnd": -7626000,
+      "roi": -0.005324675324675325,
+      "mean_net_per_observed_draw": -3194.805194805195,
+      "wilson_95": [
+        0.5775873648440429,
+        0.6169048288078799
+      ],
+      "ci_net_per_bet": [
+        -22990.222520801122,
+        16287.923979072017
+      ],
+      "max_drawdown_vnd": 42990000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 231,
+      "misses": 130,
+      "skipped": 0,
+      "hit_rate": 0.6398891966759003,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 230769000,
+      "net_vnd": 14169000,
+      "roi": 0.06541551246537396,
+      "mean_net_per_observed_draw": 39249.30747922438,
+      "wilson_95": [
+        0.589137439228022,
+        0.6876951343683841
+      ],
+      "ci_net_per_bet": [
+        -11451.698211206007,
+        87007.43923401576
+      ],
+      "max_drawdown_vnd": 9861000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 188,
+      "misses": 148,
+      "skipped": 0,
+      "hit_rate": 0.5595238095238095,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 201600000,
+      "gross_vnd": 187812000,
+      "net_vnd": -13788000,
+      "roi": -0.06839285714285714,
+      "mean_net_per_observed_draw": -41035.71428571428,
+      "wilson_95": [
+        0.5060653425531796,
+        0.6116366004022402
+      ],
+      "ci_net_per_bet": [
+        -94440.7227893736,
+        11024.963801837992
+      ],
+      "max_drawdown_vnd": 17910000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 207,
+      "misses": 154,
+      "skipped": 0,
+      "hit_rate": 0.5734072022160664,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 206793000,
+      "net_vnd": -9807000,
+      "roi": -0.045277008310249306,
+      "mean_net_per_observed_draw": -27166.204986149583,
+      "wilson_95": [
+        0.5218786043067756,
+        0.6233899739170812
+      ],
+      "ci_net_per_bet": [
+        -78643.27429753123,
+        22766.583943164092
+      ],
+      "max_drawdown_vnd": 22263000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 208,
+      "misses": 153,
+      "skipped": 0,
+      "hit_rate": 0.5761772853185596,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 207792000,
+      "net_vnd": -8808000,
+      "roi": -0.040664819944598335,
+      "mean_net_per_observed_draw": -24398.891966759,
+      "wilson_95": [
+        0.5246620652120955,
+        0.6260883461522841
+      ],
+      "ci_net_per_bet": [
+        -75862.59685311664,
+        25462.25780613185
+      ],
+      "max_drawdown_vnd": 20127000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 216,
+      "misses": 145,
+      "skipped": 0,
+      "hit_rate": 0.5983379501385041,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 215784000,
+      "net_vnd": -816000,
+      "roi": -0.0037673130193905816,
+      "mean_net_per_observed_draw": -2260.387811634349,
+      "wilson_95": [
+        0.5469882129634214,
+        0.6476168635251414
+      ],
+      "ci_net_per_bet": [
+        -53558.77524954209,
+        46969.24666161626
+      ],
+      "max_drawdown_vnd": 7647000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 226,
+      "misses": 137,
+      "skipped": 0,
+      "hit_rate": 0.6225895316804407,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 217800000,
+      "gross_vnd": 225774000,
+      "net_vnd": 7974000,
+      "roi": 0.036611570247933885,
+      "mean_net_per_observed_draw": 21966.942148760332,
+      "wilson_95": [
+        0.5716851936062617,
+        0.6709264247372955
+      ],
+      "ci_net_per_bet": [
+        -28886.491587344557,
+        70255.49831255816
+      ],
+      "max_drawdown_vnd": 6252000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 221,
+      "misses": 140,
+      "skipped": 0,
+      "hit_rate": 0.6121883656509696,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 220779000,
+      "net_vnd": 4179000,
+      "roi": 0.019293628808864267,
+      "mean_net_per_observed_draw": 11576.17728531856,
+      "wilson_95": [
+        0.56099559265962,
+        0.6610186495315573
+      ],
+      "ci_net_per_bet": [
+        -39565.4029330397,
+        60357.63088202581
+      ],
+      "max_drawdown_vnd": 8433000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k30_daily",
+      "n": 60,
+      "k": 30,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 160,
+      "misses": 84,
+      "skipped": 0,
+      "hit_rate": 0.6557377049180327,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 146400000,
+      "gross_vnd": 159840000,
+      "net_vnd": 13440000,
+      "roi": 0.09180327868852459,
+      "mean_net_per_observed_draw": 55081.96721311475,
+      "wilson_95": [
+        0.5941223882205299,
+        0.7125252580676712
+      ],
+      "ci_net_per_bet": [
+        -6471.734167690622,
+        111812.73280960356
+      ],
+      "max_drawdown_vnd": 4206000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1427,
+      "hits": 859,
+      "misses": 568,
+      "skipped": 960,
+      "hit_rate": 0.6019621583742116,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 856200000,
+      "gross_vnd": 858141000,
+      "net_vnd": 1941000,
+      "roi": 0.0022669936930623685,
+      "mean_net_per_observed_draw": 813.1545873481357,
+      "wilson_95": [
+        0.5763240260191886,
+        0.6270528038916832
+      ],
+      "ci_net_per_bet": [
+        -24252.298006830504,
+        26425.75108779152
+      ],
+      "max_drawdown_vnd": 27324000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 232,
+      "hits": 151,
+      "misses": 81,
+      "skipped": 129,
+      "hit_rate": 0.6508620689655172,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 139200000,
+      "gross_vnd": 150849000,
+      "net_vnd": 11649000,
+      "roi": 0.0836853448275862,
+      "mean_net_per_observed_draw": 32268.698060941828,
+      "wilson_95": [
+        0.5875163236119888,
+        0.7092932379893907
+      ],
+      "ci_net_per_bet": [
+        -13071.192711623153,
+        108583.94475140132
+      ],
+      "max_drawdown_vnd": 5019000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 189,
+      "hits": 109,
+      "misses": 80,
+      "skipped": 147,
+      "hit_rate": 0.5767195767195767,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 113400000,
+      "gross_vnd": 108891000,
+      "net_vnd": -4509000,
+      "roi": -0.03976190476190476,
+      "mean_net_per_observed_draw": -13419.642857142857,
+      "wilson_95": [
+        0.5054405958810918,
+        0.6449420042991137
+      ],
+      "ci_net_per_bet": [
+        -95064.8447147893,
+        44297.06229481462
+      ],
+      "max_drawdown_vnd": 9657000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 208,
+      "hits": 120,
+      "misses": 88,
+      "skipped": 153,
+      "hit_rate": 0.5769230769230769,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 124800000,
+      "gross_vnd": 119880000,
+      "net_vnd": -4920000,
+      "roi": -0.03942307692307692,
+      "mean_net_per_observed_draw": -13628.808864265928,
+      "wilson_95": [
+        0.508984522377142,
+        0.642071839196941
+      ],
+      "ci_net_per_bet": [
+        -91524.46214523516,
+        41429.767357744044
+      ],
+      "max_drawdown_vnd": 12426000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 208,
+      "hits": 116,
+      "misses": 92,
+      "skipped": 153,
+      "hit_rate": 0.5576923076923077,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 124800000,
+      "gross_vnd": 115884000,
+      "net_vnd": -8916000,
+      "roi": -0.0714423076923077,
+      "mean_net_per_observed_draw": -24698.060941828255,
+      "wilson_95": [
+        0.4897570420445255,
+        0.6235352291360369
+      ],
+      "ci_net_per_bet": [
+        -110732.71499751898,
+        22911.693906900822
+      ],
+      "max_drawdown_vnd": 11889000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 216,
+      "hits": 125,
+      "misses": 91,
+      "skipped": 145,
+      "hit_rate": 0.5787037037037037,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 129600000,
+      "gross_vnd": 124875000,
+      "net_vnd": -4725000,
+      "roi": -0.036458333333333336,
+      "mean_net_per_observed_draw": -13088.642659279778,
+      "wilson_95": [
+        0.5120437215091295,
+        0.6426131852562632
+      ],
+      "ci_net_per_bet": [
+        -88468.32221237966,
+        41970.57207100699
+      ],
+      "max_drawdown_vnd": 7023000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 226,
+      "hits": 145,
+      "misses": 81,
+      "skipped": 137,
+      "hit_rate": 0.6415929203539823,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 135600000,
+      "gross_vnd": 144855000,
+      "net_vnd": 9255000,
+      "roi": 0.06825221238938053,
+      "mean_net_per_observed_draw": 25495.867768595042,
+      "wilson_95": [
+        0.5771869217054455,
+        0.7012658880199236
+      ],
+      "ci_net_per_bet": [
+        -23390.265216259984,
+        100564.62213190366
+      ],
+      "max_drawdown_vnd": 8031000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 221,
+      "hits": 142,
+      "misses": 79,
+      "skipped": 140,
+      "hit_rate": 0.6425339366515838,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 132600000,
+      "gross_vnd": 141858000,
+      "net_vnd": 9258000,
+      "roi": 0.06981900452488687,
+      "mean_net_per_observed_draw": 25645.42936288089,
+      "wilson_95": [
+        0.5774079991220044,
+        0.7027894356857863
+      ],
+      "ci_net_per_bet": [
+        -23169.408877117676,
+        102086.64625010057
+      ],
+      "max_drawdown_vnd": 4401000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k30_pause",
+      "n": 60,
+      "k": 30,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 161,
+      "hits": 103,
+      "misses": 58,
+      "skipped": 83,
+      "hit_rate": 0.639751552795031,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 96600000,
+      "gross_vnd": 102897000,
+      "net_vnd": 6297000,
+      "roi": 0.0651863354037267,
+      "mean_net_per_observed_draw": 25807.377049180326,
+      "wilson_95": [
+        0.5631363619967396,
+        0.7098532143024403
+      ],
+      "ci_net_per_bet": [
+        -37426.77436525724,
+        109143.36108813784
+      ],
+      "max_drawdown_vnd": 3600000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1445,
+      "misses": 942,
+      "skipped": 0,
+      "hit_rate": 0.605362379555928,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 1432200000,
+      "gross_vnd": 1443555000,
+      "net_vnd": 11355000,
+      "roi": 0.007928361960620025,
+      "mean_net_per_observed_draw": 4757.0171763720155,
+      "wilson_95": [
+        0.5856003183450115,
+        0.6247858610247029
+      ],
+      "ci_net_per_bet": [
+        -14985.281973333564,
+        24161.07516367815
+      ],
+      "max_drawdown_vnd": 35037000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 231,
+      "misses": 130,
+      "skipped": 0,
+      "hit_rate": 0.6398891966759003,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 230769000,
+      "net_vnd": 14169000,
+      "roi": 0.06541551246537396,
+      "mean_net_per_observed_draw": 39249.30747922438,
+      "wilson_95": [
+        0.589137439228022,
+        0.6876951343683841
+      ],
+      "ci_net_per_bet": [
+        -11451.698211206007,
+        87007.43923401576
+      ],
+      "max_drawdown_vnd": 6228000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 199,
+      "misses": 137,
+      "skipped": 0,
+      "hit_rate": 0.5922619047619048,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 201600000,
+      "gross_vnd": 198801000,
+      "net_vnd": -2799000,
+      "roi": -0.013883928571428571,
+      "mean_net_per_observed_draw": -8330.357142857143,
+      "wilson_95": [
+        0.538962067626199,
+        0.6434759439547018
+      ],
+      "ci_net_per_bet": [
+        -61576.8944414272,
+        42832.46801074711
+      ],
+      "max_drawdown_vnd": 12303000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 214,
+      "misses": 147,
+      "skipped": 0,
+      "hit_rate": 0.592797783933518,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 213786000,
+      "net_vnd": -2814000,
+      "roi": -0.012991689750692521,
+      "mean_net_per_observed_draw": -7795.013850415512,
+      "wilson_95": [
+        0.5413968668244892,
+        0.6422445433830278
+      ],
+      "ci_net_per_bet": [
+        -59144.530042335275,
+        41602.29883964476
+      ],
+      "max_drawdown_vnd": 14889000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 201,
+      "misses": 160,
+      "skipped": 0,
+      "hit_rate": 0.556786703601108,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 200799000,
+      "net_vnd": -15801000,
+      "roi": -0.07295013850415512,
+      "mean_net_per_observed_draw": -43770.083102493074,
+      "wilson_95": [
+        0.5052115057795784,
+        0.6071660736011409
+      ],
+      "ci_net_per_bet": [
+        -95293.70572620118,
+        6558.907527539763
+      ],
+      "max_drawdown_vnd": 19131000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 225,
+      "misses": 136,
+      "skipped": 0,
+      "hit_rate": 0.6232686980609419,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 224775000,
+      "net_vnd": 8175000,
+      "roi": 0.037742382271468145,
+      "mean_net_per_observed_draw": 22645.42936288089,
+      "wilson_95": [
+        0.5722317449070125,
+        0.6717098298462565
+      ],
+      "ci_net_per_bet": [
+        -28340.48683789454,
+        71038.12001641025
+      ],
+      "max_drawdown_vnd": 6873000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 218,
+      "misses": 145,
+      "skipped": 0,
+      "hit_rate": 0.6005509641873278,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 217800000,
+      "gross_vnd": 217782000,
+      "net_vnd": -18000,
+      "roi": -8.264462809917356e-05,
+      "mean_net_per_observed_draw": -49.586776859504134,
+      "wilson_95": [
+        0.5493665666095127,
+        0.6496294798970006
+      ],
+      "ci_net_per_bet": [
+        -51182.79995709681,
+        48979.85041710362
+      ],
+      "max_drawdown_vnd": 10830000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 229,
+      "misses": 132,
+      "skipped": 0,
+      "hit_rate": 0.6343490304709142,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 228771000,
+      "net_vnd": 12171000,
+      "roi": 0.05619113573407202,
+      "mean_net_per_observed_draw": 33714.681440443215,
+      "wilson_95": [
+        0.5834952633520096,
+        0.6823736439633508
+      ],
+      "ci_net_per_bet": [
+        -17088.23191134236,
+        81691.27031938743
+      ],
+      "max_drawdown_vnd": 8637000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k38_daily",
+      "n": 60,
+      "k": 38,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 159,
+      "misses": 85,
+      "skipped": 0,
+      "hit_rate": 0.6516393442622951,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 146400000,
+      "gross_vnd": 158841000,
+      "net_vnd": 12441000,
+      "roi": 0.08497950819672132,
+      "mean_net_per_observed_draw": 50987.70491803279,
+      "wilson_95": [
+        0.5899254208372712,
+        0.7086525505486089
+      ],
+      "ci_net_per_bet": [
+        -10664.5045835661,
+        107943.89799806022
+      ],
+      "max_drawdown_vnd": 4824000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1446,
+      "hits": 883,
+      "misses": 563,
+      "skipped": 941,
+      "hit_rate": 0.6106500691562933,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 867600000,
+      "gross_vnd": 882117000,
+      "net_vnd": 14517000,
+      "roi": 0.016732365145228217,
+      "mean_net_per_observed_draw": 6081.69250104734,
+      "wilson_95": [
+        0.5852563162350981,
+        0.6354574715057277
+      ],
+      "ci_net_per_bet": [
+        -15328.940081137,
+        34822.014034222
+      ],
+      "max_drawdown_vnd": 29967000,
+      "max_loss_streak_bets": 12
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 232,
+      "hits": 154,
+      "misses": 78,
+      "skipped": 129,
+      "hit_rate": 0.6637931034482759,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 139200000,
+      "gross_vnd": 153846000,
+      "net_vnd": 14646000,
+      "roi": 0.10521551724137931,
+      "mean_net_per_observed_draw": 40570.63711911358,
+      "wilson_95": [
+        0.600774469282985,
+        0.721475911884227
+      ],
+      "ci_net_per_bet": [
+        173.69481370190624,
+        120754.43597234273
+      ],
+      "max_drawdown_vnd": 4410000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 200,
+      "hits": 120,
+      "misses": 80,
+      "skipped": 136,
+      "hit_rate": 0.6,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 120000000,
+      "gross_vnd": 119880000,
+      "net_vnd": -120000,
+      "roi": -0.001,
+      "mean_net_per_observed_draw": -357.14285714285717,
+      "wilson_95": [
+        0.53083672039262,
+        0.6653942143319266
+      ],
+      "ci_net_per_bet": [
+        -69694.11632777262,
+        64728.820117594674
+      ],
+      "max_drawdown_vnd": 10260000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 215,
+      "hits": 120,
+      "misses": 95,
+      "skipped": 146,
+      "hit_rate": 0.5581395348837209,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 129000000,
+      "gross_vnd": 119880000,
+      "net_vnd": -9120000,
+      "roi": -0.07069767441860465,
+      "mean_net_per_observed_draw": -25263.157894736843,
+      "wilson_95": [
+        0.491315400070631,
+        0.6229225516169581
+      ],
+      "ci_net_per_bet": [
+        -109175.91532943962,
+        22299.629065341083
+      ],
+      "max_drawdown_vnd": 14040000,
+      "max_loss_streak_bets": 9
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 202,
+      "hits": 114,
+      "misses": 88,
+      "skipped": 159,
+      "hit_rate": 0.5643564356435643,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 121200000,
+      "gross_vnd": 113886000,
+      "net_vnd": -7314000,
+      "roi": -0.060346534653465345,
+      "mean_net_per_observed_draw": -20260.387811634348,
+      "wilson_95": [
+        0.49540805115387443,
+        0.6309027520679792
+      ],
+      "ci_net_per_bet": [
+        -105087.35689727945,
+        30271.849315911182
+      ],
+      "max_drawdown_vnd": 9903000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 225,
+      "hits": 134,
+      "misses": 91,
+      "skipped": 136,
+      "hit_rate": 0.5955555555555555,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 135000000,
+      "gross_vnd": 133866000,
+      "net_vnd": -1134000,
+      "roi": -0.0084,
+      "mean_net_per_observed_draw": -3141.2742382271467,
+      "wilson_95": [
+        0.5303438426806496,
+        0.657559172016054
+      ],
+      "ci_net_per_bet": [
+        -70186.50116203108,
+        56901.61284403794
+      ],
+      "max_drawdown_vnd": 7659000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 218,
+      "hits": 144,
+      "misses": 74,
+      "skipped": 145,
+      "hit_rate": 0.6605504587155964,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 130800000,
+      "gross_vnd": 143856000,
+      "net_vnd": 13056000,
+      "roi": 0.09981651376146788,
+      "mean_net_per_observed_draw": 35966.94214876033,
+      "wilson_95": [
+        0.5953969631848675,
+        0.7201436953201701
+      ],
+      "ci_net_per_bet": [
+        -5198.433778317412,
+        119423.5516248499
+      ],
+      "max_drawdown_vnd": 6612000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 229,
+      "hits": 147,
+      "misses": 82,
+      "skipped": 132,
+      "hit_rate": 0.6419213973799127,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 137400000,
+      "gross_vnd": 146853000,
+      "net_vnd": 9453000,
+      "roi": 0.06879912663755458,
+      "mean_net_per_observed_draw": 26185.595567867036,
+      "wilson_95": [
+        0.5779542706633976,
+        0.7012056363789949
+      ],
+      "ci_net_per_bet": [
+        -22623.68360726582,
+        100504.43074261595
+      ],
+      "max_drawdown_vnd": 4818000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k38_pause",
+      "n": 60,
+      "k": 38,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 160,
+      "hits": 106,
+      "misses": 54,
+      "skipped": 84,
+      "hit_rate": 0.6625,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 96000000,
+      "gross_vnd": 105894000,
+      "net_vnd": 9894000,
+      "roi": 0.1030625,
+      "mean_net_per_observed_draw": 40549.18032786885,
+      "wilson_95": [
+        0.5861852427313052,
+        0.7311947438379556
+      ],
+      "ci_net_per_bet": [
+        -14400.942511426052,
+        130463.5490941176
+      ],
+      "max_drawdown_vnd": 4410000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1443,
+      "misses": 944,
+      "skipped": 0,
+      "hit_rate": 0.6045245077503142,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 1432200000,
+      "gross_vnd": 1441557000,
+      "net_vnd": 9357000,
+      "roi": 0.006533305404273146,
+      "mean_net_per_observed_draw": 3919.983242563888,
+      "wilson_95": [
+        0.5847565949059957,
+        0.62395653333553
+      ],
+      "ci_net_per_bet": [
+        -15828.161688910215,
+        23332.576802194468
+      ],
+      "max_drawdown_vnd": 34647000,
+      "max_loss_streak_bets": 9
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 234,
+      "misses": 127,
+      "skipped": 0,
+      "hit_rate": 0.6481994459833795,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 233766000,
+      "net_vnd": 17166000,
+      "roi": 0.07925207756232687,
+      "mean_net_per_observed_draw": 47551.246537396124,
+      "wilson_95": [
+        0.5976139144589606,
+        0.6956641585590143
+      ],
+      "ci_net_per_bet": [
+        -2983.6994554983685,
+        94968.49440045527
+      ],
+      "max_drawdown_vnd": 4824000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 193,
+      "misses": 143,
+      "skipped": 0,
+      "hit_rate": 0.5744047619047619,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 201600000,
+      "gross_vnd": 192807000,
+      "net_vnd": -8793000,
+      "roi": -0.04361607142857143,
+      "mean_net_per_observed_draw": -26169.64285714286,
+      "wilson_95": [
+        0.52098948861497,
+        0.6261379400793048
+      ],
+      "ci_net_per_bet": [
+        -79531.50087364501,
+        25511.802139225532
+      ],
+      "max_drawdown_vnd": 15300000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 214,
+      "misses": 147,
+      "skipped": 0,
+      "hit_rate": 0.592797783933518,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 213786000,
+      "net_vnd": -2814000,
+      "roi": -0.012991689750692521,
+      "mean_net_per_observed_draw": -7795.013850415512,
+      "wilson_95": [
+        0.5413968668244892,
+        0.6422445433830278
+      ],
+      "ci_net_per_bet": [
+        -59144.530042335275,
+        41602.29883964476
+      ],
+      "max_drawdown_vnd": 13890000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 206,
+      "misses": 155,
+      "skipped": 0,
+      "hit_rate": 0.5706371191135734,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 205794000,
+      "net_vnd": -10806000,
+      "roi": -0.04988919667590028,
+      "mean_net_per_observed_draw": -29933.518005540165,
+      "wilson_95": [
+        0.5190967527950978,
+        0.6206899922882361
+      ],
+      "ci_net_per_bet": [
+        -81422.34395769727,
+        20069.302295947797
+      ],
+      "max_drawdown_vnd": 17133000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 222,
+      "misses": 139,
+      "skipped": 0,
+      "hit_rate": 0.6149584487534626,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 221778000,
+      "net_vnd": 5178000,
+      "roi": 0.023905817174515235,
+      "mean_net_per_observed_draw": 14343.490304709141,
+      "wilson_95": [
+        0.56380209040364,
+        0.6636939849280601
+      ],
+      "ci_net_per_bet": [
+        -36761.71168676356,
+        63030.290943132015
+      ],
+      "max_drawdown_vnd": 6909000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 221,
+      "misses": 142,
+      "skipped": 0,
+      "hit_rate": 0.6088154269972452,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 217800000,
+      "gross_vnd": 220779000,
+      "net_vnd": 2979000,
+      "roi": 0.013677685950413224,
+      "mean_net_per_observed_draw": 8206.611570247935,
+      "wilson_95": [
+        0.5577236310149849,
+        0.65762825493042
+      ],
+      "ci_net_per_bet": [
+        -42834.09261603013,
+        56970.62667548959
+      ],
+      "max_drawdown_vnd": 10428000,
+      "max_loss_streak_bets": 7
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 228,
+      "misses": 133,
+      "skipped": 0,
+      "hit_rate": 0.631578947368421,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 216600000,
+      "gross_vnd": 227772000,
+      "net_vnd": 11172000,
+      "roi": 0.05157894736842105,
+      "mean_net_per_observed_draw": 30947.36842105263,
+      "wilson_95": [
+        0.5806767917470451,
+        0.6797102824277924
+      ],
+      "ci_net_per_bet": [
+        -19903.88504470198,
+        79030.5721453646
+      ],
+      "max_drawdown_vnd": 8661000,
+      "max_loss_streak_bets": 8
+    },
+    {
+      "strategy": "n60_k40_daily",
+      "n": 60,
+      "k": 40,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 159,
+      "misses": 85,
+      "skipped": 0,
+      "hit_rate": 0.6516393442622951,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 146400000,
+      "gross_vnd": 158841000,
+      "net_vnd": 12441000,
+      "roi": 0.08497950819672132,
+      "mean_net_per_observed_draw": 50987.70491803279,
+      "wilson_95": [
+        0.5899254208372712,
+        0.7086525505486089
+      ],
+      "ci_net_per_bet": [
+        -10664.5045835661,
+        107943.89799806022
+      ],
+      "max_drawdown_vnd": 4824000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1444,
+      "hits": 878,
+      "misses": 566,
+      "skipped": 943,
+      "hit_rate": 0.6080332409972299,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 866400000,
+      "gross_vnd": 877122000,
+      "net_vnd": 10722000,
+      "roi": 0.012375346260387811,
+      "mean_net_per_observed_draw": 4491.830749895266,
+      "wilson_95": [
+        0.5825985674274311,
+        0.6328946401328307
+      ],
+      "ci_net_per_bet": [
+        -17984.03113999637,
+        32261.745492697926
+      ],
+      "max_drawdown_vnd": 29562000,
+      "max_loss_streak_bets": 12
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 235,
+      "hits": 155,
+      "misses": 80,
+      "skipped": 126,
+      "hit_rate": 0.6595744680851063,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 141000000,
+      "gross_vnd": 154845000,
+      "net_vnd": 13845000,
+      "roi": 0.09819148936170213,
+      "mean_net_per_observed_draw": 38351.80055401662,
+      "wilson_95": [
+        0.5968584296723135,
+        0.7171574048076829
+      ],
+      "ci_net_per_bet": [
+        -3738.428757358808,
+        116440.24740287522
+      ],
+      "max_drawdown_vnd": 4410000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 194,
+      "hits": 111,
+      "misses": 83,
+      "skipped": 142,
+      "hit_rate": 0.5721649484536082,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 116400000,
+      "gross_vnd": 110889000,
+      "net_vnd": -5511000,
+      "roi": -0.04734536082474227,
+      "mean_net_per_observed_draw": -16401.785714285714,
+      "wilson_95": [
+        0.501806801165863,
+        0.6397206631325918
+      ],
+      "ci_net_per_bet": [
+        -98695.00563530292,
+        39080.94246945926
+      ],
+      "max_drawdown_vnd": 13050000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 215,
+      "hits": 120,
+      "misses": 95,
+      "skipped": 146,
+      "hit_rate": 0.5581395348837209,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 129000000,
+      "gross_vnd": 119880000,
+      "net_vnd": -9120000,
+      "roi": -0.07069767441860465,
+      "mean_net_per_observed_draw": -25263.157894736843,
+      "wilson_95": [
+        0.491315400070631,
+        0.6229225516169581
+      ],
+      "ci_net_per_bet": [
+        -109175.91532943962,
+        22299.629065341083
+      ],
+      "max_drawdown_vnd": 13863000,
+      "max_loss_streak_bets": 9
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 207,
+      "hits": 119,
+      "misses": 88,
+      "skipped": 154,
+      "hit_rate": 0.5748792270531401,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 124200000,
+      "gross_vnd": 118881000,
+      "net_vnd": -5319000,
+      "roi": -0.042826086956521736,
+      "mean_net_per_observed_draw": -14734.072022160664,
+      "wilson_95": [
+        0.5067720177683274,
+        0.6402578888420386
+      ],
+      "ci_net_per_bet": [
+        -93734.75424944097,
+        39617.63095319655
+      ],
+      "max_drawdown_vnd": 9870000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 222,
+      "hits": 134,
+      "misses": 88,
+      "skipped": 139,
+      "hit_rate": 0.6036036036036037,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 133200000,
+      "gross_vnd": 133866000,
+      "net_vnd": 666000,
+      "roi": 0.005,
+      "mean_net_per_observed_draw": 1844.875346260388,
+      "wilson_95": [
+        0.5380219639380138,
+        0.6656607444548749
+      ],
+      "ci_net_per_bet": [
+        -62516.05802592414,
+        64995.08371042006
+      ],
+      "max_drawdown_vnd": 5256000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 221,
+      "hits": 148,
+      "misses": 73,
+      "skipped": 142,
+      "hit_rate": 0.669683257918552,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 132600000,
+      "gross_vnd": 147852000,
+      "net_vnd": 15252000,
+      "roi": 0.11502262443438914,
+      "mean_net_per_observed_draw": 42016.52892561984,
+      "wilson_95": [
+        0.6052392596588939,
+        0.7283291151122854
+      ],
+      "ci_net_per_bet": [
+        4634.020399235073,
+        127600.78599717305
+      ],
+      "max_drawdown_vnd": 4605000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 228,
+      "hits": 141,
+      "misses": 87,
+      "skipped": 133,
+      "hit_rate": 0.618421052631579,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 136800000,
+      "gross_vnd": 140859000,
+      "net_vnd": 4059000,
+      "roi": 0.02967105263157895,
+      "mean_net_per_observed_draw": 11243.76731301939,
+      "wilson_95": [
+        0.5538983397770655,
+        0.679019449278789
+      ],
+      "ci_net_per_bet": [
+        -46655.55856271158,
+        78340.42982951016
+      ],
+      "max_drawdown_vnd": 6651000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n60_k40_pause",
+      "n": 60,
+      "k": 40,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 160,
+      "hits": 107,
+      "misses": 53,
+      "skipped": 84,
+      "hit_rate": 0.66875,
+      "break_even": 0.6006006006006006,
+      "stake_vnd": 96000000,
+      "gross_vnd": 106893000,
+      "net_vnd": 10893000,
+      "roi": 0.11346875,
+      "mean_net_per_observed_draw": 44643.44262295082,
+      "wilson_95": [
+        0.5926163390608727,
+        0.7369705700687441
+      ],
+      "ci_net_per_bet": [
+        -7976.27727818815,
+        136233.59949867532
+      ],
+      "max_drawdown_vnd": 4410000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1890,
+      "misses": 497,
+      "skipped": 0,
+      "hit_rate": 0.7917888563049853,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 1909600000,
+      "gross_vnd": 1888110000,
+      "net_vnd": -21490000,
+      "roi": -0.01125366568914956,
+      "mean_net_per_observed_draw": -9002.932551319647,
+      "wilson_95": [
+        0.7750379624102511,
+        0.8076020929814228
+      ],
+      "ci_net_per_bet": [
+        -25737.075552159105,
+        6794.490888441447
+      ],
+      "max_drawdown_vnd": 33121000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 277,
+      "misses": 84,
+      "skipped": 0,
+      "hit_rate": 0.7673130193905817,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 276723000,
+      "net_vnd": -12077000,
+      "roi": -0.04181786703601108,
+      "mean_net_per_observed_draw": -33454.29362880887,
+      "wilson_95": [
+        0.7210492828828247,
+        0.8079476151776347
+      ],
+      "ci_net_per_bet": [
+        -79671.76640005817,
+        7139.667562457034
+      ],
+      "max_drawdown_vnd": 16924000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 272,
+      "misses": 64,
+      "skipped": 0,
+      "hit_rate": 0.8095238095238095,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 268800000,
+      "gross_vnd": 271728000,
+      "net_vnd": 2928000,
+      "roi": 0.010892857142857143,
+      "mean_net_per_observed_draw": 8714.285714285714,
+      "wilson_95": [
+        0.7641297984340092,
+        0.8479203049341739
+      ],
+      "ci_net_per_bet": [
+        -36634.33136442478,
+        47072.384629239794
+      ],
+      "max_drawdown_vnd": 4892000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 291,
+      "misses": 70,
+      "skipped": 0,
+      "hit_rate": 0.8060941828254847,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 290709000,
+      "net_vnd": 1909000,
+      "roi": 0.0066101108033241,
+      "mean_net_per_observed_draw": 5288.08864265928,
+      "wilson_95": [
+        0.7621753950591074,
+        0.8435671669686725
+      ],
+      "ci_net_per_bet": [
+        -38586.78033595171,
+        42723.59980170382
+      ],
+      "max_drawdown_vnd": 5871000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 287,
+      "misses": 74,
+      "skipped": 0,
+      "hit_rate": 0.7950138504155124,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 286713000,
+      "net_vnd": -2087000,
+      "roi": -0.007226454293628809,
+      "mean_net_per_observed_draw": -5781.163434903047,
+      "wilson_95": [
+        0.7503679266625345,
+        0.8334473028031537
+      ],
+      "ci_net_per_bet": [
+        -50382.44126412808,
+        32613.85550035059
+      ],
+      "max_drawdown_vnd": 7010000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 278,
+      "misses": 83,
+      "skipped": 0,
+      "hit_rate": 0.7700831024930748,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 277722000,
+      "net_vnd": -11078000,
+      "roi": -0.038358725761772856,
+      "mean_net_per_observed_draw": -30686.980609418282,
+      "wilson_95": [
+        0.7239690398472037,
+        0.8105096913537785
+      ],
+      "ci_net_per_bet": [
+        -76754.9291926435,
+        9699.1816624247
+      ],
+      "max_drawdown_vnd": 13068000,
+      "max_loss_streak_bets": 2
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 291,
+      "misses": 72,
+      "skipped": 0,
+      "hit_rate": 0.8016528925619835,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 290400000,
+      "gross_vnd": 290709000,
+      "net_vnd": 309000,
+      "roi": 0.0010640495867768596,
+      "mean_net_per_observed_draw": 851.2396694214876,
+      "wilson_95": [
+        0.7575668341716754,
+        0.8394213053478644
+      ],
+      "ci_net_per_bet": [
+        -43190.73266249627,
+        38581.88404251658
+      ],
+      "max_drawdown_vnd": 7646000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 281,
+      "misses": 80,
+      "skipped": 0,
+      "hit_rate": 0.778393351800554,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 280719000,
+      "net_vnd": -8081000,
+      "roi": -0.02798130193905817,
+      "mean_net_per_observed_draw": -22385.041551246537,
+      "wilson_95": [
+        0.7327440286255389,
+        0.8181802019970121
+      ],
+      "ci_net_per_bet": [
+        -67988.71540308662,
+        17362.021795015084
+      ],
+      "max_drawdown_vnd": 8678000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_daily",
+      "n": 80,
+      "k": 0,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 190,
+      "misses": 54,
+      "skipped": 0,
+      "hit_rate": 0.7786885245901639,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 195200000,
+      "gross_vnd": 189810000,
+      "net_vnd": -5390000,
+      "roi": -0.027612704918032787,
+      "mean_net_per_observed_draw": -22090.16393442623,
+      "wilson_95": [
+        0.7225060752042236,
+        0.8262318181536101
+      ],
+      "ci_net_per_bet": [
+        -78216.4308709806,
+        25405.586335456464
+      ],
+      "max_drawdown_vnd": 8669000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1890,
+      "hits": 1480,
+      "misses": 410,
+      "skipped": 497,
+      "hit_rate": 0.783068783068783,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 1512000000,
+      "gross_vnd": 1478520000,
+      "net_vnd": -33480000,
+      "roi": -0.02214285714285714,
+      "mean_net_per_observed_draw": -14025.974025974027,
+      "wilson_95": [
+        0.7639231956247315,
+        0.8010660198222125
+      ],
+      "ci_net_per_bet": [
+        -36840.72757089324,
+        264.9538023902569
+      ],
+      "max_drawdown_vnd": 43615000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 277,
+      "hits": 214,
+      "misses": 63,
+      "skipped": 84,
+      "hit_rate": 0.7725631768953068,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 221600000,
+      "gross_vnd": 213786000,
+      "net_vnd": -7814000,
+      "roi": -0.03526173285198556,
+      "mean_net_per_observed_draw": -21645.42936288089,
+      "wilson_95": [
+        0.7196687022190154,
+        0.8180012010569371
+      ],
+      "ci_net_per_bet": [
+        -81050.9664832037,
+        17183.199855880113
+      ],
+      "max_drawdown_vnd": 13087000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 272,
+      "hits": 219,
+      "misses": 53,
+      "skipped": 64,
+      "hit_rate": 0.8051470588235294,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 217600000,
+      "gross_vnd": 218781000,
+      "net_vnd": 1181000,
+      "roi": 0.005427389705882353,
+      "mean_net_per_observed_draw": 3514.8809523809523,
+      "wilson_95": [
+        0.7539624746098471,
+        0.8478324865598782
+      ],
+      "ci_net_per_bet": [
+        -46791.48786476278,
+        46984.65407331835
+      ],
+      "max_drawdown_vnd": 6468000,
+      "max_loss_streak_bets": 2
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 291,
+      "hits": 231,
+      "misses": 60,
+      "skipped": 70,
+      "hit_rate": 0.7938144329896907,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 232800000,
+      "gross_vnd": 230769000,
+      "net_vnd": -2031000,
+      "roi": -0.008724226804123712,
+      "mean_net_per_observed_draw": -5626.038781163435,
+      "wilson_95": [
+        0.7436491803800687,
+        0.836323529984224
+      ],
+      "ci_net_per_bet": [
+        -57094.46880031144,
+        35487.206454239786
+      ],
+      "max_drawdown_vnd": 7650000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 287,
+      "hits": 225,
+      "misses": 62,
+      "skipped": 74,
+      "hit_rate": 0.7839721254355401,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 229600000,
+      "gross_vnd": 224775000,
+      "net_vnd": -4825000,
+      "roi": -0.02101480836236934,
+      "mean_net_per_observed_draw": -13365.650969529086,
+      "wilson_95": [
+        0.7327768288360064,
+        0.8276659658774208
+      ],
+      "ci_net_per_bet": [
+        -67955.9479928296,
+        26838.299911543378
+      ],
+      "max_drawdown_vnd": 8192000,
+      "max_loss_streak_bets": 2
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 278,
+      "hits": 208,
+      "misses": 70,
+      "skipped": 83,
+      "hit_rate": 0.7482014388489209,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 222400000,
+      "gross_vnd": 207792000,
+      "net_vnd": -14608000,
+      "roi": -0.06568345323741007,
+      "mean_net_per_observed_draw": -40465.37396121884,
+      "wilson_95": [
+        0.694032117081222,
+        0.7956048603082357
+      ],
+      "ci_net_per_bet": [
+        -106661.91503585922,
+        -5190.744552072487
+      ],
+      "max_drawdown_vnd": 16789000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 291,
+      "hits": 231,
+      "misses": 60,
+      "skipped": 72,
+      "hit_rate": 0.7938144329896907,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 232800000,
+      "gross_vnd": 230769000,
+      "net_vnd": -2031000,
+      "roi": -0.008724226804123712,
+      "mean_net_per_observed_draw": -5595.0413223140495,
+      "wilson_95": [
+        0.7436491803800687,
+        0.836323529984224
+      ],
+      "ci_net_per_bet": [
+        -57094.46880031144,
+        35487.206454239786
+      ],
+      "max_drawdown_vnd": 8275000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 281,
+      "hits": 213,
+      "misses": 68,
+      "skipped": 80,
+      "hit_rate": 0.7580071174377224,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 224800000,
+      "gross_vnd": 212787000,
+      "net_vnd": -12013000,
+      "roi": -0.05343861209964413,
+      "mean_net_per_observed_draw": -33277.00831024931,
+      "wilson_95": [
+        0.7046684363112913,
+        0.8043866731532215
+      ],
+      "ci_net_per_bet": [
+        -96036.23212502,
+        3582.2864800683456
+      ],
+      "max_drawdown_vnd": 12411000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k0_pause",
+      "n": 80,
+      "k": 0,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 190,
+      "hits": 153,
+      "misses": 37,
+      "skipped": 54,
+      "hit_rate": 0.8052631578947368,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 152000000,
+      "gross_vnd": 152847000,
+      "net_vnd": 847000,
+      "roi": 0.005572368421052631,
+      "mean_net_per_observed_draw": 3471.311475409836,
+      "wilson_95": [
+        0.7431397942286728,
+        0.8552873983117089
+      ],
+      "ci_net_per_bet": [
+        -57603.34556555585,
+        54432.11091339716
+      ],
+      "max_drawdown_vnd": 4052000,
+      "max_loss_streak_bets": 2
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1889,
+      "misses": 498,
+      "skipped": 0,
+      "hit_rate": 0.7913699204021785,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 1909600000,
+      "gross_vnd": 1887111000,
+      "net_vnd": -22489000,
+      "roi": -0.01177681189777964,
+      "mean_net_per_observed_draw": -9421.449518223711,
+      "wilson_95": [
+        0.7746076691874401,
+        0.8071958606401396
+      ],
+      "ci_net_per_bet": [
+        -26166.938481747406,
+        6388.664779499406
+      ],
+      "max_drawdown_vnd": 31797000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 288,
+      "misses": 73,
+      "skipped": 0,
+      "hit_rate": 0.7977839335180056,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 287712000,
+      "net_vnd": -1088000,
+      "roi": -0.0037673130193905816,
+      "mean_net_per_observed_draw": -3013.8504155124656,
+      "wilson_95": [
+        0.7533152774239394,
+        0.8359817851822718
+      ],
+      "ci_net_per_bet": [
+        -47438.03785348451,
+        35145.80339708959
+      ],
+      "max_drawdown_vnd": 12072000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 265,
+      "misses": 71,
+      "skipped": 0,
+      "hit_rate": 0.7886904761904762,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 268800000,
+      "gross_vnd": 264735000,
+      "net_vnd": -4065000,
+      "roi": -0.015122767857142857,
+      "mean_net_per_observed_draw": -12098.214285714286,
+      "wilson_95": [
+        0.7419014112753951,
+        0.8289530120583911
+      ],
+      "ci_net_per_bet": [
+        -58840.4901358803,
+        28124.059046332724
+      ],
+      "max_drawdown_vnd": 6150000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 286,
+      "misses": 75,
+      "skipped": 0,
+      "hit_rate": 0.7922437673130194,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 285714000,
+      "net_vnd": -3086000,
+      "roi": -0.010685595567867036,
+      "mean_net_per_observed_draw": -8548.476454293628,
+      "wilson_95": [
+        0.7474235118005588,
+        0.8309098845246066
+      ],
+      "ci_net_per_bet": [
+        -53323.91171124182,
+        30078.974640081986
+      ],
+      "max_drawdown_vnd": 9605000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 287,
+      "misses": 74,
+      "skipped": 0,
+      "hit_rate": 0.7950138504155124,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 286713000,
+      "net_vnd": -2087000,
+      "roi": -0.007226454293628809,
+      "mean_net_per_observed_draw": -5781.163434903047,
+      "wilson_95": [
+        0.7503679266625345,
+        0.8334473028031537
+      ],
+      "ci_net_per_bet": [
+        -50382.44126412808,
+        32613.85550035059
+      ],
+      "max_drawdown_vnd": 10731000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 276,
+      "misses": 85,
+      "skipped": 0,
+      "hit_rate": 0.7645429362880887,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 275724000,
+      "net_vnd": -13076000,
+      "roi": -0.045277008310249306,
+      "mean_net_per_observed_draw": -36221.60664819945,
+      "wilson_95": [
+        0.718132091477085,
+        0.8053829734428515
+      ],
+      "ci_net_per_bet": [
+        -82586.04061439203,
+        4577.590469408664
+      ],
+      "max_drawdown_vnd": 15643000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 294,
+      "misses": 69,
+      "skipped": 0,
+      "hit_rate": 0.8099173553719008,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 290400000,
+      "gross_vnd": 293706000,
+      "net_vnd": 3306000,
+      "roi": 0.011384297520661156,
+      "mean_net_per_observed_draw": 9107.438016528926,
+      "wilson_95": [
+        0.7663896649203185,
+        0.8469543140381127
+      ],
+      "ci_net_per_bet": [
+        -34376.724744601874,
+        46107.3597240746
+      ],
+      "max_drawdown_vnd": 6452000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 279,
+      "misses": 82,
+      "skipped": 0,
+      "hit_rate": 0.7728531855955678,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 278721000,
+      "net_vnd": -10079000,
+      "roi": -0.03489958448753463,
+      "mean_net_per_observed_draw": -27919.6675900277,
+      "wilson_95": [
+        0.7268913943152575,
+        0.8130691700262476
+      ],
+      "ci_net_per_bet": [
+        -73835.49707905774,
+        12256.100856221281
+      ],
+      "max_drawdown_vnd": 12992000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k5_daily",
+      "n": 80,
+      "k": 5,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 202,
+      "misses": 42,
+      "skipped": 0,
+      "hit_rate": 0.8278688524590164,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 195200000,
+      "gross_vnd": 201798000,
+      "net_vnd": 6598000,
+      "roi": 0.03380122950819672,
+      "mean_net_per_observed_draw": 27040.983606557376,
+      "wilson_95": [
+        0.7755158809357559,
+        0.870058111249931
+      ],
+      "ci_net_per_bet": [
+        -25259.634945179918,
+        69188.0531386811
+      ],
+      "max_drawdown_vnd": 3805000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1889,
+      "hits": 1487,
+      "misses": 402,
+      "skipped": 498,
+      "hit_rate": 0.7871889888830069,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 1511200000,
+      "gross_vnd": 1485513000,
+      "net_vnd": -25687000,
+      "roi": -0.016997750132345155,
+      "mean_net_per_observed_draw": -10761.206535400084,
+      "wilson_95": [
+        0.7681583567183364,
+        0.8050539400347115
+      ],
+      "ci_net_per_bet": [
+        -32609.801638381905,
+        4248.886094676796
+      ],
+      "max_drawdown_vnd": 37279000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 288,
+      "hits": 233,
+      "misses": 55,
+      "skipped": 73,
+      "hit_rate": 0.8090277777777778,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 230400000,
+      "gross_vnd": 232767000,
+      "net_vnd": 2367000,
+      "roi": 0.0102734375,
+      "mean_net_per_observed_draw": 6556.7867036011085,
+      "wilson_95": [
+        0.7596806659021597,
+        0.8502395309036074
+      ],
+      "ci_net_per_bet": [
+        -41079.01476374245,
+        49389.29137270374
+      ],
+      "max_drawdown_vnd": 9636000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 265,
+      "hits": 211,
+      "misses": 54,
+      "skipped": 71,
+      "hit_rate": 0.7962264150943397,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 212000000,
+      "gross_vnd": 210789000,
+      "net_vnd": -1211000,
+      "roi": -0.0057122641509433966,
+      "mean_net_per_observed_draw": -3604.1666666666665,
+      "wilson_95": [
+        0.7436584175875236,
+        0.8403288910987918
+      ],
+      "ci_net_per_bet": [
+        -57085.240830063936,
+        39488.562207693
+      ],
+      "max_drawdown_vnd": 5226000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 286,
+      "hits": 221,
+      "misses": 65,
+      "skipped": 75,
+      "hit_rate": 0.7727272727272727,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 228800000,
+      "gross_vnd": 220779000,
+      "net_vnd": -8021000,
+      "roi": -0.03505681818181818,
+      "mean_net_per_observed_draw": -22218.836565096954,
+      "wilson_95": [
+        0.7207321645740483,
+        0.8174931142895492
+      ],
+      "ci_net_per_bet": [
+        -79988.56759052572,
+        16675.621175259585
+      ],
+      "max_drawdown_vnd": 13955000,
+      "max_loss_streak_bets": 6
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 287,
+      "hits": 226,
+      "misses": 61,
+      "skipped": 74,
+      "hit_rate": 0.7874564459930313,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 229600000,
+      "gross_vnd": 225774000,
+      "net_vnd": -3826000,
+      "roi": -0.01666376306620209,
+      "mean_net_per_observed_draw": -10598.337950138504,
+      "wilson_95": [
+        0.7364894031397168,
+        0.8308299902818507
+      ],
+      "ci_net_per_bet": [
+        -64247.08626342297,
+        29999.16029156884
+      ],
+      "max_drawdown_vnd": 10675000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 276,
+      "hits": 208,
+      "misses": 68,
+      "skipped": 85,
+      "hit_rate": 0.7536231884057971,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 220800000,
+      "gross_vnd": 207792000,
+      "net_vnd": -13008000,
+      "roi": -0.05891304347826087,
+      "mean_net_per_observed_draw": -36033.240997229914,
+      "wilson_95": [
+        0.6995359473945612,
+        0.80074732224671
+      ],
+      "ci_net_per_bet": [
+        -101163.58855283342,
+        -53.42507553671021
+      ],
+      "max_drawdown_vnd": 15392000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 294,
+      "hits": 234,
+      "misses": 60,
+      "skipped": 69,
+      "hit_rate": 0.7959183673469388,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 235200000,
+      "gross_vnd": 233766000,
+      "net_vnd": -1434000,
+      "roi": -0.006096938775510204,
+      "mean_net_per_observed_draw": -3950.413223140496,
+      "wilson_95": [
+        0.7461717194024835,
+        0.8380317044222403
+      ],
+      "ci_net_per_bet": [
+        -54574.45231691899,
+        37193.67271781806
+      ],
+      "max_drawdown_vnd": 8474000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 279,
+      "hits": 217,
+      "misses": 62,
+      "skipped": 82,
+      "hit_rate": 0.7777777777777778,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 223200000,
+      "gross_vnd": 216783000,
+      "net_vnd": -6417000,
+      "roi": -0.02875,
+      "mean_net_per_observed_draw": -17775.623268698062,
+      "wilson_95": [
+        0.7254079527169285,
+        0.8226022316678913
+      ],
+      "ci_net_per_bet": [
+        -75317.45523578848,
+        21779.62943622342
+      ],
+      "max_drawdown_vnd": 8673000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k5_pause",
+      "n": 80,
+      "k": 5,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 202,
+      "hits": 170,
+      "misses": 32,
+      "skipped": 42,
+      "hit_rate": 0.8415841584158416,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 161600000,
+      "gross_vnd": 169830000,
+      "net_vnd": 8230000,
+      "roi": 0.050928217821782175,
+      "mean_net_per_observed_draw": 33729.50819672131,
+      "wilson_95": [
+        0.7849233650390963,
+        0.8854955135999734
+      ],
+      "ci_net_per_bet": [
+        -15861.558325942722,
+        84610.01808637334
+      ],
+      "max_drawdown_vnd": 2810000,
+      "max_loss_streak_bets": 2
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1889,
+      "misses": 498,
+      "skipped": 0,
+      "hit_rate": 0.7913699204021785,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 1909600000,
+      "gross_vnd": 1887111000,
+      "net_vnd": -22489000,
+      "roi": -0.01177681189777964,
+      "mean_net_per_observed_draw": -9421.449518223711,
+      "wilson_95": [
+        0.7746076691874401,
+        0.8071958606401396
+      ],
+      "ci_net_per_bet": [
+        -26166.938481747406,
+        6388.664779499406
+      ],
+      "max_drawdown_vnd": 34520000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 291,
+      "misses": 70,
+      "skipped": 0,
+      "hit_rate": 0.8060941828254847,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 290709000,
+      "net_vnd": 1909000,
+      "roi": 0.0066101108033241,
+      "mean_net_per_observed_draw": 5288.08864265928,
+      "wilson_95": [
+        0.7621753950591074,
+        0.8435671669686725
+      ],
+      "ci_net_per_bet": [
+        -38586.78033595171,
+        42723.59980170382
+      ],
+      "max_drawdown_vnd": 14878000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 257,
+      "misses": 79,
+      "skipped": 0,
+      "hit_rate": 0.7648809523809523,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 268800000,
+      "gross_vnd": 256743000,
+      "net_vnd": -12057000,
+      "roi": -0.04485491071428571,
+      "mean_net_per_observed_draw": -35883.92857142857,
+      "wilson_95": [
+        0.716700577579904,
+        0.807073068571714
+      ],
+      "ci_net_per_bet": [
+        -84016.1229976759,
+        6265.995503142243
+      ],
+      "max_drawdown_vnd": 13621000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 280,
+      "misses": 81,
+      "skipped": 0,
+      "hit_rate": 0.775623268698061,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 279720000,
+      "net_vnd": -9080000,
+      "roi": -0.0314404432132964,
+      "mean_net_per_observed_draw": -25152.35457063712,
+      "wilson_95": [
+        0.729816379240307,
+        0.8156260182417212
+      ],
+      "ci_net_per_bet": [
+        -70913.43713893334,
+        14810.392223479459
+      ],
+      "max_drawdown_vnd": 15404000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 283,
+      "misses": 78,
+      "skipped": 0,
+      "hit_rate": 0.7839335180055401,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 282717000,
+      "net_vnd": -6083000,
+      "roi": -0.02106301939058172,
+      "mean_net_per_observed_draw": -16850.415512465373,
+      "wilson_95": [
+        0.7386074623044468,
+        0.8232804345991497
+      ],
+      "ci_net_per_bet": [
+        -62131.145157857565,
+        22457.154164550477
+      ],
+      "max_drawdown_vnd": 13426000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 284,
+      "misses": 77,
+      "skipped": 0,
+      "hit_rate": 0.7867036011080333,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 283716000,
+      "net_vnd": -5084000,
+      "roi": -0.01760387811634349,
+      "mean_net_per_observed_draw": -14083.102493074792,
+      "wilson_95": [
+        0.7415433202613634,
+        0.8258264097827562
+      ],
+      "ci_net_per_bet": [
+        -59198.223058898,
+        25000.583372973488
+      ],
+      "max_drawdown_vnd": 7467000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 298,
+      "misses": 65,
+      "skipped": 0,
+      "hit_rate": 0.8209366391184573,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 290400000,
+      "gross_vnd": 297702000,
+      "net_vnd": 7302000,
+      "roi": 0.025144628099173554,
+      "mean_net_per_observed_draw": 20115.702479338845,
+      "wilson_95": [
+        0.7781978020070967,
+        0.8569539628698565
+      ],
+      "ci_net_per_bet": [
+        -22580.395794910495,
+        56097.008906986564
+      ],
+      "max_drawdown_vnd": 6086000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 283,
+      "misses": 78,
+      "skipped": 0,
+      "hit_rate": 0.7839335180055401,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 282717000,
+      "net_vnd": -6083000,
+      "roi": -0.02106301939058172,
+      "mean_net_per_observed_draw": -16850.415512465373,
+      "wilson_95": [
+        0.7386074623044468,
+        0.8232804345991497
+      ],
+      "ci_net_per_bet": [
+        -62131.145157857565,
+        22457.154164550477
+      ],
+      "max_drawdown_vnd": 11642000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_daily",
+      "n": 80,
+      "k": 10,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 204,
+      "misses": 40,
+      "skipped": 0,
+      "hit_rate": 0.8360655737704918,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 195200000,
+      "gross_vnd": 203796000,
+      "net_vnd": 8596000,
+      "roi": 0.04403688524590164,
+      "mean_net_per_observed_draw": 35229.50819672131,
+      "wilson_95": [
+        0.7844722420623357,
+        0.8772410999279933
+      ],
+      "ci_net_per_bet": [
+        -16312.230179726612,
+        76363.85882806522
+      ],
+      "max_drawdown_vnd": 3821000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1890,
+      "hits": 1500,
+      "misses": 390,
+      "skipped": 497,
+      "hit_rate": 0.7936507936507936,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 1512000000,
+      "gross_vnd": 1498500000,
+      "net_vnd": -13500000,
+      "roi": -0.008928571428571428,
+      "mean_net_per_observed_draw": -5655.6346878927525,
+      "wilson_95": [
+        0.774819379621665,
+        0.8112909279915198
+      ],
+      "ci_net_per_bet": [
+        -25955.439757956658,
+        10479.637063528295
+      ],
+      "max_drawdown_vnd": 23378000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 292,
+      "hits": 239,
+      "misses": 53,
+      "skipped": 69,
+      "hit_rate": 0.8184931506849316,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 233600000,
+      "gross_vnd": 238761000,
+      "net_vnd": 5161000,
+      "roi": 0.02209332191780822,
+      "mean_net_per_observed_draw": 14296.398891966759,
+      "wilson_95": [
+        0.7702422507073649,
+        0.8584728750949736
+      ],
+      "ci_net_per_bet": [
+        -30527.991543342476,
+        57614.402219878626
+      ],
+      "max_drawdown_vnd": 9477000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 257,
+      "hits": 199,
+      "misses": 58,
+      "skipped": 79,
+      "hit_rate": 0.77431906614786,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 205600000,
+      "gross_vnd": 198801000,
+      "net_vnd": -6799000,
+      "roi": -0.03306906614785992,
+      "mean_net_per_observed_draw": -20235.119047619046,
+      "wilson_95": [
+        0.7193882400750538,
+        0.8211700003115916
+      ],
+      "ci_net_per_bet": [
+        -81331.14816502132,
+        20348.830311279977
+      ],
+      "max_drawdown_vnd": 9346000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 280,
+      "hits": 222,
+      "misses": 58,
+      "skipped": 81,
+      "hit_rate": 0.7928571428571428,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 224000000,
+      "gross_vnd": 221778000,
+      "net_vnd": -2222000,
+      "roi": -0.009919642857142858,
+      "mean_net_per_observed_draw": -6155.124653739612,
+      "wilson_95": [
+        0.7415816002770471,
+        0.8362057345308699
+      ],
+      "ci_net_per_bet": [
+        -59159.981323229964,
+        35369.52879633906
+      ],
+      "max_drawdown_vnd": 9748000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 283,
+      "hits": 222,
+      "misses": 61,
+      "skipped": 78,
+      "hit_rate": 0.784452296819788,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 226400000,
+      "gross_vnd": 221778000,
+      "net_vnd": -4622000,
+      "roi": -0.02041519434628975,
+      "mean_net_per_observed_draw": -12803.324099722991,
+      "wilson_95": [
+        0.7329042793588364,
+        0.8283813892538093
+      ],
+      "ci_net_per_bet": [
+        -67828.62492052244,
+        27553.007864555577
+      ],
+      "max_drawdown_vnd": 10775000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 284,
+      "hits": 223,
+      "misses": 61,
+      "skipped": 77,
+      "hit_rate": 0.7852112676056338,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 227200000,
+      "gross_vnd": 222777000,
+      "net_vnd": -4423000,
+      "roi": -0.01946742957746479,
+      "mean_net_per_observed_draw": -12252.07756232687,
+      "wilson_95": [
+        0.7338096503107427,
+        0.8290001709836772
+      ],
+      "ci_net_per_bet": [
+        -66924.159339568,
+        28171.17081269354
+      ],
+      "max_drawdown_vnd": 7109000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 298,
+      "hits": 241,
+      "misses": 57,
+      "skipped": 65,
+      "hit_rate": 0.8087248322147651,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 238400000,
+      "gross_vnd": 240759000,
+      "net_vnd": 2359000,
+      "roi": 0.00989513422818792,
+      "mean_net_per_observed_draw": 6498.62258953168,
+      "wilson_95": [
+        0.760252258375115,
+        0.8493392825579791
+      ],
+      "ci_net_per_bet": [
+        -40507.99388326006,
+        48489.94327542116
+      ],
+      "max_drawdown_vnd": 10476000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 283,
+      "hits": 223,
+      "misses": 60,
+      "skipped": 78,
+      "hit_rate": 0.7879858657243817,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 226400000,
+      "gross_vnd": 222777000,
+      "net_vnd": -3623000,
+      "roi": -0.016002650176678446,
+      "mean_net_per_observed_draw": -10036.01108033241,
+      "wilson_95": [
+        0.7366712762721098,
+        0.8315868851183329
+      ],
+      "ci_net_per_bet": [
+        -64065.39500416233,
+        30755.298233214533
+      ],
+      "max_drawdown_vnd": 6842000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k10_pause",
+      "n": 80,
+      "k": 10,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 205,
+      "hits": 170,
+      "misses": 35,
+      "skipped": 39,
+      "hit_rate": 0.8292682926829268,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 164000000,
+      "gross_vnd": 169830000,
+      "net_vnd": 5830000,
+      "roi": 0.035548780487804875,
+      "mean_net_per_observed_draw": 23893.44262295082,
+      "wilson_95": [
+        0.7718213301154547,
+        0.8746020417683219
+      ],
+      "ci_net_per_bet": [
+        -28950.491214660695,
+        73727.43972655362
+      ],
+      "max_drawdown_vnd": 4247000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "all",
+      "observed": 2387,
+      "bets": 2387,
+      "hits": 1905,
+      "misses": 482,
+      "skipped": 0,
+      "hit_rate": 0.7980728948470884,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 1909600000,
+      "gross_vnd": 1903095000,
+      "net_vnd": -6505000,
+      "roi": -0.003406472559698366,
+      "mean_net_per_observed_draw": -2725.178047758693,
+      "wilson_95": [
+        0.7814955379375219,
+        0.8136924009155666
+      ],
+      "ci_net_per_bet": [
+        -19285.957600415568,
+        12878.70851465105
+      ],
+      "max_drawdown_vnd": 33588000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 361,
+      "hits": 300,
+      "misses": 61,
+      "skipped": 0,
+      "hit_rate": 0.8310249307479224,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 299700000,
+      "net_vnd": 10900000,
+      "roi": 0.037742382271468145,
+      "mean_net_per_observed_draw": 30193.905817174516,
+      "wilson_95": [
+        0.7889302947425361,
+        0.8661487655499498
+      ],
+      "ci_net_per_bet": [
+        -11858.635552206426,
+        65282.61678439984
+      ],
+      "max_drawdown_vnd": 3455000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "2020",
+      "observed": 336,
+      "bets": 336,
+      "hits": 260,
+      "misses": 76,
+      "skipped": 0,
+      "hit_rate": 0.7738095238095238,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 268800000,
+      "gross_vnd": 259740000,
+      "net_vnd": -9060000,
+      "roi": -0.03370535714285714,
+      "mean_net_per_observed_draw": -26964.285714285714,
+      "wilson_95": [
+        0.7261269860233722,
+        0.815301951571559
+      ],
+      "ci_net_per_bet": [
+        -74599.14096265112,
+        14486.649619987467
+      ],
+      "max_drawdown_vnd": 12952000,
+      "max_loss_streak_bets": 5
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "2021",
+      "observed": 361,
+      "bets": 361,
+      "hits": 282,
+      "misses": 79,
+      "skipped": 0,
+      "hit_rate": 0.7811634349030471,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 281718000,
+      "net_vnd": -7082000,
+      "roi": -0.024522160664819943,
+      "mean_net_per_observed_draw": -19617.728531855955,
+      "wilson_95": [
+        0.7356743775678981,
+        0.8207316861951756
+      ],
+      "ci_net_per_bet": [
+        -65061.29680966982,
+        19910.954508980387
+      ],
+      "max_drawdown_vnd": 17119000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "2022",
+      "observed": 361,
+      "bets": 361,
+      "hits": 278,
+      "misses": 83,
+      "skipped": 0,
+      "hit_rate": 0.7700831024930748,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 277722000,
+      "net_vnd": -11078000,
+      "roi": -0.038358725761772856,
+      "mean_net_per_observed_draw": -30686.980609418282,
+      "wilson_95": [
+        0.7239690398472037,
+        0.8105096913537785
+      ],
+      "ci_net_per_bet": [
+        -76754.9291926435,
+        9699.1816624247
+      ],
+      "max_drawdown_vnd": 17179000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "2023",
+      "observed": 361,
+      "bets": 361,
+      "hits": 292,
+      "misses": 69,
+      "skipped": 0,
+      "hit_rate": 0.8088642659279779,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 291708000,
+      "net_vnd": 2908000,
+      "roi": 0.010069252077562327,
+      "mean_net_per_observed_draw": 8055.401662049861,
+      "wilson_95": [
+        0.7651349474224405,
+        0.8460894477458623
+      ],
+      "ci_net_per_bet": [
+        -35630.18752498191,
+        45243.35829811636
+      ],
+      "max_drawdown_vnd": 5059000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "2024",
+      "observed": 363,
+      "bets": 363,
+      "hits": 296,
+      "misses": 67,
+      "skipped": 0,
+      "hit_rate": 0.8154269972451791,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 290400000,
+      "gross_vnd": 295704000,
+      "net_vnd": 5304000,
+      "roi": 0.018264462809917354,
+      "mean_net_per_observed_draw": 14611.570247933885,
+      "wilson_95": [
+        0.7722872192597686,
+        0.8519606526579236
+      ],
+      "ci_net_per_bet": [
+        -28485.067959491163,
+        51108.69200526574
+      ],
+      "max_drawdown_vnd": 7901000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "2025",
+      "observed": 361,
+      "bets": 361,
+      "hits": 291,
+      "misses": 70,
+      "skipped": 0,
+      "hit_rate": 0.8060941828254847,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 288800000,
+      "gross_vnd": 290709000,
+      "net_vnd": 1909000,
+      "roi": 0.0066101108033241,
+      "mean_net_per_observed_draw": 5288.08864265928,
+      "wilson_95": [
+        0.7621753950591074,
+        0.8435671669686725
+      ],
+      "ci_net_per_bet": [
+        -38586.78033595171,
+        42723.59980170382
+      ],
+      "max_drawdown_vnd": 6894000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_daily",
+      "n": 80,
+      "k": 20,
+      "pause": false,
+      "period": "2026",
+      "observed": 244,
+      "bets": 244,
+      "hits": 206,
+      "misses": 38,
+      "skipped": 0,
+      "hit_rate": 0.8442622950819673,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 195200000,
+      "gross_vnd": 205794000,
+      "net_vnd": 10594000,
+      "roi": 0.05427254098360656,
+      "mean_net_per_observed_draw": 43418.03278688525,
+      "wilson_95": [
+        0.7934684343724729,
+        0.8843842574224983
+      ],
+      "ci_net_per_bet": [
+        -7325.034061899525,
+        83499.87316507578
+      ],
+      "max_drawdown_vnd": 3204000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "all",
+      "observed": 2387,
+      "bets": 1906,
+      "hits": 1516,
+      "misses": 390,
+      "skipped": 481,
+      "hit_rate": 0.7953830010493179,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 1524800000,
+      "gross_vnd": 1514484000,
+      "net_vnd": -10316000,
+      "roi": -0.006765477439664218,
+      "mean_net_per_observed_draw": -4321.742773355677,
+      "wilson_95": [
+        0.7766862039336415,
+        0.8128915302806383
+      ],
+      "ci_net_per_bet": [
+        -24090.482270292123,
+        12078.63875035767
+      ],
+      "max_drawdown_vnd": 35796000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "latest365",
+      "observed": 361,
+      "bets": 301,
+      "hits": 251,
+      "misses": 50,
+      "skipped": 60,
+      "hit_rate": 0.8338870431893688,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 240800000,
+      "gross_vnd": 250749000,
+      "net_vnd": 9949000,
+      "roi": 0.04131644518272425,
+      "mean_net_per_observed_draw": 27559.5567867036,
+      "wilson_95": [
+        0.7876884336488371,
+        0.8716706993824314
+      ],
+      "ci_net_per_bet": [
+        -13099.254784811754,
+        70799.0286830489
+      ],
+      "max_drawdown_vnd": 5015000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "2020",
+      "observed": 336,
+      "bets": 261,
+      "hits": 201,
+      "misses": 60,
+      "skipped": 75,
+      "hit_rate": 0.7701149425287356,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 208800000,
+      "gross_vnd": 200799000,
+      "net_vnd": -8001000,
+      "roi": -0.03831896551724138,
+      "mean_net_per_observed_draw": -23812.5,
+      "wilson_95": [
+        0.7153714007219542,
+        0.8170225855816077
+      ],
+      "ci_net_per_bet": [
+        -85343.97067876777,
+        16205.562996026012
+      ],
+      "max_drawdown_vnd": 12510000,
+      "max_loss_streak_bets": 2
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "2021",
+      "observed": 361,
+      "bets": 282,
+      "hits": 220,
+      "misses": 62,
+      "skipped": 79,
+      "hit_rate": 0.7801418439716312,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 225600000,
+      "gross_vnd": 219780000,
+      "net_vnd": -5820000,
+      "roi": -0.02579787234042553,
+      "mean_net_per_observed_draw": -16121.883656509695,
+      "wilson_95": [
+        0.7282182860709948,
+        0.824535679892746
+      ],
+      "ci_net_per_bet": [
+        -72509.93221507617,
+        23711.14421285328
+      ],
+      "max_drawdown_vnd": 13083000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "2022",
+      "observed": 361,
+      "bets": 278,
+      "hits": 209,
+      "misses": 69,
+      "skipped": 83,
+      "hit_rate": 0.7517985611510791,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 222400000,
+      "gross_vnd": 208791000,
+      "net_vnd": -13609000,
+      "roi": -0.06119154676258993,
+      "mean_net_per_observed_draw": -37698.060941828255,
+      "wilson_95": [
+        0.6978188277467992,
+        0.7989143377207666
+      ],
+      "ci_net_per_bet": [
+        -102878.99108094769,
+        -1884.5766169541748
+      ],
+      "max_drawdown_vnd": 17390000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "2023",
+      "observed": 361,
+      "bets": 292,
+      "hits": 232,
+      "misses": 60,
+      "skipped": 69,
+      "hit_rate": 0.7945205479452054,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 233600000,
+      "gross_vnd": 231768000,
+      "net_vnd": -1832000,
+      "roi": -0.007842465753424658,
+      "mean_net_per_observed_draw": -5074.792243767313,
+      "wilson_95": [
+        0.7444955656141884,
+        0.8368969163105545
+      ],
+      "ci_net_per_bet": [
+        -56248.92995142576,
+        36060.01939424395
+      ],
+      "max_drawdown_vnd": 6042000,
+      "max_loss_streak_bets": 4
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "2024",
+      "observed": 363,
+      "bets": 296,
+      "hits": 244,
+      "misses": 52,
+      "skipped": 67,
+      "hit_rate": 0.8243243243243243,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 236800000,
+      "gross_vnd": 243756000,
+      "net_vnd": 6956000,
+      "roi": 0.029375,
+      "mean_net_per_observed_draw": 19162.534435261707,
+      "wilson_95": [
+        0.7768960501502594,
+        0.8634423498667191
+      ],
+      "ci_net_per_bet": [
+        -23880.845899890875,
+        62578.90751685237
+      ],
+      "max_drawdown_vnd": 5457000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "2025",
+      "observed": 361,
+      "bets": 291,
+      "hits": 234,
+      "misses": 57,
+      "skipped": 70,
+      "hit_rate": 0.8041237113402062,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 232800000,
+      "gross_vnd": 233766000,
+      "net_vnd": 966000,
+      "roi": 0.004149484536082475,
+      "mean_net_per_observed_draw": 2675.9002770083102,
+      "wilson_95": [
+        0.7546875202819118,
+        0.8456351097442861
+      ],
+      "ci_net_per_bet": [
+        -46067.167238370166,
+        44789.4746345419
+      ],
+      "max_drawdown_vnd": 5768000,
+      "max_loss_streak_bets": 3
+    },
+    {
+      "strategy": "n80_k20_pause",
+      "n": 80,
+      "k": 20,
+      "pause": true,
+      "period": "2026",
+      "observed": 244,
+      "bets": 207,
+      "hits": 177,
+      "misses": 30,
+      "skipped": 37,
+      "hit_rate": 0.855072463768116,
+      "break_even": 0.8008008008008008,
+      "stake_vnd": 165600000,
+      "gross_vnd": 176823000,
+      "net_vnd": 11223000,
+      "roi": 0.06777173913043479,
+      "mean_net_per_observed_draw": 45995.901639344265,
+      "wilson_95": [
+        0.8006480181984587,
+        0.8965583131474707
+      ],
+      "ci_net_per_bet": [
+        -152.6298197398428,
+        95661.75483432319
+      ],
+      "max_drawdown_vnd": 2400000,
+      "max_loss_streak_bets": 3
+    }
+  ],
+  "chronological_selection": [
+    {
+      "year": "2024",
+      "train_end": "2023-12-31",
+      "best_nonzero": "n80_k0_daily",
+      "train_mean_net": -5868.9217758985205,
+      "chosen": "abstain",
+      "realized_net_vnd": 0,
+      "nonzero_test": {
+        "observed": 363,
+        "bets": 363,
+        "hits": 291,
+        "misses": 72,
+        "skipped": 0,
+        "hit_rate": 0.8016528925619835,
+        "break_even": 0.8008008008008008,
+        "stake_vnd": 290400000,
+        "gross_vnd": 290709000,
+        "net_vnd": 309000,
+        "roi": 0.0010640495867768596,
+        "mean_net_per_observed_draw": 851.2396694214876,
+        "wilson_95": [
+          0.7575668341716754,
+          0.8394213053478644
+        ],
+        "ci_net_per_bet": [
+          -43190.73266249627,
+          38581.88404251658
+        ],
+        "max_drawdown_vnd": 7646000,
+        "max_loss_streak_bets": 4
+      }
+    },
+    {
+      "year": "2025",
+      "train_end": "2024-12-31",
+      "best_nonzero": "n60_k40_pause",
+      "train_mean_net": -2373.7373737373737,
+      "chosen": "abstain",
+      "realized_net_vnd": 0,
+      "nonzero_test": {
+        "observed": 361,
+        "bets": 228,
+        "hits": 141,
+        "misses": 87,
+        "skipped": 133,
+        "hit_rate": 0.618421052631579,
+        "break_even": 0.6006006006006006,
+        "stake_vnd": 136800000,
+        "gross_vnd": 140859000,
+        "net_vnd": 4059000,
+        "roi": 0.02967105263157895,
+        "mean_net_per_observed_draw": 11243.76731301939,
+        "wilson_95": [
+          0.5538983397770655,
+          0.679019449278789
+        ],
+        "ci_net_per_bet": [
+          -46655.55856271158,
+          78340.42982951016
+        ],
+        "max_drawdown_vnd": 6651000,
+        "max_loss_streak_bets": 5
+      }
+    },
+    {
+      "year": "2026",
+      "train_end": "2025-12-31",
+      "best_nonzero": "n60_k38_pause",
+      "train_mean_net": 2157.2561829211386,
+      "chosen": "n60_k38_pause",
+      "realized_net_vnd": 9894000,
+      "nonzero_test": {
+        "observed": 244,
+        "bets": 160,
+        "hits": 106,
+        "misses": 54,
+        "skipped": 84,
+        "hit_rate": 0.6625,
+        "break_even": 0.6006006006006006,
+        "stake_vnd": 96000000,
+        "gross_vnd": 105894000,
+        "net_vnd": 9894000,
+        "roi": 0.1030625,
+        "mean_net_per_observed_draw": 40549.18032786885,
+        "wilson_95": [
+          0.5861852427313052,
+          0.7311947438379556
+        ],
+        "ci_net_per_bet": [
+          -14400.942511426052,
+          130463.5490941176
+        ],
+        "max_drawdown_vnd": 4410000,
+        "max_loss_streak_bets": 4
+      }
+    }
+  ]
+}
