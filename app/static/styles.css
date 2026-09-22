@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    XSMB Research Lab — Design System
    Dark / Light mode với CSS custom properties
    ============================================================ */
@@ -1886,6 +1886,36 @@ body[data-current-page="fortune-two-digit"] .feature-nav a[data-page-link="fortu
 .fortune-number.selected span { color: #8d3410; font-weight: 800; }
 .fortune-number.selected small { color: #a24b0c; font-weight: 750; }
 .fortune-number.actual { outline: 3px solid #efb917; outline-offset: 2px; }
+.fortune-number.excluded-recent {
+  opacity: 0.48;
+  pointer-events: none;
+  filter: grayscale(0.8);
+  border-color: #b3151f;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 244, 222, 0.86),
+    rgba(255, 244, 222, 0.86) 7px,
+    rgba(179, 21, 31, 0.14) 7px,
+    rgba(179, 21, 31, 0.14) 12px
+  );
+  box-shadow: none;
+}
+.fortune-number.excluded-recent strong { text-decoration: line-through; }
+.fortune-exclude-recent-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 4px;
+  border-top: 1px solid var(--border, #e8ddd6);
+  margin-bottom: 4px;
+}
+.fortune-excluded-label {
+  color: #8a0a12;
+  font-size: 0.7rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
 .fortune-number.hit {
   outline-color: #fffbd1;
   background: linear-gradient(145deg, #fff8af, #ffcb2d 48%, #bc151d);

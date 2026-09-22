@@ -1,11 +1,11 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="vi" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Công cụ phân tích dữ liệu lịch sử và tạo dự đoán XSMB — backtest nghiêm ngặt, không rò rỉ tương lai." />
     <title>XSMB Research Lab</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20260922-17" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260922-18" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" />
@@ -380,6 +380,23 @@
             <button class="fortune-filter-button" type="button" data-fortune-filter="selected">Được chọn</button>
             <button class="fortune-filter-button" type="button" data-fortune-filter="excluded">Bị loại</button>
           </div>
+          <div class="fortune-exclude-recent-group exclude-recent-group">
+            <label class="exclude-toggle-label" for="fortune-exclude-recent-toggle">
+              <input type="checkbox" id="fortune-exclude-recent-toggle" />
+              <span class="exclude-toggle-track"></span>
+              <span class="exclude-toggle-text">&#x1F6AB; Lo&#7841;i s&#7889; tr&#250;ng ng&#224;y g&#7847;n nh&#7845;t</span>
+            </label>
+            <div id="fortune-exclude-recent-days-wrap" style="display:none">
+              <select id="fortune-exclude-recent-days" class="exclude-days-select" aria-label="S&#7889; ng&#224;y lo&#7841;i tr&#7915;">
+                <option value="1">1 ng&#224;y</option>
+                <option value="2">2 ng&#224;y</option>
+                <option value="3" selected>3 ng&#224;y</option>
+                <option value="5">5 ng&#224;y</option>
+                <option value="7">7 ng&#224;y</option>
+              </select>
+            </div>
+            <div id="fortune-excluded-recent-chips" class="excluded-recent-chips" style="display:none"></div>
+          </div>
           <div class="fortune-export" id="fortune-export" hidden>
             <span><strong id="fortune-export-count">0 số</strong> theo thứ hạng mô hình</span>
             <code id="fortune-export-string">—</code>
@@ -700,6 +717,6 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="/static/app.js?v=20260922-15" defer></script>
+    <script src="/static/app.js?v=20260922-16" defer></script>
   </body>
 </html>

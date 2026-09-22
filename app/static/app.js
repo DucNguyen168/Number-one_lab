@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    XSMB Research Lab — app.js
    ============================================================ */
 
@@ -21,6 +21,9 @@ const state = {
   excludeRecentDays: 3,
   recentNumbers: [],       // Array of { draw_date, last_two }
   fortuneFilter: 'all',
+  fortuneExcludeRecentEnabled: false,
+  fortuneExcludeRecentDays: 3,
+  fortuneRecentNumbers: [],  // Array of { draw_date, last_two }
 };
 
 // ── Helpers ────────────────────────────────────────────────
@@ -898,11 +901,18 @@ function renderFortunePrediction(prediction) {
     meta.append(chip);
   });
 
+  const fortuneExcludedSet = getFortuneExcludedRecentSet();
+
   const scores = [...(prediction.scores || [])]
     .sort((a, b) => a.rank - b.rank)
     .filter((score) => {
-      if (state.fortuneFilter === 'selected') return selected.has(score.number);
-      if (state.fortuneFilter === 'excluded') return !selected.has(score.number);
+      const isExcludedByRecent = fortuneExcludedSet.has(score.number);
+      if (state.fortuneFilter === 'selected') {
+        return selected.has(score.number) && !isExcludedByRecent;
+      }
+      if (state.fortuneFilter === 'excluded') {
+        return !selected.has(score.number) || isExcludedByRecent;
+      }
       return true;
     });
 
@@ -910,7 +920,8 @@ function renderFortunePrediction(prediction) {
     const isSelected = selected.has(score.number);
     const isActual = actual === score.number;
     const node = document.createElement('div');
-    node.className = `fortune-number${isSelected ? ' selected' : ''}${isActual ? ' actual' : ''}${isSelected && evaluation.hit && isActual ? ' hit' : ''}`;
+    const isExcluded = fortuneExcludedSet.has(score.number);
+    node.className = `fortune-number${isSelected ? ' selected' : ''}${isActual ? ' actual' : ''}${isSelected && evaluation.hit && isActual ? ' hit' : ''}${isExcluded ? ' excluded-recent' : ''}`;
     node.setAttribute('role', 'gridcell');
     const number = document.createElement('strong');
     number.textContent = score.number;
@@ -919,17 +930,22 @@ function renderFortunePrediction(prediction) {
     const rank = document.createElement('small');
     rank.textContent = `#${score.rank}`;
     node.append(number, probability, rank);
-    node.title = `Số ${score.number} · rank #${score.rank} · điểm ${formatPercent(score.probability, 4)}`;
+    node.title = isExcluded
+      ? `Số ${score.number} · rank #${score.rank} · đã bị loại vì xuất hiện trong ${state.fortuneExcludeRecentDays} kỳ gần nhất`
+      : `Số ${score.number} · rank #${score.rank} · điểm ${formatPercent(score.probability, 4)}`;
     grid.append(node);
   });
 
   updateFortuneRippleDelays();
 
   const selectedScores = [...(prediction.scores || [])]
-    .filter(score => selected.has(score.number))
+    .filter(score => selected.has(score.number) && !fortuneExcludedSet.has(score.number))
     .sort((a, b) => a.rank - b.rank);
+  const removedSelectedCount = [...selected].filter(number => fortuneExcludedSet.has(number)).length;
   el('fortune-export-string').textContent = selectedScores.map(score => score.number).join(',');
-  el('fortune-export-count').textContent = `${selectedScores.length} số`;
+  el('fortune-export-count').textContent = removedSelectedCount > 0
+    ? `${selectedScores.length} số · đã loại ${removedSelectedCount} số vừa ra`
+    : `${selectedScores.length} số`;
   exportBox.hidden = false;
 }
 
@@ -1255,6 +1271,7 @@ function initFortunePage() {
       loadRollingModelComparison(),
     ]);
   });
+  initFortuneExcludeRecentToggle();
   el('fortune-copy-button').addEventListener('click', async () => {
     const text = el('fortune-export-string').textContent;
     if (!text || text === '—') return;
@@ -1736,6 +1753,20 @@ async function refreshDashboard() {
     loadBacktests(),
     loadDigitBacktests(),
   ]);
+
+  // Khi dữ liệu kết quả vừa được đồng bộ, cập nhật lại ngay tập loại trừ
+  // đang bật để bảng hiển thị và chuỗi sao chép không dùng danh sách cũ.
+  if (state.excludeRecentEnabled) {
+    await loadRecentNumbers(state.excludeRecentDays);
+    updateExcludeRecentChips();
+    renderNumberGrid(state.latestPrediction);
+    updateSelectedExport(state.latestPrediction);
+  }
+  if (state.fortuneExcludeRecentEnabled) {
+    await loadFortuneRecentNumbers(state.fortuneExcludeRecentDays);
+    updateFortuneExcludeRecentChips();
+    renderFortunePrediction(state.latestLogisticPrediction);
+  }
 }
 
 async function runAction(button, busyLabel, action, successMessage) {
@@ -1790,6 +1821,88 @@ function initExcludeRecentToggle() {
 }
 
 // ═══════════════════════════════════════════════════════════
+// FORTUNE EXCLUDE RECENT TOGGLE
+// ─────────────────────────────────────────────────────────────────────────────
+function updateFortuneExcludeRecentChips() {
+  const chips = el('fortune-excluded-recent-chips');
+  if (!chips) return;
+  if (!state.fortuneExcludeRecentEnabled || state.fortuneRecentNumbers.length === 0) {
+    chips.style.display = 'none';
+    chips.replaceChildren();
+    return;
+  }
+  chips.replaceChildren();
+  const label = document.createElement('span');
+  label.className = 'fortune-excluded-label';
+  label.textContent = 'Đang loại:';
+  chips.append(label);
+  state.fortuneRecentNumbers.forEach(({ draw_date, last_two }) => {
+    const chip = document.createElement('span');
+    chip.className = 'excluded-recent-chip';
+    chip.title = `Số ${last_two} đã trúng ngày ${draw_date}`;
+    const number = document.createElement('span');
+    number.textContent = last_two;
+    const date = document.createElement('span');
+    date.className = 'excluded-recent-chip-date';
+    date.textContent = draw_date;
+    chip.append(number, date);
+    chips.append(chip);
+  });
+  chips.style.display = 'flex';
+}
+
+function getFortuneExcludedRecentSet() {
+  return new Set(
+    state.fortuneExcludeRecentEnabled
+      ? state.fortuneRecentNumbers.map(result => result.last_two)
+      : []
+  );
+}
+
+function initFortuneExcludeRecentToggle() {
+  const toggle = el('fortune-exclude-recent-toggle');
+  const daysWrap = el('fortune-exclude-recent-days-wrap');
+  const daysSelect = el('fortune-exclude-recent-days');
+
+  if (!toggle) return;
+
+  async function applyFortuneToggle() {
+    state.fortuneExcludeRecentEnabled = toggle.checked;
+    state.fortuneExcludeRecentDays = Number(daysSelect.value);
+
+    daysWrap.style.display = toggle.checked ? '' : 'none';
+
+    if (toggle.checked) {
+      await loadFortuneRecentNumbers(state.fortuneExcludeRecentDays);
+    } else {
+      state.fortuneRecentNumbers = [];
+    }
+    updateFortuneExcludeRecentChips();
+    renderFortunePrediction(state.latestLogisticPrediction);
+  }
+
+  toggle.addEventListener('change', applyFortuneToggle);
+
+  daysSelect.addEventListener('change', async () => {
+    if (!state.fortuneExcludeRecentEnabled) return;
+    state.fortuneExcludeRecentDays = Number(daysSelect.value);
+    await loadFortuneRecentNumbers(state.fortuneExcludeRecentDays);
+    updateFortuneExcludeRecentChips();
+    renderFortunePrediction(state.latestLogisticPrediction);
+  });
+}
+
+async function loadFortuneRecentNumbers(days) {
+  try {
+    const data = await api(`/api/results/recent-last-two?days=${days}`);
+    state.fortuneRecentNumbers = data.results || [];
+    return state.fortuneRecentNumbers;
+  } catch (error) {
+    console.warn('Không tải được số vừa ra cho trang Thần Tài:', error);
+    state.fortuneRecentNumbers = [];
+    return [];
+  }
+}
 // TAB SYSTEM
 // ═══════════════════════════════════════════════════════════
 function initTabs() {
@@ -1991,13 +2104,6 @@ function startSmartAutoRefresh() {
           state.smartRefreshSeenDate = today;
           // Refresh toàn bộ dashboard
           await refreshDashboard();
-          // Reload exclude-recent nếu đang bật
-          if (state.excludeRecentEnabled) {
-            await loadRecentNumbers(state.excludeRecentDays);
-            updateExcludeRecentChips();
-            renderNumberGrid(state.latestPrediction);
-            updateSelectedExport(state.latestPrediction);
-          }
           toast(`✅ Kết quả ngày ${today} vừa cập nhật! Giải đặc biệt: ${result.special_prize}`, 'success');
         }
       }

@@ -93,6 +93,11 @@ def test_fortune_page_uses_logistic_api_and_automatic_date() -> None:
     assert 'data-page-view="fortune-two-digit"' in html
     assert 'id="fortune-selected-count"' in html
     assert '/api/logistic-predictions/generate' in javascript
+    assert '/api/results/recent-last-two?days=${days}' in javascript
+    assert '/api/results/recent?days=${days}' not in javascript
+    assert "getFortuneExcludedRecentSet()" in javascript
+    assert "đã loại ${removedSelectedCount} số vừa ra" in javascript
+    assert 'id="fortune-excluded-recent-chips"' in html
     assert 'id="fortune-prediction-date"' not in html
 
 
