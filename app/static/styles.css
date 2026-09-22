@@ -2072,9 +2072,11 @@ body[data-current-page="fortune-two-digit"] .feature-nav a[data-page-link="fortu
 
 @media (prefers-reduced-motion: reduce) {
   /* .fortune-glitter-rain { display: none; } */
+  /*
   .fortune-number.selected,
   .fortune-number.selected::before,
   .fortune-icon-item {
     animation: none !important;
   }
+  */
 }
