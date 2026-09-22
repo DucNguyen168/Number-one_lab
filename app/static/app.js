@@ -160,24 +160,218 @@ function cell(text) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// DARK MODE TOGGLE
+// SKY DRAG TOGGLE — Sun/Moon/Cloud interactive drag widget
+// Kéo mây che Sun = Dark mode | che Moon = Light mode
+// Thả giữa = Limbo 5s → auto-snap về gần nhất
 // ═══════════════════════════════════════════════════════════
+const SKY = {
+  toggle: null,        // #sky-toggle
+  cloud: null,         // #sky-cloud
+  arrow: null,         // #sky-arrow
+  countdown: null,     // .sky-countdown-bar
+  dragging: false,
+  didDrag: false,
+  startX: 0,
+  startCloudLeft: 0,
+  cloudLeft: 0,        // current px from left edge of toggle
+  limboTimer: null,
+  limboRatio: 0.5,     // store ratio when entering limbo
+};
+
+// Ngưỡng snap: phần trăm width của toggle
+const SKY_SNAP = 0.40;   // < 40% → snap moon (light), > 60% → snap sun (dark)
+
 function initThemeToggle() {
-  const savedTheme = localStorage.getItem('xsmb-theme') || 'light';
-  applyTheme(savedTheme);
+  SKY.toggle  = el('sky-toggle');
+  SKY.cloud   = el('sky-cloud');
+  SKY.arrow   = el('sky-arrow');
+  if (!SKY.toggle || !SKY.cloud) return;
 
-  el('theme-toggle').addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    applyTheme(current === 'dark' ? 'light' : 'dark');
+  // Tạo countdown bar bên trong toggle
+  SKY.countdown = document.createElement('div');
+  SKY.countdown.className = 'sky-countdown-bar';
+  SKY.toggle.appendChild(SKY.countdown);
+
+  // Áp theme đã lưu (không animate)
+  const saved = localStorage.getItem('xsmb-theme') || 'light';
+  _skyApply(saved, false);
+
+  // Keyboard toggle
+  SKY.toggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (!SKY.dragging) {
+        const cur = document.documentElement.getAttribute('data-theme');
+        applyTheme(cur === 'dark' ? 'light' : 'dark');
+      }
+    }
   });
+
+  // Click toggle (không phải drag)
+  SKY.toggle.addEventListener('click', (e) => {
+    if (!SKY.didDrag) {
+      const cur = document.documentElement.getAttribute('data-theme');
+      applyTheme(cur === 'dark' ? 'light' : 'dark');
+    }
+    SKY.didDrag = false;
+  });
+
+  // Mouse drag
+  SKY.cloud.addEventListener('mousedown', _skyDragStart);
+  window.addEventListener('mousemove', _skyDragMove);
+  window.addEventListener('mouseup', _skyDragEnd);
+
+  // Touch drag
+  SKY.cloud.addEventListener('touchstart', _skyDragStart, { passive: false });
+  window.addEventListener('touchmove', _skyDragMove, { passive: false });
+  window.addEventListener('touchend', _skyDragEnd);
 }
 
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('xsmb-theme', theme);
-  el('theme-icon').textContent = theme === 'dark' ? '☀️' : '🌙';
-  el('theme-label').textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+function _skyX(e) {
+  return e.touches ? e.touches[0].clientX : e.clientX;
 }
+
+function _skyDragStart(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  SKY.dragging = true;
+  SKY.didDrag  = false;
+
+  // Lấy vị trí hiện tại của cloud
+  const tRect = SKY.toggle.getBoundingClientRect();
+  const cRect = SKY.cloud.getBoundingClientRect();
+  SKY.cloudLeft      = cRect.left - tRect.left;
+  SKY.startX         = _skyX(e);
+  SKY.startCloudLeft = SKY.cloudLeft;
+
+  SKY.cloud.classList.add('sky-no-transition');
+  SKY.cloud.style.left  = SKY.cloudLeft + 'px';
+  SKY.cloud.style.right = 'auto';
+  SKY.toggle.classList.add('sky-dragging');
+
+  // Hủy limbo nếu đang drag lại trong 5s
+  _skyClrLimbo(false);  // false = giữ backdrop cho đến khi snap
+}
+
+function _skyDragMove(e) {
+  if (!SKY.dragging) return;
+  e.preventDefault();
+
+  const dx = _skyX(e) - SKY.startX;
+  if (Math.abs(dx) > 3) SKY.didDrag = true;
+
+  const toggleW = SKY.toggle.offsetWidth;
+  const cloudW  = SKY.cloud.offsetWidth;
+  const minL    = 2;
+  const maxL    = toggleW - cloudW - 2;
+  SKY.cloudLeft = Math.max(minL, Math.min(SKY.startCloudLeft + dx, maxL));
+  SKY.cloud.style.left = SKY.cloudLeft + 'px';
+}
+
+function _skyDragEnd(e) {
+  if (!SKY.dragging) return;
+  SKY.dragging = false;
+  SKY.toggle.classList.remove('sky-dragging');
+  SKY.cloud.classList.remove('sky-no-transition');
+
+  if (!SKY.didDrag) return;
+
+  const toggleW   = SKY.toggle.offsetWidth;
+  const cloudW    = SKY.cloud.offsetWidth;
+  const cloudCtr  = SKY.cloudLeft + cloudW / 2;
+  const ratio     = cloudCtr / toggleW;
+
+  if (ratio <= SKY_SNAP) {
+    // Snap về moon (trái) = Light mode
+    applyTheme('light');
+  } else if (ratio >= (1 - SKY_SNAP)) {
+    // Snap về sun (phải) = Dark mode
+    applyTheme('dark');
+  } else {
+    // Limbo — không che cái nào
+    _skyEnterLimbo(ratio);
+  }
+}
+
+function _skyEnterLimbo(ratio) {
+  SKY.limboRatio = ratio;
+  SKY.toggle.classList.add('sky-limbo-active');
+  document.body.classList.add('sky-limbo');
+
+  // Hiển thị mũi tên chỉ hướng gần nhất
+  if (SKY.arrow) {
+    const nearLeft = ratio < 0.5;
+    SKY.arrow.innerHTML = nearLeft
+      ? '<span style="animation:none;display:inline-block;transform:scaleX(-1)">➜</span>&nbsp;Kéo về'
+      : 'Kéo về&nbsp;<span style="display:inline-block">➜</span>';
+    SKY.arrow.classList.add('active');
+  }
+
+  // Countdown bar
+  if (SKY.countdown) {
+    // Khởi động lại animation bằng cách clone node
+    const newBar = SKY.countdown.cloneNode(false);
+    SKY.countdown.replaceWith(newBar);
+    SKY.countdown = newBar;
+    SKY.countdown.classList.add('active');
+  }
+
+  // Auto-snap sau 5s
+  SKY.limboTimer = setTimeout(() => {
+    _skyClrLimbo(true);
+    _skyApply(SKY.limboRatio < 0.5 ? 'light' : 'dark', true);
+  }, 5000);
+}
+
+function _skyClrLimbo(clearBodyClass = true) {
+  if (SKY.limboTimer) { clearTimeout(SKY.limboTimer); SKY.limboTimer = null; }
+  if (clearBodyClass) document.body.classList.remove('sky-limbo');
+  if (SKY.toggle)    SKY.toggle.classList.remove('sky-limbo-active');
+  if (SKY.arrow)     { SKY.arrow.classList.remove('active'); SKY.arrow.innerHTML = ''; }
+  if (SKY.countdown) { SKY.countdown.classList.remove('active'); }
+}
+
+// Hàm apply chính — đặt theme và di cloud đến đúng vị trí
+function _skyApply(theme, animate = true) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.body.setAttribute('data-theme', theme);
+  localStorage.setItem('xsmb-theme', theme);
+
+  if (!SKY.cloud || !SKY.toggle) return;
+
+  if (!animate) SKY.cloud.classList.add('sky-no-transition');
+
+  const toggleW = SKY.toggle.offsetWidth || 112;
+  const cloudW  = SKY.cloud.offsetWidth  || 46;
+
+  if (theme === 'light') {
+    // Cloud bên TRÁI che Moon → Light (ban ngày)
+    SKY.cloud.style.right = 'auto';
+    SKY.cloud.style.left  = '4px';
+  } else {
+    // Cloud bên PHẢI che Sun → Dark (ban đêm)
+    SKY.cloud.style.right = 'auto';
+    SKY.cloud.style.left  = (toggleW - cloudW - 4) + 'px';
+  }
+
+  if (!animate) {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (SKY.cloud) SKY.cloud.classList.remove('sky-no-transition');
+    }));
+  }
+
+  if (SKY.toggle) {
+    SKY.toggle.setAttribute('aria-label',
+      theme === 'dark' ? 'Chuyển sang chế độ Sáng' : 'Chuyển sang chế độ Tối');
+  }
+}
+
+// API công khai — dùng trong toàn app
+function applyTheme(theme) {
+  _skyClrLimbo(true);
+  _skyApply(theme, true);
+}
+
 
 // ═══════════════════════════════════════════════════════════
 // COUNTDOWN TIMER đến 18:15 hàng ngày

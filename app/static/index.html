@@ -5,19 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Công cụ phân tích dữ liệu lịch sử và tạo dự đoán XSMB — backtest nghiêm ngặt, không rò rỉ tương lai." />
     <title>XSMB Research Lab</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20260922-8" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260922-12" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" />
   </head>
-  <body>
+  <body data-current-page="overview">
+    <div id="app-backdrop" class="app-backdrop" aria-hidden="true"></div>
     <div id="fortune-glitter-rain" class="fortune-glitter-rain" aria-hidden="true"></div>
     <div class="page-shell">
 
       <!-- ═══════════════ APP HEADER ═══════════════ -->
       <header class="hero">
         <a class="app-brand" href="/" aria-label="Về trang tổng quan">
-          <span class="app-brand-mark">X</span>
+          <span class="app-brand-mark">
+            <img src="/img/backgroud.jpg" alt="XSMB Lab logo" class="brand-logo-img" />
+          </span>
           <span class="app-brand-copy">
             <strong>XSMB Lab</strong>
             <small>Personal Data Research</small>
@@ -26,7 +29,7 @@
 
         <nav class="feature-nav" aria-label="Các trang chức năng">
           <a href="/" data-page-link="overview">
-            <span class="nav-icon"><img class="nav-logo" src="/img/icon_nav_home_active.svg" alt="" /></span><span class="nav-label">Tổng quan</span>
+            <span class="nav-icon"><img class="nav-logo" src="/img/star.png" alt="" /></span><span class="nav-label">Tổng quan</span>
           </a>
           <a href="/ket-qua" data-page-link="results">
             <span class="nav-icon"><img class="nav-logo" src="/img/chip.png" alt="" /></span><span class="nav-label">Kết quả</span>
@@ -50,10 +53,15 @@
             <span id="health-pill" class="pill neutral">Đang kết nối…</span>
             <span id="scheduler-pill" class="pill subtle">Scheduler</span>
           </div>
-          <button class="theme-toggle" id="theme-toggle" aria-label="Chuyển giao diện sáng/tối">
-            <span id="theme-icon">🌙</span>
-            <span id="theme-label" class="theme-label">Dark mode</span>
-          </button>
+          <!-- Sky Toggle: kéo cloud che sun = dark, che moon = light -->
+          <div class="sky-toggle-wrap">
+            <div class="sky-toggle" id="sky-toggle" role="button" tabindex="0" aria-label="Chuyển giao diện sáng/tối" title="Kéo mây để chuyển sáng/tối">
+              <img class="sky-moon" src="/img/moon.png" alt="Mặt trăng" />
+              <img class="sky-sun"  src="/img/sun.png"  alt="Mặt trời" />
+              <img class="sky-cloud" id="sky-cloud" src="/img/cloud.png" alt="Mây" />
+            </div>
+            <div class="sky-arrow" id="sky-arrow" aria-hidden="true"></div>
+          </div>
         </div>
       </header>
 

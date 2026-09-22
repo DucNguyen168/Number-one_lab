@@ -84,8 +84,32 @@ body {
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 
-/* ── Layout ── */
+/* ── Layout & Ambient Backdrop ── */
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/img/backgroud.jpg');
+  background-repeat: no-repeat;
+  background-position: center 30%;
+  background-size: min(1180px, 88vw) auto;
+  mix-blend-mode: multiply;
+  opacity: 0.28;
+  -webkit-mask-image: radial-gradient(ellipse 78% 70% at 50% 42%, black 35%, rgba(0, 0, 0, 0.5) 68%, transparent 95%);
+  mask-image: radial-gradient(ellipse 78% 70% at 50% 42%, black 35%, rgba(0, 0, 0, 0.5) 68%, transparent 95%);
+  transition: opacity 0.3s ease;
+}
+
+[data-theme="dark"] .app-backdrop {
+  opacity: 0.15;
+  mix-blend-mode: screen;
+  filter: invert(0.92) hue-rotate(185deg) brightness(0.85) contrast(1.15);
+}
+
 .page-shell {
+  position: relative;
+  z-index: 1;
   width: 100%;
   min-height: 100vh;
 }
@@ -117,15 +141,25 @@ button { cursor: pointer; }
 .app-brand-mark {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background: linear-gradient(145deg, var(--blue), var(--violet));
-  color: white;
-  font-size: 1.35rem;
-  font-weight: 900;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+  overflow: hidden;
+  border: 2.5px solid rgba(255,255,255,0.55);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.30), 0 0 0 1px rgba(37,99,235,0.18);
+  background: #fff;
+  flex-shrink: 0;
 }
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 49% 40%;
+  border-radius: 50%;
+  display: block;
+  transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.app-brand:hover .brand-logo-img { transform: scale(1.08) rotate(-4deg); }
 .app-brand-copy { display: grid; line-height: 1.15; }
 .app-brand-copy strong { font-size: 0.96rem; letter-spacing: -0.02em; }
 .app-brand-copy small { margin-top: 3px; color: var(--muted); font-size: 0.62rem; font-weight: 600; }
@@ -151,22 +185,166 @@ button { cursor: pointer; }
 .pill.ok { background: var(--green-soft); color: var(--green); }
 .pill.error { background: var(--red-soft); color: var(--red); }
 
-/* ── Dark Mode Toggle ── */
-.theme-toggle {
-  background: var(--panel);
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* ── Sky Day/Night Toggle Wrapper ── */
+.sky-toggle-wrap {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  flex-shrink: 0;
 }
-.theme-toggle:hover { color: var(--ink); border-color: var(--blue); }
+.sky-toggle {
+  position: relative;
+  width: 112px;
+  height: 48px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #87ceeb 0%, #cce6ff 100%);
+  border: 1.5px solid rgba(100, 160, 220, 0.5);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.08);
+  cursor: default;
+  overflow: hidden;
+  transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.4s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+[data-theme="dark"] .sky-toggle {
+  background: linear-gradient(120deg, #0d1b3e 0%, #1a2a5e 100%);
+  border-color: rgba(100, 130, 200, 0.35);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.35), 0 2px 10px rgba(0,0,0,0.2);
+}
+.sky-toggle.sky-limbo-active {
+  background: linear-gradient(120deg, #6ba8d0 0%, #5a80b8 50%, #1a2a5e 100%);
+  border-color: rgba(245, 200, 50, 0.55);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.20), 0 0 14px rgba(245,200,50,0.30);
+}
+.sky-moon, .sky-sun {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+  z-index: 1;
+}
+.sky-moon  { left: 9px;  opacity: 0; }
+.sky-sun   { right: 9px; opacity: 1; }
+[data-theme="dark"] .sky-moon  { opacity: 1; }
+[data-theme="dark"] .sky-sun   { opacity: 0; }
+.sky-limbo-active .sky-moon { opacity: 0.55; }
+.sky-limbo-active .sky-sun  { opacity: 0.55; }
+.sky-cloud {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-48%);
+  width: 46px;
+  height: 36px;
+  object-fit: contain;
+  cursor: grab;
+  pointer-events: auto;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.14));
+  z-index: 2;
+  /* Default: light mode, cloud on LEFT covering moon */
+  left: 4px;
+  right: auto;
+  transition: left 0.45s cubic-bezier(.34,1.24,.64,1), filter 0.35s ease;
+  will-change: left;
+}
+.sky-cloud.sky-no-transition {
+  transition: none !important;
+}
+.sky-toggle.sky-dragging .sky-cloud {
+  cursor: grabbing;
+  transition: none !important;
+}
+.sky-toggle.sky-dragging { cursor: grabbing; }
+
+/* Limbo: cloud nhấp nháy vàng */
+.sky-limbo-active .sky-cloud {
+  animation: skyCloudFlash 0.55s ease-in-out infinite alternate;
+}
+@keyframes skyCloudFlash {
+  0%   { filter: drop-shadow(0 2px 5px rgba(0,0,0,0.14)); }
+  100% { filter: drop-shadow(0 2px 5px rgba(0,0,0,0.14))
+                 drop-shadow(0 0 12px rgba(255, 205, 20, 0.95))
+                 brightness(1.15); }
+}
+
+/* Mũi tên tự kéo về */
+.sky-arrow {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #f59e0b;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 200;
+  text-shadow: 0 0 10px rgba(245,158,11,0.8), 0 1px 3px rgba(0,0,0,0.3);
+  animation: skyArrowPulse 0.6s ease-in-out infinite alternate;
+}
+.sky-arrow.active { display: flex; }
+@keyframes skyArrowPulse {
+  from { opacity: 0.5; transform: translateX(-50%) scale(0.92); }
+  to   { opacity: 1.0; transform: translateX(-50%) scale(1.06); }
+}
+/* Thanh đếm ngược 5s */
+.sky-countdown-bar {
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f59e0b, #fcd34d);
+  width: 100%;
+  transform-origin: left center;
+  animation: skyCountdown 5s linear forwards;
+  display: none;
+}
+.sky-countdown-bar.active { display: block; }
+@keyframes skyCountdown {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* Limbo: CHỈ hiện backdrop — Ẩn toàn bộ nội dung trang */
+body.sky-limbo main,
+body.sky-limbo .page-sticker,
+body.sky-limbo .page-heading-bar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.5s ease !important;
+}
+body.sky-limbo .app-backdrop {
+  opacity: 0.82 !important;
+  mix-blend-mode: multiply !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  transition: opacity 0.4s ease, mask-image 0s !important;
+}
+[data-theme="dark"] body.sky-limbo .app-backdrop {
+  opacity: 0.60 !important;
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+/* Thần Tài: không bao giờ hiện backdrop */
+body[data-current-page="fortune-two-digit"] .app-backdrop,
+body[data-current-page="fortune-two-digit"].sky-limbo .app-backdrop {
+  display: none !important;
+}
+/* Limbo không ẩn glitter rain */
+body.sky-limbo .fortune-glitter-rain { opacity: 0 !important; }
+
 
 /* ── Feature Page Buttons ── */
 .feature-nav {
@@ -295,7 +473,9 @@ main {
 /* ── Metric Cards ── */
 .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .metric-card {
-  background: var(--panel);
+  background: var(--panel-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
   border-radius: var(--radius);
@@ -323,12 +503,14 @@ main {
 
 /* ── Panel ── */
 .panel {
-  background: var(--panel);
+  background: var(--panel-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
   border-radius: var(--radius);
   padding: 24px;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 .section-heading {
   display: flex;
@@ -1283,10 +1465,14 @@ body[data-current-page="fortune-two-digit"] {
     linear-gradient(145deg, #7c0810 0%, #b3131d 48%, #7c0810 100%);
 }
 
+body[data-current-page="fortune-two-digit"] .app-backdrop {
+  display: none !important;
+}
+
 .fortune-glitter-rain {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 45;
   overflow: hidden;
   pointer-events: none;
   opacity: 0;
@@ -1295,7 +1481,7 @@ body[data-current-page="fortune-two-digit"] {
 }
 
 body[data-current-page="fortune-two-digit"] .fortune-glitter-rain {
-  opacity: 0.72;
+  opacity: 0.78;
   visibility: visible;
 }
 
@@ -1772,13 +1958,6 @@ body[data-current-page="fortune-two-digit"] .feature-nav a[data-page-link="fortu
 [data-theme="dark"] .historical-daily-page-info { color: #c7a58f; }
 
 [data-theme="dark"] body[data-current-page="fortune-two-digit"] { color: #fff7dc; }
-[data-theme="dark"] .theme-toggle {
-  border-color: #52617c;
-  background: #18213a;
-  color: #f8fafc;
-  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.14), 0 6px 18px rgba(0, 0, 0, 0.32);
-}
-[data-theme="dark"] .theme-toggle:hover { border-color: #93c5fd; background: #22304f; color: #fff; }
 [data-theme="dark"] .feature-nav a { color: #aebbd1; }
 [data-theme="dark"] .feature-nav a:hover { color: #f8fafc; background: #1b263d; }
 [data-theme="dark"] .fortune-hero {
