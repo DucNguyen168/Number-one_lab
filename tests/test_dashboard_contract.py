@@ -23,24 +23,40 @@ def test_feature_pages_have_matching_links_views_and_server_routes() -> None:
     from app.main import app
 
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
-    page_names = {"overview", "results", "two-digit", "one-digit", "backtest"}
+    page_names = {
+        "overview",
+        "results",
+        "two-digit",
+        "fortune-two-digit",
+        "one-digit",
+        "backtest",
+    }
     link_pages = set(re.findall(r'data-page-link="([^"]+)"', html))
     view_pages = set(re.findall(r'data-page-view="([^"]+)"', html))
     server_paths = {route.path for route in app.routes}
 
     assert link_pages == page_names
     assert view_pages == page_names
-    assert {"/", "/ket-qua", "/du-doan-2-so", "/du-doan-1-so", "/backtest"} <= server_paths
+    assert {
+        "/",
+        "/ket-qua",
+        "/du-doan-2-so",
+        "/du-doan-than-tai",
+        "/du-doan-1-so",
+        "/backtest",
+    } <= server_paths
+    assert "/api/model-comparison/rolling" in server_paths
 
 
 def test_app_shell_has_button_navigation_and_versioned_assets() -> None:
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
 
     assert 'class="app-brand"' in html
-    assert html.count('class="nav-icon"') == 5
-    assert html.count('class="nav-label"') == 5
+    assert html.count('class="nav-icon"') == 6
+    assert html.count('class="nav-label"') == 6
     assert '/static/styles.css?v=' in html
     assert '/static/app.js?v=' in html
+    assert html.count('class="nav-logo') == 6
 
 
 def test_two_digit_form_always_uses_automatic_prediction_date() -> None:
@@ -67,6 +83,40 @@ def test_one_digit_form_always_uses_automatic_prediction_date() -> None:
     assert "el('digit-prediction-date')" not in javascript
     assert "payload.prediction_date" not in one_digit_handler
     assert "Ngày được tự động chọn là hôm nay" in html
+
+
+def test_fortune_page_uses_logistic_api_and_automatic_date() -> None:
+    javascript = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+
+    assert 'data-page-link="fortune-two-digit"' in html
+    assert 'data-page-view="fortune-two-digit"' in html
+    assert 'id="fortune-selected-count"' in html
+    assert '/api/logistic-predictions/generate' in javascript
+    assert 'id="fortune-prediction-date"' not in html
+
+
+def test_fortune_page_has_local_art_glitter_and_center_out_highlight() -> None:
+    from app.main import app
+
+    javascript = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    css = (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
+    mounted_paths = {route.path for route in app.routes}
+
+    assert "/img" in mounted_paths
+    assert '/img/Than_tai2.jpg' in html
+    assert '/img/Than_tai.jpg' in html
+    assert 'id="fortune-glitter-rain"' in html
+    assert "function initFortuneGlitter()" in javascript
+    assert "function updateFortuneRippleDelays()" in javascript
+    assert "--fortune-ripple-delay" in css
+    assert "prefers-reduced-motion: reduce" in css
+    assert '[data-theme="dark"] .fortune-number.selected' in css
+    assert "max-width: 720px" in css
+    assert '/img/icon_nav_home_active.svg' in html
+    assert 'class="page-sticker sticker-fortune' in html
+    assert '/api/model-comparison/rolling' in javascript
 
 
 def test_vercel_cron_uses_get_compatible_reconciliation_endpoint() -> None:

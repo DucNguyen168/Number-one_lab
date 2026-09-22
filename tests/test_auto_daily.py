@@ -57,6 +57,7 @@ def test_auto_daily_creates_tomorrows_predictions_after_result(monkeypatch) -> N
         return {}, True
 
     monkeypatch.setattr(app_main, "create_prediction", create_two_digit)
+    monkeypatch.setattr(app_main, "create_logistic_prediction", create_two_digit)
     monkeypatch.setattr(app_main, "create_digit_prediction", create_one_digit)
 
     result = app_main._run_auto_daily(database)
@@ -64,6 +65,7 @@ def test_auto_daily_creates_tomorrows_predictions_after_result(monkeypatch) -> N
     assert result["ok"] is True
     assert result["target_date"] == "2026-09-11"
     assert created == [
+        ("two", date(2026, 9, 11)),
         ("two", date(2026, 9, 11)),
         ("one", date(2026, 9, 11)),
     ]
@@ -78,6 +80,7 @@ def test_auto_daily_does_not_create_late_prediction_without_result(
         raise AssertionError("late prediction must not be created")
 
     monkeypatch.setattr(app_main, "create_prediction", must_not_run)
+    monkeypatch.setattr(app_main, "create_logistic_prediction", must_not_run)
     monkeypatch.setattr(app_main, "create_digit_prediction", must_not_run)
 
     result = app_main._run_auto_daily(database)

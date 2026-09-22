@@ -15,6 +15,7 @@ from app.services.evaluation import (
     evaluate_pending_digit_predictions,
     evaluate_pending_predictions,
 )
+from app.services.logistic_prediction import create_prediction as create_logistic_prediction
 from app.services.prediction import create_prediction
 
 
@@ -74,6 +75,17 @@ class DailyScheduler:
         _, two_digit_created = await asyncio.to_thread(
             create_prediction, self.db, target, self.config.auto_prediction_count
         )
+        logistic_created = False
+        logistic_error: str | None = None
+        try:
+            _, logistic_created = await asyncio.to_thread(
+                create_logistic_prediction,
+                self.db,
+                target,
+                self.config.auto_prediction_count,
+            )
+        except (ValueError, RuntimeError) as exc:
+            logistic_error = str(exc)
         _, one_digit_created = await asyncio.to_thread(
             create_digit_prediction, self.db, target
         )
@@ -81,6 +93,8 @@ class DailyScheduler:
             "prediction_date": target.isoformat(),
             "selected_count": self.config.auto_prediction_count,
             "two_digit_created": two_digit_created,
+            "logistic_two_digit_created": logistic_created,
+            "logistic_two_digit_error": logistic_error,
             "one_digit_created": one_digit_created,
         }
         logger.info(

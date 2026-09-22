@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Công cụ phân tích dữ liệu lịch sử và tạo dự đoán XSMB — backtest nghiêm ngặt, không rò rỉ tương lai." />
     <title>XSMB Research Lab</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20260922-2" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260922-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" />
   </head>
   <body>
+    <div id="fortune-glitter-rain" class="fortune-glitter-rain" aria-hidden="true"></div>
     <div class="page-shell">
 
       <!-- ═══════════════ APP HEADER ═══════════════ -->
@@ -22,19 +26,22 @@
 
         <nav class="feature-nav" aria-label="Các trang chức năng">
           <a href="/" data-page-link="overview">
-            <span class="nav-icon">⌂</span><span class="nav-label">Tổng quan</span>
+            <span class="nav-icon"><img class="nav-logo" src="/img/icon_nav_home_active.svg" alt="" /></span><span class="nav-label">Tổng quan</span>
           </a>
           <a href="/ket-qua" data-page-link="results">
-            <span class="nav-icon">▤</span><span class="nav-label">Kết quả</span>
+            <span class="nav-icon"><img class="nav-logo" src="/img/chip.png" alt="" /></span><span class="nav-label">Kết quả</span>
           </a>
           <a href="/du-doan-2-so" data-page-link="two-digit">
-            <span class="nav-icon">00</span><span class="nav-label">Dự đoán 2 số</span>
+            <span class="nav-icon"><img class="nav-logo nav-logo-art" src="/img/casino-chip.png" alt="" /></span><span class="nav-label">Dự đoán 2 số</span>
+          </a>
+          <a href="/du-doan-than-tai" data-page-link="fortune-two-digit">
+            <span class="nav-icon"><img class="nav-logo" src="/img/travel.png" alt="" /></span><span class="nav-label">Thần Tài</span>
           </a>
           <a href="/du-doan-1-so" data-page-link="one-digit">
-            <span class="nav-icon">0</span><span class="nav-label">Dự đoán 1 số</span>
+            <span class="nav-icon"><img class="nav-logo nav-logo-art" src="/img/choice.png" alt="" /></span><span class="nav-label">Dự đoán 1 số</span>
           </a>
           <a href="/backtest" data-page-link="backtest">
-            <span class="nav-icon">↗</span><span class="nav-label">Backtest</span>
+            <span class="nav-icon"><img class="nav-logo nav-logo-art" src="/img/casino-roulette.png" alt="" /></span><span class="nav-label">Backtest</span>
           </a>
         </nav>
 
@@ -59,6 +66,13 @@
             <p id="page-description">Theo dõi trạng thái dữ liệu, dự đoán và kết quả mới nhất.</p>
           </div>
         </div>
+
+        <aside class="page-sticker sticker-overview page-view" data-page-view="overview" aria-hidden="true"><img src="/img/maneki-neko.png" alt="" /></aside>
+        <aside class="page-sticker sticker-results page-view" data-page-view="results" aria-hidden="true"><img src="/img/choice.png" alt="" /></aside>
+        <aside class="page-sticker sticker-two-digit page-view" data-page-view="two-digit" aria-hidden="true"><img src="/img/casino-chip.png" alt="" /></aside>
+        <aside class="page-sticker sticker-fortune page-view" data-page-view="fortune-two-digit" aria-hidden="true"><img src="/img/lucky-bag.png" alt="" /></aside>
+        <aside class="page-sticker sticker-one-digit page-view" data-page-view="one-digit" aria-hidden="true"><img src="/img/gold.png" alt="" /></aside>
+        <aside class="page-sticker sticker-backtest page-view" data-page-view="backtest" aria-hidden="true"><img src="/img/casino-roulette.png" alt="" /></aside>
 
         <!-- ═══════════════ COUNTDOWN ═══════════════ -->
         <div class="countdown-bar page-view" id="countdown-bar" data-page-view="overview">
@@ -243,6 +257,204 @@
             <span><i class="legend-dot recent"></i>Vừa ra trong 3 ngày qua</span>
             <span id="legend-excluded-recent" style="display:none"><i class="legend-dot excluded-recent"></i>Bị loại (trúng gần nhất)</span>
           </div>
+        </section>
+
+        <!-- ═══════════════ FACTORIZED LOGISTIC / THẦN TÀI ═══════════════ -->
+        <section class="fortune-hero page-view" data-page-view="fortune-two-digit">
+          <div class="fortune-hero-art fortune-hero-art-left" aria-hidden="true">
+            <img src="/img/Than_tai2.jpg" alt="" decoding="async" />
+          </div>
+          <div class="fortune-hero-art fortune-hero-art-right" aria-hidden="true">
+            <img src="/img/Than_tai.jpg" alt="" decoding="async" />
+          </div>
+          <!-- Đèn lồng trái -->
+          <div class="fortune-lantern left" aria-hidden="true">
+            <svg class="lantern-svg" viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="6" width="32" height="42" rx="16" fill="url(#lg1)" stroke="#ffd86b" stroke-width="1.5"/>
+              <rect x="16" y="0" width="8" height="7" rx="3" fill="#ffd86b"/>
+              <text x="20" y="34" text-anchor="middle" font-size="18" fill="#ffe58b" font-family="serif">福</text>
+              <path d="M18 48 L20 56 L22 48" stroke="#ffd86b" stroke-width="1.5" fill="none"/>
+              <defs>
+                <linearGradient id="lg1" x1="0" y1="0" x2="40" y2="60" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#b91019"/>
+                  <stop offset="50%" stop-color="#ef3440"/>
+                  <stop offset="100%" stop-color="#8d0710"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <!-- Ấn Thần Tài giữa -->
+          <div class="fortune-seal" aria-hidden="true">
+            <svg class="seal-svg" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="84" height="84" rx="20" fill="url(#sealGrad)" stroke="#ffe491" stroke-width="3"/>
+              <rect x="8" y="8" width="72" height="72" rx="14" fill="none" stroke="rgba(255,228,145,0.35)" stroke-width="1.5"/>
+              <text x="44" y="60" text-anchor="middle" font-size="44" fill="#7b0710" font-family="serif" font-weight="900">財</text>
+              <defs>
+                <linearGradient id="sealGrad" x1="0" y1="0" x2="88" y2="88" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ffd966"/>
+                  <stop offset="100%" stop-color="#c67b12"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <div class="fortune-intro">
+            <p class="fortune-kicker">MÔ HÌNH B · FACTORIZED LOGISTIC V1</p>
+            <h2>Thần Tài kiểm chứng chéo</h2>
+            <p>Hai mô hình cùng dự đoán một kỳ. Trang này dùng Logistic Regression học riêng hàng chục và hàng đơn vị, sau đó đối chiếu công bằng với mô hình tần suất.</p>
+            <div class="fortune-intro-ornaments" aria-hidden="true">
+              <span class="fortune-inline-lantern">🏮</span>
+              <span class="fortune-character">財</span>
+              <span class="fortune-inline-lantern">🏮</span>
+            </div>
+            <!-- Icon thần tài mini bar -->
+            <div class="fortune-icon-bar" aria-hidden="true">
+              <span class="fortune-icon-item" title="Thần Tài">🏮</span>
+              <span class="fortune-icon-divider">·</span>
+              <span class="fortune-icon-item" title="Vàng">🪙</span>
+              <span class="fortune-icon-divider">·</span>
+              <span class="fortune-icon-item" title="Phúc lộc">💰</span>
+              <span class="fortune-icon-divider">·</span>
+              <span class="fortune-icon-item" title="Thịnh vượng">🎋</span>
+            </div>
+          </div>
+
+          <!-- Đèn lồng phải -->
+          <div class="fortune-lantern right" aria-hidden="true">
+            <svg class="lantern-svg" viewBox="0 0 40 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="6" width="32" height="42" rx="16" fill="url(#lg2)" stroke="#ffd86b" stroke-width="1.5"/>
+              <rect x="16" y="0" width="8" height="7" rx="3" fill="#ffd86b"/>
+              <text x="20" y="34" text-anchor="middle" font-size="18" fill="#ffe58b" font-family="serif">祿</text>
+              <path d="M18 48 L20 56 L22 48" stroke="#ffd86b" stroke-width="1.5" fill="none"/>
+              <defs>
+                <linearGradient id="lg2" x1="0" y1="0" x2="40" y2="60" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#8d0710"/>
+                  <stop offset="50%" stop-color="#ef3440"/>
+                  <stop offset="100%" stop-color="#b91019"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </section>
+
+        <section class="fortune-panel fortune-control page-view" data-page-view="fortune-two-digit">
+          <div class="fortune-panel-heading">
+            <div>
+              <p class="fortune-eyebrow">🏮 KHAI LỘC · 00–99</p>
+              <h2>Tạo dự đoán Logistic hai số cuối</h2>
+              <p>Ngày được chọn tự động. Snapshot khóa độc lập với mô hình tần suất và được đối chiếu bằng kết quả thực.</p>
+            </div>
+            <span class="fortune-method-badge">🪙 Mô hình B</span>
+          </div>
+          <form id="fortune-prediction-form" class="fortune-form">
+            <label>
+              Số lượng
+              <select id="fortune-selected-count">
+                <option value="60">60 số</option>
+                <option value="65" selected>65 số</option>
+                <option value="70">70 số</option>
+                <option value="75">75 số</option>
+                <option value="80">80 số</option>
+              </select>
+            </label>
+            <button class="fortune-button" type="submit"><span aria-hidden="true">🔒</span> Tạo và khóa dự đoán</button>
+          </form>
+        </section>
+
+        <section class="fortune-panel page-view" data-page-view="fortune-two-digit">
+          <div class="fortune-panel-heading">
+            <div>
+              <p class="fortune-eyebrow">🎯 BẢNG SỐ MAY MẮN</p>
+              <h2>Dự đoán Logistic gần nhất</h2>
+            </div>
+            <div id="fortune-prediction-meta" class="fortune-meta"></div>
+          </div>
+          <div class="fortune-filter" role="tablist" aria-label="Lọc bảng số Logistic">
+            <button class="fortune-filter-button active" type="button" data-fortune-filter="all">Đủ 100 số</button>
+            <button class="fortune-filter-button" type="button" data-fortune-filter="selected">Được chọn</button>
+            <button class="fortune-filter-button" type="button" data-fortune-filter="excluded">Bị loại</button>
+          </div>
+          <div class="fortune-export" id="fortune-export" hidden>
+            <span><strong id="fortune-export-count">0 số</strong> theo thứ hạng mô hình</span>
+            <code id="fortune-export-string">—</code>
+            <button id="fortune-copy-button" class="fortune-copy-button" type="button">⧉ Sao chép</button>
+          </div>
+          <div id="fortune-number-grid" class="fortune-number-grid" role="grid" aria-label="Bảng Logistic từ 00 đến 99"></div>
+          <p class="fortune-note">Điểm hiển thị là xác suất ước lượng nội bộ của mô hình, chưa phải cam kết tỷ lệ trúng. Mốc ngẫu nhiên của Top N là N%.</p>
+        </section>
+
+        <section class="fortune-panel page-view" data-page-view="fortune-two-digit">
+          <div class="fortune-panel-heading">
+            <div>
+              <p class="fortune-eyebrow">⚖️ ĐỐI CHIẾU CÙNG KỲ</p>
+              <h2>Tần suất và Logistic</h2>
+              <p>Chỉ tính những ngày cả hai mô hình có snapshot cùng số lượng và đều đã có kết quả.</p>
+            </div>
+          </div>
+          <div class="fortune-history-callout">
+            <div>
+              <p class="fortune-eyebrow">ĐỐI CHIẾU ROLLING · CÙNG CUTOFF</p>
+              <h3 id="fortune-historical-title">Đang tải kết quả 365 kỳ…</h3>
+              <p id="fortune-historical-note">Đang tạo đối chiếu hai mô hình từ dữ liệu mới nhất.</p>
+            </div>
+            <div id="fortune-historical-summary" class="fortune-comparison-grid compact"></div>
+          </div>
+          <div id="fortune-comparison-summary" class="fortune-comparison-grid"></div>
+          <div class="table-wrap fortune-table-wrap">
+            <table>
+              <thead>
+                <tr><th>Ngày</th><th>Kết quả</th><th>Tần suất</th><th>Logistic</th></tr>
+              </thead>
+              <tbody id="fortune-comparison-history"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="fortune-panel page-view" data-page-view="fortune-two-digit">
+          <div class="fortune-panel-heading">
+            <div>
+              <p class="fortune-eyebrow">📜 LỊCH SỬ ĐÃ KHÓA</p>
+              <h2>Kết quả mô hình Logistic</h2>
+            </div>
+          </div>
+          <div class="table-wrap fortune-table-wrap">
+            <table>
+              <thead>
+                <tr><th>Ngày</th><th>Top N</th><th>Train đến</th><th>Kết quả</th><th>Đánh giá</th><th></th></tr>
+              </thead>
+              <tbody id="fortune-prediction-history"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="fortune-panel page-view" data-page-view="fortune-two-digit">
+          <div class="fortune-panel-heading">
+            <div>
+              <p class="fortune-eyebrow">📊 BÁO CÁO ROLLING · DỮ LIỆU THẬT</p>
+              <h2>So sánh chi tiết 365 kỳ</h2>
+              <p>Từng ngày đối chiếu song song trong 365 kỳ mới nhất; mỗi mô hình chỉ dùng dữ liệu có trước ngày đang đánh giá.</p>
+            </div>
+            <span id="fortune-rolling-window-badge" class="fortune-method-badge">365 kỳ · live</span>
+          </div>
+          <div id="fortune-historical-daily-stats" class="fortune-comparison-grid"></div>
+          <div class="table-wrap fortune-table-wrap fortune-daily-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Ngày</th>
+                  <th>Kết quả</th>
+                  <th>Tần suất A</th>
+                  <th>Logistic B</th>
+                  <th>So sánh</th>
+                  <th>ΔLog Loss</th>
+                </tr>
+              </thead>
+              <tbody id="fortune-historical-daily-body"></tbody>
+            </table>
+          </div>
+          <p class="fortune-note">ΔLog Loss = Logistic − Tần suất. Giá trị âm (đỏ đậm) nghĩa là Logistic dự đoán chính xác hơn cho kỳ đó. Cửa sổ 365 kỳ được tạo lại khi dữ liệu kết quả thay đổi.</p>
         </section>
 
         <!-- ═══════════════ LAST DIGIT 0-9 ═══════════════ -->
@@ -483,6 +695,6 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="/static/app.js?v=20260922-2" defer></script>
+    <script src="/static/app.js?v=20260922-5" defer></script>
   </body>
 </html>

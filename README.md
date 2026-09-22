@@ -238,6 +238,24 @@ Phần trăm hiển thị là **điểm phân phối thô của mô hình**, kh�
 hiệu chỉnh hay bảo đảm. Chỉ hit rate walk-forward và khoảng tin cậy so với baseline
 `10%` mới dùng để đánh giá mô hình có tạo ra tín hiệu đáng kể hay không.
 
+### Mô hình Logistic kiểm chứng chéo
+
+Trang `/du-doan-than-tai` dùng `factorized_logistic_v1`: hai Logistic Regression L2
+học riêng hàng chục và hàng đơn vị từ ba kỳ trước, thứ trong tuần và khoảng cách ngày.
+Hai phân phối 0–9 được ghép thành 100 điểm cho `00–99`, sau đó chọn Top 60/65/70/75/80.
+Snapshot được lưu trong collection `predictions` với `model_version` riêng nên có thể
+đối chiếu cùng ngày với `frequency_ensemble_v1` mà không trộn lịch sử.
+
+Chạy lại báo cáo lịch sử cố định:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\compare_factorized_logistic.py
+```
+
+Kết quả được ghi vào `reports/logistic_comparison/summary.json` và `daily.csv`.
+Trang Thần Tài hiển thị riêng backtest lịch sử và kết quả live đã khóa; backtest không
+được coi là bằng chứng chắc chắn cho dữ liệu tương lai.
+
 ## Có cần API key AI không?
 
 Không. Collector, prediction, backtest, MongoDB và dashboard đều chạy local mà không

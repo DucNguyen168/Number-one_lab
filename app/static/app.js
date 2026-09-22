@@ -6,6 +6,7 @@
 const state = {
   currentPage: 'overview',
   latestPrediction: null,
+  latestLogisticPrediction: null,
   latestDigitPrediction: null,
   toastTimer: null,
   currentTab: 'all',       // 'all' | 'selected' | 'excluded'
@@ -19,6 +20,7 @@ const state = {
   excludeRecentEnabled: false,
   excludeRecentDays: 3,
   recentNumbers: [],       // Array of { draw_date, last_two }
+  fortuneFilter: 'all',
 };
 
 // ── Helpers ────────────────────────────────────────────────
@@ -51,6 +53,12 @@ const PAGE_CONFIG = {
     eyebrow: 'TWO DIGITS · 00–99',
     title: 'Dự đoán hai số cuối',
     description: 'Tạo snapshot Top 60–80, xem bảng điểm và lịch sử đánh giá từng ngày.',
+  },
+  'fortune-two-digit': {
+    path: '/du-doan-than-tai',
+    eyebrow: 'FORTUNE MODEL · 00–99',
+    title: 'Dự đoán Thần Tài',
+    description: 'Mô hình Logistic độc lập để kiểm chứng chéo với mô hình tần suất bằng kết quả thực.',
   },
   'one-digit': {
     path: '/du-doan-1-so',
@@ -594,7 +602,7 @@ function initExportBar() {
           copyBtn.innerHTML = origHTML;
           copyBtn.classList.remove('copy-success');
         }, 1800);
-        showToast(`✅ Đã copy ${text.split(',').length} số vào clipboard!`);
+        toast(`✅ Đã copy ${text.split(',').length} số vào clipboard!`, 'success');
       } catch {
         // Fallback cho trình duyệt không hỗ trợ clipboard API
         const ta = document.createElement('textarea');
@@ -604,7 +612,7 @@ function initExportBar() {
         ta.select();
         document.execCommand('copy');
         document.body.removeChild(ta);
-        showToast(`✅ Đã copy ${text.split(',').length} số vào clipboard!`);
+        toast(`✅ Đã copy ${text.split(',').length} số vào clipboard!`, 'success');
       }
     });
   }
@@ -654,6 +662,421 @@ async function loadLatestPrediction() {
     node.className = `meta-chip ${cls}`.trim();
     node.textContent = text;
     meta.append(node);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// FACTORIZED LOGISTIC — TRANG THẦN TÀI
+// ═══════════════════════════════════════════════════════════
+function renderFortunePrediction(prediction) {
+  const grid = el('fortune-number-grid');
+  const meta = el('fortune-prediction-meta');
+  const exportBox = el('fortune-export');
+  grid.replaceChildren();
+  meta.replaceChildren();
+
+  if (!prediction) {
+    exportBox.hidden = true;
+    const empty = document.createElement('div');
+    empty.className = 'fortune-empty';
+    empty.textContent = 'Chưa có dự đoán Logistic cho lựa chọn này.';
+    grid.append(empty);
+    return;
+  }
+
+  const evaluation = prediction.evaluation || { status: 'pending' };
+  const selected = new Set(prediction.numbers || []);
+  const actual = evaluation.actual_last_two;
+  const chips = [
+    `📅 ${prediction.prediction_date}`,
+    `Top ${prediction.selected_count}`,
+    `Train đến ${prediction.trained_through}`,
+    `Coverage ${formatPercent(prediction.coverage_probability)}`,
+    evaluation.status === 'evaluated'
+      ? (evaluation.hit ? '✅ HIT' : '❌ MISS')
+      : '⏳ PENDING',
+  ];
+  if (actual) chips.push(`Kết quả ${actual}`);
+  chips.forEach((text) => {
+    const chip = document.createElement('span');
+    chip.className = 'fortune-meta-chip';
+    chip.textContent = text;
+    meta.append(chip);
+  });
+
+  const scores = [...(prediction.scores || [])]
+    .sort((a, b) => a.rank - b.rank)
+    .filter((score) => {
+      if (state.fortuneFilter === 'selected') return selected.has(score.number);
+      if (state.fortuneFilter === 'excluded') return !selected.has(score.number);
+      return true;
+    });
+
+  scores.forEach((score) => {
+    const isSelected = selected.has(score.number);
+    const isActual = actual === score.number;
+    const node = document.createElement('div');
+    node.className = `fortune-number${isSelected ? ' selected' : ''}${isActual ? ' actual' : ''}${isSelected && evaluation.hit && isActual ? ' hit' : ''}`;
+    node.setAttribute('role', 'gridcell');
+    const number = document.createElement('strong');
+    number.textContent = score.number;
+    const probability = document.createElement('span');
+    probability.textContent = formatPercent(score.probability, 3);
+    const rank = document.createElement('small');
+    rank.textContent = `#${score.rank}`;
+    node.append(number, probability, rank);
+    node.title = `Số ${score.number} · rank #${score.rank} · điểm ${formatPercent(score.probability, 4)}`;
+    grid.append(node);
+  });
+
+  updateFortuneRippleDelays();
+
+  const selectedScores = [...(prediction.scores || [])]
+    .filter(score => selected.has(score.number))
+    .sort((a, b) => a.rank - b.rank);
+  el('fortune-export-string').textContent = selectedScores.map(score => score.number).join(',');
+  el('fortune-export-count').textContent = `${selectedScores.length} số`;
+  exportBox.hidden = false;
+}
+
+function updateFortuneRippleDelays() {
+  const grid = el('fortune-number-grid');
+  if (!grid || !grid.children.length) return;
+
+  const renderedColumns = getComputedStyle(grid).gridTemplateColumns
+    .split(' ')
+    .filter(Boolean).length || 1;
+  const cells = [...grid.querySelectorAll('.fortune-number')];
+  const rows = Math.ceil(cells.length / renderedColumns);
+  const centerColumn = (renderedColumns - 1) / 2;
+  const centerRow = (rows - 1) / 2;
+
+  cells.forEach((cell, index) => {
+    const column = index % renderedColumns;
+    const row = Math.floor(index / renderedColumns);
+    const distance = Math.hypot(column - centerColumn, row - centerRow);
+    cell.style.setProperty('--fortune-ripple-delay', `${(distance * 0.105).toFixed(3)}s`);
+  });
+}
+
+function initFortuneGlitter() {
+  const rain = el('fortune-glitter-rain');
+  if (!rain || rain.children.length) return;
+
+  const particleCount = 34;
+  for (let index = 0; index < particleCount; index += 1) {
+    const particle = document.createElement('i');
+    const lane = ((index * 37) % 101) + ((index % 3) * 0.17);
+    const duration = 5.8 + ((index * 13) % 37) / 10;
+    const delay = -((index * 29) % 91) / 10;
+    const drift = ((index * 17) % 90) - 45;
+    const size = 3 + ((index * 7) % 6);
+    particle.style.setProperty('--glitter-x', `${lane}%`);
+    particle.style.setProperty('--glitter-duration', `${duration.toFixed(1)}s`);
+    particle.style.setProperty('--glitter-delay', `${delay.toFixed(1)}s`);
+    particle.style.setProperty('--glitter-drift', `${drift}px`);
+    particle.style.setProperty('--glitter-size', `${size}px`);
+    rain.append(particle);
+  }
+}
+
+async function loadLatestLogisticPrediction() {
+  const selectedCount = Number(el('fortune-selected-count').value);
+  const prediction = await api(`/api/logistic-predictions/latest?selected_count=${selectedCount}`);
+  state.latestLogisticPrediction = prediction;
+  renderFortunePrediction(prediction);
+}
+
+async function loadLogisticPredictionHistory() {
+  const predictions = await api('/api/logistic-predictions?limit=50');
+  const body = el('fortune-prediction-history');
+  body.replaceChildren();
+  if (!predictions.length) {
+    const row = document.createElement('tr');
+    const td = cell('Chưa có dự đoán Logistic');
+    td.colSpan = 6;
+    td.style.textAlign = 'center';
+    row.append(td);
+    body.append(row);
+    return;
+  }
+  predictions.forEach((prediction) => {
+    const evaluation = prediction.evaluation || { status: 'pending' };
+    const row = document.createElement('tr');
+    row.append(
+      cell(prediction.prediction_date),
+      cell(prediction.selected_count),
+      cell(prediction.trained_through),
+      cell(evaluation.actual_last_two || '—'),
+    );
+    const status = document.createElement('td');
+    status.append(evaluation.status === 'evaluated'
+      ? badge(evaluation.hit ? 'HIT' : 'MISS', evaluation.hit ? 'hit' : 'miss')
+      : badge('PENDING', 'pending'));
+    row.append(status);
+    const action = document.createElement('td');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'fortune-detail-button';
+    button.textContent = 'Xem chi tiết';
+    button.addEventListener('click', () => openPredictionDetail(prediction._id));
+    action.append(button);
+    row.append(action);
+    body.append(row);
+  });
+}
+
+function comparisonCard(label, value, detail = '') {
+  const card = document.createElement('article');
+  card.className = 'fortune-comparison-card';
+  const caption = document.createElement('span');
+  caption.textContent = label;
+  const strong = document.createElement('strong');
+  strong.textContent = value;
+  const small = document.createElement('small');
+  small.textContent = detail;
+  card.append(caption, strong, small);
+  return card;
+}
+
+async function loadModelComparison() {
+  const selectedCount = Number(el('fortune-selected-count').value);
+  const comparison = await api(`/api/model-comparison?selected_count=${selectedCount}`);
+  const root = el('fortune-comparison-summary');
+  root.replaceChildren(
+    comparisonCard('Kỳ ghép cặp', comparison.paired_predictions, `Top ${selectedCount}`),
+    comparisonCard('Mô hình tần suất', formatPercent(comparison.frequency_model.hit_rate), `${comparison.frequency_model.hits} HIT`),
+    comparisonCard('Mô hình Logistic', formatPercent(comparison.logistic_model.hit_rate), `${comparison.logistic_model.hits} HIT`),
+    comparisonCard('Chênh lệch B − A', formatPercent(comparison.lift_logistic_vs_frequency), `Baseline ${formatPercent(comparison.baseline, 0)}`),
+  );
+
+  const body = el('fortune-comparison-history');
+  body.replaceChildren();
+  if (!comparison.recent_pairs.length) {
+    const row = document.createElement('tr');
+    const td = cell('Chưa có đủ cặp dự đoán đã đối chiếu');
+    td.colSpan = 4;
+    td.style.textAlign = 'center';
+    row.append(td);
+    body.append(row);
+    return;
+  }
+  comparison.recent_pairs.forEach((pair) => {
+    const row = document.createElement('tr');
+    row.append(cell(pair.prediction_date), cell(pair.actual_last_two));
+    const frequency = document.createElement('td');
+    frequency.append(badge(pair.frequency_hit ? 'HIT' : 'MISS', pair.frequency_hit ? 'hit' : 'miss'));
+    const logistic = document.createElement('td');
+    logistic.append(badge(pair.logistic_hit ? 'HIT' : 'MISS', pair.logistic_hit ? 'hit' : 'miss'));
+    row.append(frequency, logistic);
+    body.append(row);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// BÁO CÁO ROLLING 365 KỲ — hai mô hình cùng cutoff mỗi ngày
+// ═══════════════════════════════════════════════════════════
+async function loadRollingModelComparison() {
+  const selectedCount = Number(el('fortune-selected-count').value);
+  try {
+    const report = await api(`/api/model-comparison/rolling?selected_count=${selectedCount}`);
+    const metrics = report.metrics;
+    el('fortune-historical-title').textContent =
+      `${report.paired_predictions} kỳ gần nhất · ${report.start_date} đến ${report.end_date}`;
+    el('fortune-historical-note').textContent =
+      `Đối chiếu walk-forward song song theo dữ liệu đến ${report.dataset.last_date}. `
+      + 'Báo cáo tự làm mới khi kết quả mới được đồng bộ.';
+    el('fortune-historical-summary').replaceChildren(
+      comparisonCard('Tần suất A', formatPercent(metrics.frequency.hit_rate), `${metrics.frequency.hits} HIT`),
+      comparisonCard('Logistic B', formatPercent(metrics.logistic.hit_rate), `${metrics.logistic.hits} HIT`),
+      comparisonCard('Baseline', formatPercent(metrics.baseline, 0), `Top ${selectedCount}`),
+      comparisonCard('B − A', formatPercent(metrics.delta_logistic_vs_frequency), `McNemar p=${metrics.mcnemar_exact_p}`),
+    );
+    el('fortune-rolling-window-badge').textContent = `${report.paired_predictions} kỳ · live`;
+    renderHistoricalDailyTable(report.daily);
+    renderHistoricalDailyStats(report.daily);
+  } catch (err) {
+    console.warn('Rolling model comparison load failed:', err);
+    el('fortune-historical-title').textContent = 'Chưa thể tạo đối chiếu rolling';
+    el('fortune-historical-note').textContent = 'Hệ thống sẽ thử lại khi dữ liệu hợp lệ sẵn sàng.';
+    const body = el('fortune-historical-daily-body');
+    if (body) {
+      body.replaceChildren();
+      const row = document.createElement('tr');
+      const td = cell('Không tải được dữ liệu lịch sử chi tiết');
+      td.colSpan = 7;
+      td.style.textAlign = 'center';
+      row.append(td);
+      body.append(row);
+    }
+  }
+}
+
+function renderHistoricalDailyStats(rows) {
+  const root = el('fortune-historical-daily-stats');
+  if (!root) return;
+  root.replaceChildren();
+
+  const total = rows.length;
+  const freqHits = rows.filter(r => r.frequency_hit).length;
+  const logHits = rows.filter(r => r.logistic_hit).length;
+  const bothHit = rows.filter(r => r.frequency_hit && r.logistic_hit).length;
+  const bothMiss = rows.filter(r => !r.frequency_hit && !r.logistic_hit).length;
+  const logOnly = rows.filter(r => !r.frequency_hit && r.logistic_hit).length;
+  const freqOnly = rows.filter(r => r.frequency_hit && !r.logistic_hit).length;
+
+  // Streak tính toán
+  let currentStreak = 0;
+  let maxStreak = 0;
+  let currentMissStreak = 0;
+  let maxMissStreak = 0;
+  // Tính cho logistic
+  for (const r of [...rows].reverse()) {
+    if (r.logistic_hit) {
+      currentStreak++;
+      maxStreak = Math.max(maxStreak, currentStreak);
+      currentMissStreak = 0;
+    } else {
+      currentStreak = 0;
+      currentMissStreak++;
+      maxMissStreak = Math.max(maxMissStreak, currentMissStreak);
+    }
+  }
+
+  const stats = [
+    comparisonCard('Tổng kỳ', total, 'Dữ liệu thật'),
+    comparisonCard('Tần suất A', `${freqHits}/${total}`, formatPercent(freqHits / total)),
+    comparisonCard('Logistic B', `${logHits}/${total}`, formatPercent(logHits / total)),
+    comparisonCard('B − A', `+${logHits - freqHits} kỳ`, formatPercent((logHits - freqHits) / total)),
+    comparisonCard('Cả hai HIT', `${bothHit}`, `${(bothHit / total * 100).toFixed(1)}% kỳ`),
+    comparisonCard('Cả hai MISS', `${bothMiss}`, `${(bothMiss / total * 100).toFixed(1)}% kỳ`),
+    comparisonCard('Chỉ B đúng', `${logOnly}`, `${(logOnly / total * 100).toFixed(1)}% kỳ`),
+    comparisonCard('Chỉ A đúng', `${freqOnly}`, `${(freqOnly / total * 100).toFixed(1)}% kỳ`),
+  ];
+  root.replaceChildren(...stats);
+}
+
+function renderHistoricalDailyTable(rows) {
+  const body = el('fortune-historical-daily-body');
+  if (!body) return;
+  body.replaceChildren();
+
+  const pageSize = 30;
+  const pageState = { current: 0 };
+  const totalPages = Math.ceil(rows.length / pageSize);
+
+  function renderPage() {
+    body.replaceChildren();
+    const start = pageState.current * pageSize;
+    const pageRows = rows.slice(start, start + pageSize);
+
+    pageRows.forEach((row, idx) => {
+      const tr = document.createElement('tr');
+      tr.append(
+        cell(start + idx + 1),
+        cell(row.prediction_date),
+        cell(row.actual_last_two),
+      );
+      // Tần suất A
+      const freqTd = document.createElement('td');
+      freqTd.append(badge(row.frequency_hit ? 'HIT' : 'MISS', row.frequency_hit ? 'hit' : 'miss'));
+      tr.append(freqTd);
+      // Logistic B
+      const logTd = document.createElement('td');
+      logTd.append(badge(row.logistic_hit ? 'HIT' : 'MISS', row.logistic_hit ? 'hit' : 'miss'));
+      tr.append(logTd);
+      // Comparison
+      const cmpTd = document.createElement('td');
+      if (row.logistic_hit && !row.frequency_hit) {
+        cmpTd.append(badge('B thắng', 'hit'));
+      } else if (!row.logistic_hit && row.frequency_hit) {
+        cmpTd.append(badge('A thắng', 'miss'));
+      } else if (row.logistic_hit && row.frequency_hit) {
+        cmpTd.append(badge('Cả hai', 'verified'));
+      } else {
+        cmpTd.append(badge('Trượt', 'pending'));
+      }
+      tr.append(cmpTd);
+      // Log loss
+      const llTd = document.createElement('td');
+      const llDiff = row.logistic_log_loss - row.frequency_log_loss;
+      llTd.textContent = llDiff > 0 ? `+${llDiff.toFixed(2)}` : llDiff.toFixed(2);
+      llTd.style.color = llDiff <= 0 ? 'var(--fortune-red, #9d0c14)' : 'var(--muted)';
+      llTd.style.fontWeight = llDiff <= 0 ? '700' : '400';
+      tr.append(llTd);
+      body.append(tr);
+    });
+
+    // Pagination row
+    const pageTr = document.createElement('tr');
+    const pageTd = document.createElement('td');
+    pageTd.colSpan = 7;
+    pageTd.className = 'historical-daily-pagination';
+
+    const info = document.createElement('span');
+    info.className = 'historical-daily-page-info';
+    info.textContent = `Trang ${pageState.current + 1}/${totalPages} · ${rows.length} kỳ`;
+
+    const prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.className = 'fortune-detail-button';
+    prevBtn.textContent = '← Trước';
+    prevBtn.disabled = pageState.current === 0;
+    prevBtn.addEventListener('click', () => { pageState.current--; renderPage(); });
+
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'fortune-detail-button';
+    nextBtn.textContent = 'Sau →';
+    nextBtn.disabled = pageState.current >= totalPages - 1;
+    nextBtn.addEventListener('click', () => { pageState.current++; renderPage(); });
+
+    pageTd.append(prevBtn, info, nextBtn);
+    pageTr.append(pageTd);
+    body.append(pageTr);
+  }
+
+  renderPage();
+}
+
+function initFortunePage() {
+  initFortuneGlitter();
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(updateFortuneRippleDelays, 120);
+  });
+  document.querySelectorAll('[data-fortune-filter]').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-fortune-filter]').forEach(item => item.classList.remove('active'));
+      button.classList.add('active');
+      state.fortuneFilter = button.dataset.fortuneFilter;
+      renderFortunePrediction(state.latestLogisticPrediction);
+    });
+  });
+  el('fortune-selected-count').addEventListener('change', async () => {
+    await Promise.allSettled([
+      loadLatestLogisticPrediction(),
+      loadModelComparison(),
+      loadRollingModelComparison(),
+    ]);
+  });
+  el('fortune-copy-button').addEventListener('click', async () => {
+    const text = el('fortune-export-string').textContent;
+    if (!text || text === '—') return;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(`Đã sao chép ${text.split(',').length} số Logistic.`, 'success');
+    } catch {
+      const area = document.createElement('textarea');
+      area.value = text;
+      area.style.cssText = 'position:fixed;opacity:0';
+      document.body.append(area);
+      area.select();
+      document.execCommand('copy');
+      area.remove();
+      toast(`Đã sao chép ${text.split(',').length} số Logistic.`, 'success');
+    }
   });
 }
 
@@ -1108,8 +1531,12 @@ async function refreshDashboard() {
     loadMetrics(),
     loadLatestResult(),
     loadLatestPrediction(),
+    loadLatestLogisticPrediction(),
     loadLatestDigitPrediction(),
     loadPredictionHistory(),
+    loadLogisticPredictionHistory(),
+    loadModelComparison(),
+    loadRollingModelComparison(),
     loadDigitPredictionHistory(),
     loadResults(),
     loadBacktests(),
@@ -1250,6 +1677,19 @@ el('prediction-form').addEventListener('submit', (event) => {
     (result) => result.created
       ? `✅ Đã khóa prediction ngày ${result.prediction.prediction_date}.`
       : `Prediction ngày ${result.prediction.prediction_date} đã tồn tại — không ghi đè.`,
+  );
+});
+
+el('fortune-prediction-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('button');
+  const payload = { selected_count: Number(el('fortune-selected-count').value) };
+  runAction(
+    button, '🧧 Đang huấn luyện và khóa snapshot…',
+    () => api('/api/logistic-predictions/generate', { method: 'POST', body: JSON.stringify(payload) }),
+    (result) => result.created
+      ? `Đã khóa dự đoán Logistic ngày ${result.prediction.prediction_date}.`
+      : `Dự đoán Logistic ngày ${result.prediction.prediction_date} đã tồn tại.`,
   );
 });
 
@@ -1398,6 +1838,7 @@ function startSmartAutoRefresh() {
   initSortButtons();
   initExcludeRecentToggle();
   initExportBar();
+  initFortunePage();
   startCountdown();
   startSmartAutoRefresh(); // Tự động cập nhật kết quả sau 18:15
 

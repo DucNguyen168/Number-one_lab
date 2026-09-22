@@ -149,7 +149,15 @@ def test_generate_prediction_creates_two_digit_and_one_digit_snapshots(
         calls.append(("one-digit", target, None))
         return {"prediction_date": target.isoformat()}, True
 
+    def create_logistic(db, target: date, selected_count: int):
+        calls.append(("logistic-two-digit", target, selected_count))
+        return {"prediction_date": target.isoformat()}, True
+
     monkeypatch.setattr("app.services.scheduler.create_prediction", create_two_digit)
+    monkeypatch.setattr(
+        "app.services.scheduler.create_logistic_prediction",
+        create_logistic,
+    )
     monkeypatch.setattr(
         "app.services.scheduler.create_digit_prediction",
         create_one_digit,
@@ -159,11 +167,14 @@ def test_generate_prediction_creates_two_digit_and_one_digit_snapshots(
 
     assert calls == [
         ("two-digit", date(2026, 9, 6), 65),
+        ("logistic-two-digit", date(2026, 9, 6), 65),
         ("one-digit", date(2026, 9, 6), None),
     ]
     assert outcome == {
         "prediction_date": "2026-09-06",
         "selected_count": 65,
         "two_digit_created": True,
+        "logistic_two_digit_created": True,
+        "logistic_two_digit_error": None,
         "one_digit_created": True,
     }

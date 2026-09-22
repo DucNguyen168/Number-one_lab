@@ -1,0 +1,161 @@
+{
+  "study_type": "historical_fixed_protocol",
+  "created_at": "2026-09-22T01:06:18.996434+00:00",
+  "frequency_model_version": "frequency_ensemble_v1",
+  "logistic_model_version": "factorized_logistic_v1",
+  "start_date": "2025-09-02",
+  "end_date": "2026-09-05",
+  "paired_predictions": 365,
+  "counts": {
+    "60": {
+      "baseline": 0.6,
+      "frequency": {
+        "hits": 192,
+        "hit_rate": 0.5260274,
+        "confidence_interval_95": [
+          0.474798,
+          0.57671465
+        ]
+      },
+      "logistic": {
+        "hits": 228,
+        "hit_rate": 0.62465753,
+        "confidence_interval_95": [
+          0.5739267,
+          0.67279177
+        ]
+      },
+      "delta_logistic_vs_frequency": 0.09863014,
+      "frequency_only_hit": 66,
+      "logistic_only_hit": 102,
+      "mcnemar_exact_p": 0.00675137,
+      "paired_block_bootstrap_delta_ci95": [
+        0.03561644,
+        0.16164384
+      ]
+    },
+    "65": {
+      "baseline": 0.65,
+      "frequency": {
+        "hits": 213,
+        "hit_rate": 0.58356164,
+        "confidence_interval_95": [
+          0.53237468,
+          0.63300803
+        ]
+      },
+      "logistic": {
+        "hits": 243,
+        "hit_rate": 0.66575342,
+        "confidence_interval_95": [
+          0.61585481,
+          0.71219942
+        ]
+      },
+      "delta_logistic_vs_frequency": 0.08219178,
+      "frequency_only_hit": 63,
+      "logistic_only_hit": 93,
+      "mcnemar_exact_p": 0.01994575,
+      "paired_block_bootstrap_delta_ci95": [
+        0.01917808,
+        0.14520548
+      ]
+    },
+    "70": {
+      "baseline": 0.7,
+      "frequency": {
+        "hits": 239,
+        "hit_rate": 0.65479452,
+        "confidence_interval_95": [
+          0.6046357,
+          0.70172899
+        ]
+      },
+      "logistic": {
+        "hits": 264,
+        "hit_rate": 0.72328767,
+        "confidence_interval_95": [
+          0.67524694,
+          0.76667735
+        ]
+      },
+      "delta_logistic_vs_frequency": 0.06849315,
+      "frequency_only_hit": 58,
+      "logistic_only_hit": 83,
+      "mcnemar_exact_p": 0.04287962,
+      "paired_block_bootstrap_delta_ci95": [
+        0.00821918,
+        0.12876712
+      ]
+    },
+    "75": {
+      "baseline": 0.75,
+      "frequency": {
+        "hits": 257,
+        "hit_rate": 0.70410959,
+        "confidence_interval_95": [
+          0.65535379,
+          0.74861382
+        ]
+      },
+      "logistic": {
+        "hits": 278,
+        "hit_rate": 0.76164384,
+        "confidence_interval_95": [
+          0.71535074,
+          0.80248692
+        ]
+      },
+      "delta_logistic_vs_frequency": 0.05753425,
+      "frequency_only_hit": 53,
+      "logistic_only_hit": 74,
+      "mcnemar_exact_p": 0.07553056,
+      "paired_block_bootstrap_delta_ci95": [
+        -0.00273973,
+        0.11506849
+      ]
+    },
+    "80": {
+      "baseline": 0.8,
+      "frequency": {
+        "hits": 280,
+        "hit_rate": 0.76712329,
+        "confidence_interval_95": [
+          0.72111718,
+          0.80756525
+        ]
+      },
+      "logistic": {
+        "hits": 295,
+        "hit_rate": 0.80821918,
+        "confidence_interval_95": [
+          0.76470241,
+          0.84531578
+        ]
+      },
+      "delta_logistic_vs_frequency": 0.04109589,
+      "frequency_only_hit": 50,
+      "logistic_only_hit": 65,
+      "mcnemar_exact_p": 0.19149594,
+      "paired_block_bootstrap_delta_ci95": [
+        -0.0109589,
+        0.09315068
+      ]
+    }
+  },
+  "probability_metrics": {
+    "frequency_mean_log_loss": 4.68354285,
+    "logistic_mean_log_loss": 4.69047614,
+    "frequency_mean_brier": 0.99160867,
+    "logistic_mean_brier": 0.99174425
+  },
+  "runtime_seconds": 33.934,
+  "interpretation": "Đây là backtest lịch sử của cấu hình đã khóa, không phải bằng chứng xác nhận tương lai. Delta dương mới chỉ mô tả Logistic tốt hơn mô hình tần suất.",
+  "dataset": {
+    "path": "reports/recent5_pause/input_snapshot.json",
+    "sha256": "8078474323e36520602e02a86692db7d73ff7bbd434f28e09ec8ca084c13ef37",
+    "draws": 2752,
+    "first_date": "2019-01-01",
+    "last_date": "2026-09-05"
+  }
+}

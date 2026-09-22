@@ -5,6 +5,8 @@ from typing import Any
 
 from pymongo.database import Database
 
+from app.services.prediction import MODEL_VERSION
+
 
 def evaluate_pending_predictions(db: Database) -> dict[str, int]:
     counters = {"evaluated": 0, "hits": 0, "misses": 0, "skipped": 0}
@@ -66,8 +68,11 @@ def evaluate_pending_digit_predictions(db: Database) -> dict[str, int]:
 def metrics_summary(db: Database) -> dict[str, Any]:
     total_draws = db.draw_results.count_documents({"status": {"$ne": "conflict"}})
     conflicts = db.draw_results.count_documents({"status": "conflict"})
-    total_predictions = db.predictions.count_documents({})
-    evaluated = list(db.predictions.find({"evaluation.status": "evaluated"}))
+    model_filter = {"model_version": MODEL_VERSION}
+    total_predictions = db.predictions.count_documents(model_filter)
+    evaluated = list(
+        db.predictions.find({**model_filter, "evaluation.status": "evaluated"})
+    )
     hits = sum(1 for item in evaluated if item.get("evaluation", {}).get("hit"))
 
     by_count: dict[str, dict[str, Any]] = {}
@@ -83,11 +88,15 @@ def metrics_summary(db: Database) -> dict[str, Any]:
             bucket["hit_rate"] - bucket["random_baseline"], 6
         )
 
-    skipped = db.predictions.count_documents({"evaluation.status": "pending"})
+    skipped = db.predictions.count_documents(
+        {**model_filter, "evaluation.status": "pending"}
+    )
     latest_draw = db.draw_results.find_one(
         {"status": {"$ne": "conflict"}}, sort=[("draw_date", -1)]
     )
-    latest_prediction = db.predictions.find_one(sort=[("prediction_date", -1)])
+    latest_prediction = db.predictions.find_one(
+        model_filter, sort=[("prediction_date", -1)]
+    )
     digit_total = db.digit_predictions.count_documents({})
     digit_evaluated = list(
         db.digit_predictions.find({"evaluation.status": "evaluated"})

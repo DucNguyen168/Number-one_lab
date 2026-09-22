@@ -35,11 +35,21 @@ from app.services.evaluation import (
     evaluate_pending_predictions,
     metrics_summary,
 )
+from app.services.logistic_prediction import (
+    MODEL_VERSION as LOGISTIC_MODEL_VERSION,
+    create_prediction as create_logistic_prediction,
+)
+from app.services.model_comparison import comparison_summary
 from app.services.prediction import MODEL_VERSION, create_prediction
+from app.services.rolling_comparison import (
+    load_or_build_rolling_comparison,
+    report_for_selected_count,
+)
 from app.services.scheduler import DailyScheduler
 
 
 STATIC_DIR = Path(__file__).parent / "static"
+IMG_DIR = Path(__file__).parent.parent / "img"
 
 
 def _in_process_scheduler_enabled() -> bool:
@@ -80,6 +90,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/img", StaticFiles(directory=IMG_DIR), name="fortune-images")
 
 
 def _db(request: Request):
@@ -88,6 +99,7 @@ def _db(request: Request):
 
 @app.get("/backtest", include_in_schema=False)
 @app.get("/du-doan-1-so", include_in_schema=False)
+@app.get("/du-doan-than-tai", include_in_schema=False)
 @app.get("/du-doan-2-so", include_in_schema=False)
 @app.get("/ket-qua", include_in_schema=False)
 @app.get("/", include_in_schema=False)
@@ -109,6 +121,7 @@ def health(request: Request) -> dict[str, Any]:
         "scheduler_enabled": _in_process_scheduler_enabled(),
         "automation_mode": "vercel_cron" if settings.is_vercel else "scheduler",
         "model_version": MODEL_VERSION,
+        "logistic_model_version": LOGISTIC_MODEL_VERSION,
         "digit_model_version": DIGIT_MODEL_VERSION,
     }
 
@@ -313,11 +326,14 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
 
     pred_result: dict[str, Any] = {}
     pred_error: str | None = None
+    logistic_pred_result: dict[str, Any] = {}
+    logistic_pred_error: str | None = None
     digit_pred_result: dict[str, Any] = {}
     digit_pred_error: str | None = None
 
     if target is None:
         pred_error = "Today's result is not available; waiting for the next cron run."
+        logistic_pred_error = pred_error
         digit_pred_error = pred_error
     elif settings.auto_prediction:
         try:
@@ -333,6 +349,21 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
             pred_error = str(exc)
 
         try:
+            logistic_prediction, logistic_created = create_logistic_prediction(
+                db, target, settings.auto_prediction_count
+            )
+            logistic_pred_result = {
+                "created": logistic_created,
+                "prediction_date": str(target),
+                "selected_count": settings.auto_prediction_count,
+                "model_version": logistic_prediction.get(
+                    "model_version", LOGISTIC_MODEL_VERSION
+                ),
+            }
+        except (ValueError, RuntimeError) as exc:
+            logistic_pred_error = str(exc)
+
+        try:
             digit_prediction, digit_created = create_digit_prediction(db, target)
             digit_pred_result = {
                 "created": digit_created,
@@ -342,11 +373,22 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
             digit_pred_error = str(exc)
     else:
         pred_error = "Automatic prediction is disabled."
+        logistic_pred_error = pred_error
         digit_pred_error = pred_error
 
+    model_error = any(
+        error is not None
+        for error in (pred_error, logistic_pred_error, digit_pred_error)
+    ) and target is not None
     return serialize_document({
-        "ok": sync_error is None,
-        "status": "completed" if sync_error is None else "source_failed",
+        "ok": sync_error is None and not model_error,
+        "status": (
+            "source_failed"
+            if sync_error is not None
+            else "partial_failure"
+            if model_error
+            else "completed"
+        ),
         "target_date": str(target) if target else None,
         "sync": sync_result,
         "sync_error": sync_error,
@@ -354,6 +396,8 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
         "digit_evaluation": digit_evaluation,
         "prediction": pred_result,
         "prediction_error": pred_error,
+        "logistic_prediction": logistic_pred_result,
+        "logistic_prediction_error": logistic_pred_error,
         "digit_prediction": digit_pred_result,
         "digit_prediction_error": digit_pred_error,
     })
@@ -390,7 +434,7 @@ def list_predictions(
     }
     documents = (
         _db(request)
-        .predictions.find({}, projection)
+        .predictions.find({"model_version": MODEL_VERSION}, projection)
         .sort([("prediction_date", -1), ("locked_at", -1)])
         .limit(limit)
     )
@@ -399,8 +443,111 @@ def list_predictions(
 
 @app.get("/api/predictions/latest")
 def latest_prediction(request: Request) -> dict[str, Any] | None:
-    prediction = _db(request).predictions.find_one(sort=[("prediction_date", -1)])
+    prediction = _db(request).predictions.find_one(
+        {"model_version": MODEL_VERSION}, sort=[("prediction_date", -1)]
+    )
     return serialize_document(prediction) if prediction else None
+
+
+@app.post("/api/logistic-predictions/generate")
+def generate_logistic_prediction(
+    request: Request,
+    payload: Annotated[GeneratePredictionRequest, Body()],
+) -> dict[str, Any]:
+    db = _db(request)
+    target = payload.prediction_date or settings.local_today()
+    if payload.prediction_date is None and db.draw_results.find_one(
+        {"draw_date": target.isoformat()}
+    ):
+        target += timedelta(days=1)
+    try:
+        prediction, created = create_logistic_prediction(
+            db, target, payload.selected_count
+        )
+        return serialize_document({"created": created, "prediction": prediction})
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/logistic-predictions")
+def list_logistic_predictions(
+    request: Request,
+    limit: Annotated[int, Query(ge=1, le=500)] = 30,
+) -> list[dict[str, Any]]:
+    projection = {
+        "numbers": 0,
+        "scores": 0,
+        "dataset_hash": 0,
+        "training_dataset_hash": 0,
+    }
+    documents = (
+        _db(request)
+        .predictions.find({"model_version": LOGISTIC_MODEL_VERSION}, projection)
+        .sort([("prediction_date", -1), ("locked_at", -1)])
+        .limit(limit)
+    )
+    return serialize_document(list(documents))
+
+
+@app.get("/api/logistic-predictions/latest")
+def latest_logistic_prediction(
+    request: Request,
+    selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
+) -> dict[str, Any] | None:
+    prediction = _db(request).predictions.find_one(
+        {
+            "model_version": LOGISTIC_MODEL_VERSION,
+            "selected_count": selected_count,
+        },
+        sort=[("prediction_date", -1)],
+    )
+    return serialize_document(prediction) if prediction else None
+
+
+@app.get("/api/model-comparison")
+def get_model_comparison(
+    request: Request,
+    selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
+) -> dict[str, Any]:
+    return serialize_document(comparison_summary(_db(request), selected_count))
+
+
+def _rolling_comparison_payload(
+    request: Request, selected_count: int
+) -> dict[str, Any]:
+    try:
+        report, rebuilt = load_or_build_rolling_comparison(_db(request))
+        payload = report_for_selected_count(report, selected_count)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {**payload, "cache_rebuilt": rebuilt}
+
+
+@app.get("/api/model-comparison/rolling")
+def get_rolling_model_comparison(
+    request: Request,
+    selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
+) -> dict[str, Any]:
+    """Rolling 365-draw A/B walk-forward report, cached in MongoDB by dataset hash."""
+    return serialize_document(_rolling_comparison_payload(request, selected_count))
+
+
+@app.get("/api/model-comparison/historical")
+def get_historical_model_comparison(
+    request: Request,
+    selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
+) -> dict[str, Any]:
+    """Compatibility route: now returns the current rolling report."""
+    return serialize_document(_rolling_comparison_payload(request, selected_count))
+
+
+@app.get("/api/model-comparison/historical-daily")
+def get_historical_daily_comparison(
+    request: Request,
+    selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
+) -> list[dict[str, Any]]:
+    """Compatibility route: daily rows from the current rolling report."""
+    return serialize_document(_rolling_comparison_payload(request, selected_count)["daily"])
 
 
 @app.get("/api/predictions/{prediction_id}")
