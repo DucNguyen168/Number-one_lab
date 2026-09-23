@@ -23,6 +23,10 @@ from app.models import (
     GeneratePredictionRequest,
 )
 from app.services.backtest import run_walk_forward_backtest
+from app.services.catboost_prediction import (
+    MODEL_VERSION as CATBOOST_MODEL_VERSION,
+    create_prediction as create_catboost_prediction,
+)
 from app.services.collector import CollectorSourcesUnavailable, KqxsCollector
 from app.services.cron_lock import CronAlreadyRunning, mongo_cron_lease
 from app.services.digit_backtest import run_digit_walk_forward_backtest
@@ -39,7 +43,7 @@ from app.services.logistic_prediction import (
     MODEL_VERSION as LOGISTIC_MODEL_VERSION,
     create_prediction as create_logistic_prediction,
 )
-from app.services.model_comparison import comparison_summary
+from app.services.model_comparison import comparison_summary, three_way_comparison_summary
 from app.services.prediction import MODEL_VERSION, create_prediction
 from app.services.rolling_comparison import (
     load_or_build_rolling_comparison,
@@ -328,13 +332,13 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
     pred_error: str | None = None
     logistic_pred_result: dict[str, Any] = {}
     logistic_pred_error: str | None = None
-    digit_pred_result: dict[str, Any] = {}
-    digit_pred_error: str | None = None
+    catboost_pred_result: dict[str, Any] = {}
+    catboost_pred_error: str | None = None
 
     if target is None:
         pred_error = "Today's result is not available; waiting for the next cron run."
         logistic_pred_error = pred_error
-        digit_pred_error = pred_error
+        catboost_pred_error = pred_error
     elif settings.auto_prediction:
         try:
             prediction, pred_created = create_prediction(
@@ -364,21 +368,27 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
             logistic_pred_error = str(exc)
 
         try:
-            digit_prediction, digit_created = create_digit_prediction(db, target)
-            digit_pred_result = {
-                "created": digit_created,
+            catboost_prediction, catboost_created = create_catboost_prediction(
+                db, target, settings.auto_prediction_count
+            )
+            catboost_pred_result = {
+                "created": catboost_created,
                 "prediction_date": str(target),
+                "selected_count": settings.auto_prediction_count,
+                "model_version": catboost_prediction.get(
+                    "model_version", CATBOOST_MODEL_VERSION
+                ),
             }
-        except ValueError as exc:
-            digit_pred_error = str(exc)
+        except (ValueError, RuntimeError) as exc:
+            catboost_pred_error = str(exc)
     else:
         pred_error = "Automatic prediction is disabled."
         logistic_pred_error = pred_error
-        digit_pred_error = pred_error
+        catboost_pred_error = pred_error
 
     model_error = any(
         error is not None
-        for error in (pred_error, logistic_pred_error, digit_pred_error)
+        for error in (pred_error, logistic_pred_error, catboost_pred_error)
     ) and target is not None
     return serialize_document({
         "ok": sync_error is None and not model_error,
@@ -398,8 +408,8 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
         "prediction_error": pred_error,
         "logistic_prediction": logistic_pred_result,
         "logistic_prediction_error": logistic_pred_error,
-        "digit_prediction": digit_pred_result,
-        "digit_prediction_error": digit_pred_error,
+        "catboost_prediction": catboost_pred_result,
+        "catboost_prediction_error": catboost_pred_error,
     })
 
 
@@ -504,12 +514,77 @@ def latest_logistic_prediction(
     return serialize_document(prediction) if prediction else None
 
 
+@app.post("/api/catboost-predictions/generate")
+def generate_catboost_prediction(
+    request: Request,
+    payload: Annotated[GeneratePredictionRequest, Body()],
+) -> dict[str, Any]:
+    db = _db(request)
+    target = payload.prediction_date or settings.local_today()
+    if payload.prediction_date is None and db.draw_results.find_one(
+        {"draw_date": target.isoformat()}
+    ):
+        target += timedelta(days=1)
+    try:
+        prediction, created = create_catboost_prediction(
+            db, target, payload.selected_count
+        )
+        return serialize_document({"created": created, "prediction": prediction})
+    except (ValueError, RuntimeError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/catboost-predictions")
+def list_catboost_predictions(
+    request: Request,
+    limit: Annotated[int, Query(ge=1, le=500)] = 30,
+) -> list[dict[str, Any]]:
+    projection = {
+        "numbers": 0,
+        "scores": 0,
+        "dataset_hash": 0,
+        "training_dataset_hash": 0,
+    }
+    documents = (
+        _db(request)
+        .predictions.find({"model_version": CATBOOST_MODEL_VERSION}, projection)
+        .sort([("prediction_date", -1), ("locked_at", -1)])
+        .limit(limit)
+    )
+    return serialize_document(list(documents))
+
+
+@app.get("/api/catboost-predictions/latest")
+def latest_catboost_prediction(
+    request: Request,
+    selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
+) -> dict[str, Any] | None:
+    prediction = _db(request).predictions.find_one(
+        {
+            "model_version": CATBOOST_MODEL_VERSION,
+            "selected_count": selected_count,
+        },
+        sort=[("prediction_date", -1)],
+    )
+    return serialize_document(prediction) if prediction else None
+
+
 @app.get("/api/model-comparison")
 def get_model_comparison(
     request: Request,
     selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
 ) -> dict[str, Any]:
     return serialize_document(comparison_summary(_db(request), selected_count))
+
+
+@app.get("/api/model-comparison/three-way")
+def get_three_way_model_comparison(
+    request: Request,
+    selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
+) -> dict[str, Any]:
+    return serialize_document(
+        three_way_comparison_summary(_db(request), selected_count)
+    )
 
 
 def _rolling_comparison_payload(

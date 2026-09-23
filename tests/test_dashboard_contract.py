@@ -63,7 +63,7 @@ def test_two_digit_form_always_uses_automatic_prediction_date() -> None:
     javascript = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
     two_digit_handler = javascript.split("el('prediction-form')", 1)[1].split(
-        "el('digit-prediction-form')", 1
+        "el('catboost-prediction-form')", 1
     )[0]
 
     assert 'id="prediction-date"' not in html
@@ -72,17 +72,18 @@ def test_two_digit_form_always_uses_automatic_prediction_date() -> None:
     assert "Ngày dự đoán được chọn tự động" in html
 
 
-def test_one_digit_form_always_uses_automatic_prediction_date() -> None:
+def test_catboost_form_always_uses_automatic_prediction_date() -> None:
     javascript = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
-    one_digit_handler = javascript.split("el('digit-prediction-form')", 1)[1].split(
+    one_digit_handler = javascript.split("el('catboost-prediction-form')", 1)[1].split(
         "el('backtest-form')", 1
     )[0]
 
-    assert 'id="digit-prediction-date"' not in html
-    assert "el('digit-prediction-date')" not in javascript
+    assert 'id="catboost-prediction-date"' not in html
+    assert "el('catboost-prediction-date')" not in javascript
     assert "payload.prediction_date" not in one_digit_handler
-    assert "Ngày được tự động chọn là hôm nay" in html
+    assert "Ngày được chọn tự động" in html
+    assert "/api/catboost-predictions/generate" in javascript
 
 
 def test_fortune_page_uses_logistic_api_and_automatic_date() -> None:
@@ -122,6 +123,28 @@ def test_fortune_page_has_local_art_glitter_and_center_out_highlight() -> None:
     assert '/img/icon_nav_home_active.svg' in html
     assert 'class="page-sticker sticker-fortune' in html
     assert '/api/model-comparison/rolling' in javascript
+
+
+def test_catboost_page_has_structured_dashboard_and_cartoon_theme() -> None:
+    javascript = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+    html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    css = (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
+
+    assert 'class="catboost-workbench-grid"' in html
+    assert 'class="catboost-grid-frame"' in html
+    assert 'class="catboost-report-grid"' in html
+    assert "chuỗi 2.000 kỳ trước" in html
+    assert "<strong>2.000</strong> kỳ làm đặc trưng" in html
+    assert 'class="catboost-legend"' in html
+    assert 'id="catboost-comparison-cards"' in html
+    assert 'id="catboost-prediction-history"' in html
+    assert "/img/catboost-cat-mouse-hero.png" in css
+    assert ".catboost-card-titlebar" in css
+    assert ".catboost-number.selected.top-ten" in css
+    assert "html[data-theme=\"dark\"] .catboost-card" in css
+    assert "prefers-reduced-motion: reduce" in css
+    assert "Được chọn (${selected.size})" in javascript
+    assert "Bị loại (${100 - selected.size})" in javascript
 
 
 def test_vercel_cron_uses_get_compatible_reconciliation_endpoint() -> None:

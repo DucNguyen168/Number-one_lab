@@ -9,8 +9,8 @@ from typing import Any
 from pymongo.database import Database
 
 from app.config import Settings
+from app.services.catboost_prediction import create_prediction as create_catboost_prediction
 from app.services.collector import KqxsCollector
-from app.services.digit_prediction import create_digit_prediction
 from app.services.evaluation import (
     evaluate_pending_digit_predictions,
     evaluate_pending_predictions,
@@ -86,22 +86,32 @@ class DailyScheduler:
             )
         except (ValueError, RuntimeError) as exc:
             logistic_error = str(exc)
-        _, one_digit_created = await asyncio.to_thread(
-            create_digit_prediction, self.db, target
-        )
+        catboost_created = False
+        catboost_error: str | None = None
+        try:
+            _, catboost_created = await asyncio.to_thread(
+                create_catboost_prediction,
+                self.db,
+                target,
+                self.config.auto_prediction_count,
+            )
+        except (ValueError, RuntimeError) as exc:
+            catboost_error = str(exc)
         outcome = {
             "prediction_date": target.isoformat(),
             "selected_count": self.config.auto_prediction_count,
             "two_digit_created": two_digit_created,
             "logistic_two_digit_created": logistic_created,
             "logistic_two_digit_error": logistic_error,
-            "one_digit_created": one_digit_created,
+            "catboost_two_digit_created": catboost_created,
+            "catboost_two_digit_error": catboost_error,
         }
         logger.info(
-            "automatic prediction %s ready (two-digit created=%s, one-digit created=%s)",
+            "automatic prediction %s ready (frequency=%s, logistic=%s, catboost=%s)",
             target.isoformat(),
             two_digit_created,
-            one_digit_created,
+            logistic_created,
+            catboost_created,
         )
         return outcome
 

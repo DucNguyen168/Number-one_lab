@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Công cụ phân tích dữ liệu lịch sử và tạo dự đoán XSMB — backtest nghiêm ngặt, không rò rỉ tương lai." />
     <title>XSMB Research Lab</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20260922-18" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260923-5" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" />
@@ -29,7 +29,7 @@
 
         <nav class="feature-nav" aria-label="Các trang chức năng">
           <a href="/" data-page-link="overview">
-            <span class="nav-icon"><img class="nav-logo" src="/img/star.png" alt="" /></span><span class="nav-label">Tổng quan</span>
+            <span class="nav-icon"><img class="nav-logo" src="/img/icon_nav_home_active.svg" alt="" /></span><span class="nav-label">Tổng quan</span>
           </a>
           <a href="/ket-qua" data-page-link="results">
             <span class="nav-icon"><img class="nav-logo" src="/img/chip.png" alt="" /></span><span class="nav-label">Kết quả</span>
@@ -41,7 +41,10 @@
             <span class="nav-icon"><img class="nav-logo" src="/img/travel.png" alt="" /></span><span class="nav-label">Thần Tài</span>
           </a>
           <a href="/du-doan-1-so" data-page-link="one-digit">
-            <span class="nav-icon"><img class="nav-logo nav-logo-art" src="/img/choice.png" alt="" /></span><span class="nav-label">Dự đoán 1 số</span>
+            <span class="nav-icon"><img class="nav-logo" src="/img/tom-and-jerry.jpg" alt="" /></span><span class="nav-label">CatBoost</span>
+          </a>
+          <a href="/backtest" data-page-link="backtest">
+            <span class="nav-icon"><img class="nav-logo" src="/img/casino-roulette.png" alt="" /></span><span class="nav-label">Backtest</span>
           </a>
         </nav>
 
@@ -76,7 +79,7 @@
         <aside class="page-sticker sticker-results page-view" data-page-view="results" aria-hidden="true"><img src="/img/choice.png" alt="" /></aside>
         <aside class="page-sticker sticker-two-digit page-view" data-page-view="two-digit" aria-hidden="true"><img src="/img/casino-chip.png" alt="" /></aside>
         <aside class="page-sticker sticker-fortune page-view" data-page-view="fortune-two-digit" aria-hidden="true"><img src="/img/lucky-bag.png" alt="" /></aside>
-        <aside class="page-sticker sticker-one-digit page-view" data-page-view="one-digit" aria-hidden="true"><img src="/img/gold.png" alt="" /></aside>
+        <aside class="page-sticker sticker-one-digit page-view" data-page-view="one-digit" aria-hidden="true"><span class="catboost-sticker-mark">🐭</span></aside>
         <aside class="page-sticker sticker-backtest page-view" data-page-view="backtest" aria-hidden="true"><img src="/img/casino-roulette.png" alt="" /></aside>
 
         <!-- ═══════════════ COUNTDOWN ═══════════════ -->
@@ -479,49 +482,96 @@
           <p class="fortune-note">ΔLog Loss = Logistic − Tần suất. Giá trị âm (đỏ đậm) nghĩa là Logistic dự đoán chính xác hơn cho kỳ đó. Cửa sổ 365 kỳ được tạo lại khi dữ liệu kết quả thay đổi.</p>
         </section>
 
-        <!-- ═══════════════ LAST DIGIT 0-9 ═══════════════ -->
-        <section class="panel digit-panel page-view" data-page-view="one-digit">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">LAST DIGIT · TOP 1</p>
-              <h2>Dự đoán 1 số cuối từ 0–9</h2>
-              <p class="section-copy">Chọn đúng một chữ số có điểm mô hình cao nhất. Ngày được tự động chọn là hôm nay, hoặc ngày mai nếu hôm nay đã có kết quả.</p>
+        <!-- ═══════════════ CATBOOST DIRECT 00-99 ═══════════════ -->
+        <section class="catboost-page page-view" data-page-view="one-digit">
+          <div class="catboost-hero">
+            <span class="catboost-episode-tag">TẬP MỚI · MÔ HÌNH C</span>
+            <div class="catboost-hero-copy">
+              <p class="catboost-kicker">MÔ HÌNH C · DIRECT MULTICLASS 00–99</p>
+              <h2>Cuộc rượt đuổi CatBoost</h2>
+              <p>CatBoost học trực tiếp 100 kết quả từ chuỗi 2.000 kỳ trước. Mỗi dự đoán được khóa trước kỳ quay để so sánh công bằng với Tần suất A và Logistic B.</p>
+              <div class="catboost-hero-badges"><span>🌳 Boosted trees</span><span>⏱ Giữ thứ tự thời gian</span><span>🔒 Snapshot bất biến</span></div>
+              <div class="catboost-hero-stats" aria-label="Thông tin mô hình">
+                <span><strong>100</strong> lớp 00–99</span>
+                <span><strong>2.000</strong> kỳ làm đặc trưng</span>
+                <span><strong>60–80</strong> số được chọn</span>
+              </div>
             </div>
-            <form id="digit-prediction-form" class="inline-form">
-              <button class="button violet" type="submit">🔒 Tạo dự đoán 1 số</button>
-            </form>
+            <div class="catboost-speed-lines" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="catboost-cheese-trail" aria-hidden="true"><i>●</i><i>●</i><i>▲</i><i>●</i></div>
           </div>
 
-          <div id="digit-prediction-meta" class="meta-cluster digit-meta"></div>
-          <div class="digit-prediction-layout">
-            <div id="digit-highlight" class="digit-highlight empty-state">
-              Chưa có dự đoán một số cuối.
-            </div>
-            <div>
-              <div id="digit-grid" class="digit-grid" role="grid" aria-label="Bảng điểm chữ số 0 đến 9"></div>
-              <p class="model-score-note">
-                “Điểm mô hình” là phân phối tần suất có làm trơn, không phải cam kết xác suất trúng đã hiệu chỉnh.
-              </p>
-            </div>
+          <div class="catboost-workbench-grid">
+            <section class="catboost-card catboost-create-card">
+              <div class="catboost-card-titlebar">
+                <span class="catboost-title-icon catboost-title-icon-red">🐾</span>
+                <div><p class="catboost-eyebrow">PHÒNG THÍ NGHIỆM MÔ HÌNH C</p><h3>Tạo dự đoán CatBoost hai số cuối</h3></div>
+                <span class="catboost-card-number">01</span>
+              </div>
+              <div class="catboost-create-layout">
+                <div class="catboost-process-list">
+                  <div><b>1</b><span><strong>Đọc 2.000 kỳ</strong><small>Chỉ dùng các kỳ trước ngày dự đoán</small></span></div>
+                  <div><b>2</b><span><strong>Huấn luyện 100 lớp</strong><small>Giữ nguyên thứ tự thời gian</small></span></div>
+                  <div><b>3</b><span><strong>Khóa snapshot</strong><small>Không chỉnh sửa sau khi tạo</small></span></div>
+                </div>
+                <form id="catboost-prediction-form" class="catboost-form">
+                  <span class="catboost-form-caption">BẢNG ĐIỀU KHIỂN</span>
+                  <label>Số lượng dự đoán<select id="catboost-selected-count"><option value="60">60 số</option><option value="65" selected>65 số</option><option value="70">70 số</option><option value="75">75 số</option><option value="80">80 số</option></select></label>
+                  <button class="button catboost-button" type="submit">🐾 Huấn luyện và khóa</button>
+                  <small>Ngày tự chọn: hôm nay hoặc ngày mai nếu đã có kết quả.</small>
+                </form>
+              </div>
+            </section>
+
+            <aside class="catboost-card catboost-guide-card">
+              <div class="catboost-card-titlebar">
+                <span class="catboost-title-icon catboost-title-icon-blue">🧀</span>
+                <div><p class="catboost-eyebrow">BẢN ĐỒ CUỘC ĐUA</p><h3>Ba mô hình độc lập</h3></div>
+                <span class="catboost-card-number">ABC</span>
+              </div>
+              <div class="catboost-model-stack">
+                <div class="model-a"><b>A</b><span><strong>Tần suất</strong><small>Nhiều cửa sổ lịch sử</small></span></div>
+                <div class="model-b"><b>B</b><span><strong>Logistic</strong><small>Tách hàng chục / đơn vị</small></span></div>
+                <div class="model-c"><b>C</b><span><strong>CatBoost</strong><small>Học trực tiếp 100 lớp</small></span><em>ĐANG XEM</em></div>
+              </div>
+              <p class="catboost-guide-note">Chỉ kết quả thật sau kỳ quay mới quyết định HIT/MISS. Điểm mô hình không phải cam kết trúng.</p>
+            </aside>
           </div>
 
-          <div class="table-wrap top-gap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Ngày</th>
-                  <th>Số dự đoán</th>
-                  <th>Điểm mô hình</th>
-                  <th>Baseline</th>
-                  <th>Train đến</th>
-                  <th>Kết quả thực</th>
-                  <th>Đánh giá</th>
-                </tr>
-              </thead>
-              <tbody id="digit-prediction-history"></tbody>
-            </table>
-          </div>
+          <section class="catboost-card catboost-board-card">
+            <div class="catboost-card-titlebar catboost-board-heading">
+              <span class="catboost-title-icon catboost-title-icon-yellow">🎯</span>
+              <div><p class="catboost-eyebrow">BẢNG XẾP HẠNG 100 SỐ</p><h3>Dự đoán CatBoost gần nhất</h3></div>
+              <span class="catboost-card-number">02</span>
+            </div>
+            <div class="catboost-meta-panel"><span class="catboost-meta-label">THÔNG TIN SNAPSHOT</span><div id="catboost-prediction-meta" class="meta-cluster"></div></div>
+            <div class="catboost-toolbar">
+              <div class="catboost-tool-group"><span>HIỂN THỊ</span><div class="catboost-tabs" role="tablist"><button type="button" class="active" data-catboost-tab="all">Đủ 100 số</button><button type="button" data-catboost-tab="selected">Được chọn</button><button type="button" data-catboost-tab="excluded">Bị loại</button></div></div>
+              <div class="catboost-tool-group"><span>BỘ LỌC AN TOÀN</span><label class="catboost-recent-toggle"><input id="catboost-exclude-recent" type="checkbox" /><i aria-hidden="true"></i> Bỏ số vừa ra<select id="catboost-exclude-days" aria-label="Số kỳ gần nhất"><option value="3">3 kỳ</option><option value="5">5 kỳ</option><option value="10">10 kỳ</option></select></label></div>
+            </div>
+            <div id="catboost-export" class="catboost-export" hidden><div class="catboost-export-heading"><span>🧀 DÃY SỐ ĐÃ CHỌN</span><strong id="catboost-export-label">65 số theo thứ hạng mô hình</strong></div><span id="catboost-number-string">—</span><button id="catboost-copy" type="button">📋 Sao chép</button></div>
+            <div id="catboost-recent-chips" class="catboost-recent-chips" hidden></div>
+            <div class="catboost-grid-frame">
+              <div class="catboost-grid-frame-head"><strong>BẢNG ĐIỂM 00–99</strong><div class="catboost-legend"><span class="legend-selected">Được chọn</span><span class="legend-excluded">Bị loại</span><span class="legend-recent">Vừa ra gần đây</span><span class="legend-latest">Kỳ gần nhất</span><span class="legend-actual">Kết quả thật</span></div></div>
+              <div id="catboost-number-grid" class="catboost-number-grid" role="grid" aria-label="Bảng xác suất CatBoost 00 đến 99"></div>
+            </div>
+            <p class="catboost-note">Điểm hiển thị là phân phối mô hình đã co 15% về phân phối đều để hạn chế quá tự tin; không phải cam kết xác suất trúng.</p>
+          </section>
 
+          <div class="catboost-report-grid">
+            <section class="catboost-card catboost-report-card">
+              <div class="catboost-card-titlebar"><span class="catboost-title-icon catboost-title-icon-blue">📊</span><div><p class="catboost-eyebrow">ĐỐI CHIẾU LIVE A / B / C</p><h3>Ba mô hình · cùng ngày · cùng Top N</h3></div><span class="catboost-card-number">03</span></div>
+              <div id="catboost-comparison-cards" class="catboost-comparison-cards"></div>
+              <p id="catboost-comparison-note" class="catboost-note">Chưa có đủ snapshot đã đối chiếu của cả ba mô hình.</p>
+              <div class="catboost-table-box"><div class="catboost-table-caption"><strong>Kết quả đối đầu gần nhất</strong><span>Chỉ tính snapshot đã khóa</span></div><div class="table-wrap"><table class="catboost-table"><thead><tr><th>Ngày</th><th>Kết quả</th><th>Tần suất A</th><th>Logistic B</th><th>CatBoost C</th></tr></thead><tbody id="catboost-comparison-history"></tbody></table></div></div>
+            </section>
+
+            <section class="catboost-card catboost-report-card">
+              <div class="catboost-card-titlebar"><span class="catboost-title-icon catboost-title-icon-red">📒</span><div><p class="catboost-eyebrow">NHẬT KÝ SNAPSHOT</p><h3>Lịch sử dự đoán CatBoost</h3></div><span class="catboost-card-number">04</span></div>
+              <div class="catboost-history-summary"><span><strong>Không sửa</strong> sau khi khóa</span><span><strong>Tự đối chiếu</strong> khi có kết quả</span></div>
+              <div class="catboost-table-box"><div class="catboost-table-caption"><strong>Các kỳ CatBoost đã lưu</strong><span>MongoDB · model C</span></div><div class="table-wrap"><table class="catboost-table"><thead><tr><th>Ngày</th><th>Top N</th><th>Train đến</th><th>Coverage</th><th>Kết quả</th><th>Đánh giá</th><th>Mô hình</th></tr></thead><tbody id="catboost-prediction-history"></tbody></table></div></div>
+            </section>
+          </div>
         </section>
 
         <!-- ═══════════════ PREDICTION HISTORY ═══════════════ -->
@@ -717,6 +767,6 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="/static/app.js?v=20260922-16" defer></script>
+    <script src="/static/app.js?v=20260923-5" defer></script>
   </body>
 </html>

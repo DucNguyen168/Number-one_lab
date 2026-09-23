@@ -8,6 +8,7 @@ const state = {
   latestPrediction: null,
   latestLogisticPrediction: null,
   latestDigitPrediction: null,
+  latestCatBoostPrediction: null,
   toastTimer: null,
   currentTab: 'all',       // 'all' | 'selected' | 'excluded'
   currentSort: 'rank',     // 'rank' | 'number' | 'days'
@@ -24,6 +25,9 @@ const state = {
   fortuneExcludeRecentEnabled: false,
   fortuneExcludeRecentDays: 3,
   fortuneRecentNumbers: [],  // Array of { draw_date, last_two }
+  catboostFilter: 'all',
+  catboostExcludeRecent: false,
+  catboostRecentNumbers: [],
 };
 
 // ── Helpers ────────────────────────────────────────────────
@@ -65,9 +69,9 @@ const PAGE_CONFIG = {
   },
   'one-digit': {
     path: '/du-doan-1-so',
-    eyebrow: 'LAST DIGIT · 0–9',
-    title: 'Dự đoán một số cuối',
-    description: 'Xếp hạng 10 chữ số, chọn Top‑1 và theo dõi kết quả HIT/MISS riêng.',
+    eyebrow: 'MODEL C · CATBOOST 00–99',
+    title: 'Dự đoán CatBoost hai số cuối',
+    description: 'Mô hình cây tăng cường đa lớp để kiểm chứng chéo Tần suất A và Logistic B.',
   },
   backtest: {
     path: '/backtest',
@@ -1292,126 +1296,219 @@ function initFortunePage() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// LAST DIGIT 0-9 — TOP 1
+// CATBOOST DIRECT MULTICLASS 00-99
 // ═══════════════════════════════════════════════════════════
-function renderDigitPrediction(prediction) {
-  const grid = el('digit-grid');
-  const highlight = el('digit-highlight');
-  const meta = el('digit-prediction-meta');
-  grid.replaceChildren();
-  highlight.replaceChildren();
-  meta.replaceChildren();
+function catboostRecentSet() {
+  return new Set(state.catboostExcludeRecent
+    ? state.catboostRecentNumbers.map(item => item.last_two)
+    : []);
+}
 
+function catboostRecentDisplaySet() {
+  return new Set(state.catboostRecentNumbers.map(item => item.last_two));
+}
+
+function latestCatBoostRecentNumber() {
+  return state.catboostRecentNumbers[0]?.last_two || null;
+}
+
+function renderCatBoostPrediction(prediction) {
+  const grid = el('catboost-number-grid');
+  const meta = el('catboost-prediction-meta');
+  const exportBox = el('catboost-export');
+  if (!grid || !meta || !exportBox) return;
+  grid.replaceChildren();
+  meta.replaceChildren();
   if (!prediction) {
-    highlight.className = 'digit-highlight empty-state';
-    highlight.textContent = 'Chưa có dự đoán một số cuối.';
-    for (let digit = 0; digit < 10; digit += 1) {
-      const node = document.createElement('div');
-      node.className = 'digit-cell';
-      const number = document.createElement('span');
-      number.className = 'digit-cell-number';
-      number.textContent = String(digit);
-      const score = document.createElement('span');
-      score.className = 'digit-cell-probability';
-      score.textContent = '—';
-      node.append(number, score);
-      grid.append(node);
-    }
+    exportBox.hidden = true;
+    const empty = document.createElement('div');
+    empty.className = 'catboost-empty';
+    empty.innerHTML = '<span>🐭</span><strong>Chưa có snapshot CatBoost</strong><small>Chọn Top N rồi bấm “Huấn luyện và khóa” để tạo bảng đầu tiên.</small>';
+    grid.append(empty);
     return;
   }
 
   const evaluation = prediction.evaluation || { status: 'pending' };
-  const actual = evaluation.actual_digit;
-  highlight.className = 'digit-highlight';
-  const label = document.createElement('span');
-  label.className = 'digit-highlight-label';
-  label.textContent = 'Chữ số có điểm cao nhất';
-  const number = document.createElement('strong');
-  number.className = 'digit-highlight-number';
-  number.textContent = prediction.predicted_digit;
-  const score = document.createElement('span');
-  score.className = 'digit-highlight-score';
-  score.textContent = `Điểm thô ${formatPercent(prediction.prediction_probability, 3)} · baseline 10%`;
-  highlight.append(label, number, score);
-
-  const chips = [
-    { text: `📅 ${prediction.prediction_date}`, cls: '' },
-    { text: `Train đến ${prediction.trained_through}`, cls: '' },
-    { text: `${Number(prediction.training_draw_count || 0).toLocaleString('vi-VN')} kỳ train`, cls: '' },
-  ];
-  if (evaluation.status === 'evaluated') {
-    chips.push({ text: evaluation.hit ? '✅ HIT' : '❌ MISS', cls: evaluation.hit ? 'hit-chip' : 'miss-chip' });
-    chips.push({ text: `Kết quả: ${actual}`, cls: '' });
-  } else {
-    chips.push({ text: '⏳ PENDING', cls: 'pending-chip' });
-  }
-  chips.forEach(({ text, cls }) => {
-    const node = document.createElement('span');
-    node.className = `meta-chip ${cls}`.trim();
-    node.textContent = text;
-    meta.append(node);
+  const recent = catboostRecentSet();
+  const recentDisplay = catboostRecentDisplaySet();
+  const latestRecent = latestCatBoostRecentNumber();
+  const selected = new Set((prediction.numbers || []).filter(number => !recent.has(number)));
+  const actual = evaluation.actual_last_two;
+  [
+    { text: `📅 ${prediction.prediction_date}`, cls: 'date' },
+    { text: `Top ${prediction.selected_count}`, cls: 'count' },
+    { text: `Train đến ${prediction.trained_through}`, cls: 'train' },
+    { text: `Coverage ${formatPercent(prediction.coverage_probability)}`, cls: 'coverage' },
+    {
+      text: evaluation.status === 'evaluated' ? (evaluation.hit ? '✅ HIT' : '❌ MISS') : '⏳ PENDING',
+      cls: evaluation.status === 'evaluated' ? (evaluation.hit ? 'hit' : 'miss') : 'pending',
+    },
+  ].forEach(({ text, cls }) => {
+    const chip = document.createElement('span');
+    chip.className = `meta-chip catboost-meta-chip ${cls}`;
+    chip.textContent = text;
+    meta.append(chip);
   });
 
-  [...(prediction.scores || [])]
-    .sort((a, b) => Number(a.digit) - Number(b.digit))
-    .forEach(item => {
-      const isTop = item.digit === prediction.predicted_digit;
-      const isActual = item.digit === actual;
-      const node = document.createElement('div');
-      node.className = `digit-cell${isTop ? ' top' : ''}${isActual ? ' actual' : ''}${isTop && evaluation.hit ? ' hit' : ''}`;
-      node.setAttribute('role', 'gridcell');
-      const digit = document.createElement('span');
-      digit.className = 'digit-cell-number';
-      digit.textContent = item.digit;
-      const probability = document.createElement('span');
-      probability.className = 'digit-cell-probability';
-      probability.textContent = formatPercent(item.probability, 3);
-      const rank = document.createElement('span');
-      rank.className = 'digit-cell-rank';
-      rank.textContent = `Rank #${item.rank}`;
-      node.append(digit, probability, rank);
-      node.title = `Chữ số ${item.digit} · rank #${item.rank} · điểm thô ${formatPercent(item.probability, 4)}`;
-      grid.append(node);
-    });
+  document.querySelectorAll('[data-catboost-tab]').forEach(button => {
+    const type = button.dataset.catboostTab;
+    if (type === 'all') button.textContent = 'Đủ 100 số';
+    if (type === 'selected') button.textContent = `Được chọn (${selected.size})`;
+    if (type === 'excluded') button.textContent = `Bị loại (${100 - selected.size})`;
+    button.setAttribute('aria-selected', String(type === state.catboostFilter));
+  });
+
+  let scores = [...(prediction.scores || [])].sort((a, b) => a.rank - b.rank);
+  if (state.catboostFilter === 'selected') scores = scores.filter(score => selected.has(score.number));
+  if (state.catboostFilter === 'excluded') scores = scores.filter(score => !selected.has(score.number));
+  scores.forEach(score => {
+    const node = document.createElement('div');
+    const isSelected = selected.has(score.number);
+    const isActual = actual === score.number;
+    const isRecent = recentDisplay.has(score.number);
+    const isLatestRecent = latestRecent === score.number;
+    node.className = `catboost-number${isSelected ? ' selected' : ' excluded'}${score.rank <= 10 ? ' top-ten' : ''}${isActual ? ' actual' : ''}${isActual && isSelected ? ' hit' : ''}${isRecent ? ' recent' : ''}${isLatestRecent ? ' latest-recent' : ''}`;
+    node.innerHTML = `<strong>${score.number}</strong><span>${formatPercent(score.probability, 3)}</span><small>#${score.rank}</small>`;
+    node.title = `Số ${score.number} · rank #${score.rank} · ${formatPercent(score.probability, 4)}${isLatestRecent ? ' · kết quả kỳ gần nhất' : isRecent ? ' · vừa ra gần đây' : ''}`;
+    node.setAttribute('role', 'gridcell');
+    node.setAttribute('aria-label', `Số ${score.number}, hạng ${score.rank}, ${isSelected ? 'được chọn' : 'bị loại'}${isLatestRecent ? ', kết quả kỳ gần nhất' : isRecent ? ', vừa ra gần đây' : ''}`);
+    grid.append(node);
+  });
+
+  const exportScores = (prediction.scores || [])
+    .filter(score => selected.has(score.number))
+    .sort((a, b) => a.rank - b.rank);
+  el('catboost-number-string').textContent = exportScores.map(score => score.number).join(',');
+  el('catboost-export-label').textContent = `${exportScores.length} số theo thứ hạng mô hình${recent.size ? ` · bỏ ${recent.size} số vừa ra` : ''}`;
+  exportBox.hidden = false;
 }
 
-async function loadLatestDigitPrediction() {
-  const prediction = await api('/api/digit-predictions/latest');
-  state.latestDigitPrediction = prediction;
-  renderDigitPrediction(prediction);
+async function loadLatestCatBoostPrediction() {
+  const count = Number(el('catboost-selected-count')?.value || 65);
+  const prediction = await api(`/api/catboost-predictions/latest?selected_count=${count}`);
+  state.latestCatBoostPrediction = prediction;
+  renderCatBoostPrediction(prediction);
 }
 
-async function loadDigitPredictionHistory() {
-  const predictions = await api('/api/digit-predictions?limit=50');
-  const body = el('digit-prediction-history');
+async function loadCatBoostHistory() {
+  const predictions = await api('/api/catboost-predictions?limit=50');
+  const body = el('catboost-prediction-history');
+  if (!body) return;
   body.replaceChildren();
   if (!predictions.length) {
     const row = document.createElement('tr');
-    const td = cell('Chưa có dự đoán một số cuối');
-    td.colSpan = 7;
-    td.style.textAlign = 'center';
-    row.append(td);
-    body.append(row);
-    return;
+    const td = cell('Chưa có snapshot CatBoost'); td.colSpan = 7; td.style.textAlign = 'center';
+    row.append(td); body.append(row); return;
   }
-
   predictions.forEach(prediction => {
     const evaluation = prediction.evaluation || { status: 'pending' };
     const row = document.createElement('tr');
     row.append(
-      cell(prediction.prediction_date),
-      cell(prediction.predicted_digit),
-      cell(formatPercent(prediction.prediction_probability, 3)),
-      cell(formatPercent(prediction.random_baseline, 0)),
-      cell(prediction.trained_through),
-      cell(evaluation.actual_digit || '—'),
+      cell(prediction.prediction_date), cell(prediction.selected_count),
+      cell(prediction.trained_through), cell(formatPercent(prediction.coverage_probability)),
+      cell(evaluation.actual_last_two || '—'),
     );
     const status = document.createElement('td');
     status.append(evaluation.status === 'evaluated'
       ? badge(evaluation.hit ? 'HIT' : 'MISS', evaluation.hit ? 'hit' : 'miss')
       : badge('PENDING', 'pending'));
-    row.append(status);
+    row.append(status, cell(prediction.model_version));
     body.append(row);
+  });
+}
+
+async function loadCatBoostComparison() {
+  const count = Number(el('catboost-selected-count')?.value || 65);
+  const report = await api(`/api/model-comparison/three-way?selected_count=${count}`);
+  const cards = el('catboost-comparison-cards');
+  const body = el('catboost-comparison-history');
+  const note = el('catboost-comparison-note');
+  if (!cards || !body || !note) return;
+  cards.replaceChildren(); body.replaceChildren();
+  const definitions = [
+    ['Tần suất A', report.frequency_model],
+    ['Logistic B', report.logistic_model],
+    ['CatBoost C', report.catboost_model],
+    ['Baseline', { hit_rate: report.baseline, hits: null }],
+  ];
+  definitions.forEach(([label, model], index) => {
+    const card = document.createElement('div');
+    card.className = `catboost-metric model-${['a', 'b', 'c', 'baseline'][index]}${label === 'CatBoost C' ? ' featured' : ''}`;
+    card.innerHTML = `<span>${label}</span><strong>${formatPercent(model?.hit_rate)}</strong><small>${model?.hits == null ? `Top ${report.selected_count}` : `${model.hits}/${report.paired_predictions} HIT`}</small>`;
+    cards.append(card);
+  });
+  (report.recent_pairs || []).forEach(item => {
+    const row = document.createElement('tr');
+    row.append(cell(item.prediction_date), cell(item.actual_last_two),
+      cell(item.frequency_hit ? '✅ HIT' : '❌ MISS'),
+      cell(item.logistic_hit ? '✅ HIT' : '❌ MISS'),
+      cell(item.catboost_hit ? '✅ HIT' : '❌ MISS'));
+    body.append(row);
+  });
+  if (!report.recent_pairs?.length) {
+    const row = document.createElement('tr'); const td = cell('Chưa có ngày đủ cả ba snapshot đã đánh giá');
+    td.colSpan = 5; td.style.textAlign = 'center'; row.append(td); body.append(row);
+  }
+  note.textContent = report.note;
+}
+
+async function loadCatBoostRecentNumbers() {
+  const days = Number(el('catboost-exclude-days')?.value || 3);
+  const data = await api(`/api/results/recent-last-two?days=${days}`);
+  state.catboostRecentNumbers = [...(data.results || [])]
+    .sort((left, right) => right.draw_date.localeCompare(left.draw_date));
+  const chips = el('catboost-recent-chips');
+  if (!chips) return;
+  chips.replaceChildren();
+  state.catboostRecentNumbers.forEach((item, index) => {
+    const chip = document.createElement('span');
+    chip.className = index === 0 ? 'latest' : 'recent';
+    chip.textContent = `${index === 0 ? '★ ' : ''}${item.last_two} · ${item.draw_date}`;
+    chips.append(chip);
+  });
+  chips.hidden = !state.catboostExcludeRecent || !state.catboostRecentNumbers.length;
+}
+
+function initCatBoostPage() {
+  document.querySelectorAll('[data-catboost-tab]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-catboost-tab]').forEach(item => item.classList.remove('active'));
+      button.classList.add('active'); state.catboostFilter = button.dataset.catboostTab;
+      renderCatBoostPrediction(state.latestCatBoostPrediction);
+    });
+  });
+  el('catboost-selected-count')?.addEventListener('change', async () => {
+    await Promise.allSettled([loadLatestCatBoostPrediction(), loadCatBoostComparison()]);
+  });
+  el('catboost-exclude-recent')?.addEventListener('change', async event => {
+    state.catboostExcludeRecent = event.target.checked;
+    if (state.catboostExcludeRecent) await loadCatBoostRecentNumbers();
+    else el('catboost-recent-chips').hidden = true;
+    renderCatBoostPrediction(state.latestCatBoostPrediction);
+  });
+  el('catboost-exclude-days')?.addEventListener('change', async () => {
+    await loadCatBoostRecentNumbers(); renderCatBoostPrediction(state.latestCatBoostPrediction);
+  });
+  el('catboost-copy')?.addEventListener('click', async () => {
+    const text = el('catboost-number-string')?.textContent || '';
+    if (!text || text === '—') return;
+    const button = el('catboost-copy');
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const area = document.createElement('textarea');
+      area.value = text;
+      area.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+      document.body.append(area);
+      area.select();
+      document.execCommand('copy');
+      area.remove();
+    }
+    const original = button.textContent;
+    button.textContent = '✓ Đã sao chép';
+    button.classList.add('copied');
+    setTimeout(() => { button.textContent = original; button.classList.remove('copied'); }, 1600);
+    toast(`Đã sao chép ${text.split(',').length} số CatBoost.`, 'success');
   });
 }
 
@@ -1743,16 +1840,22 @@ async function refreshDashboard() {
     loadLatestResult(),
     loadLatestPrediction(),
     loadLatestLogisticPrediction(),
-    loadLatestDigitPrediction(),
+    loadLatestCatBoostPrediction(),
     loadPredictionHistory(),
     loadLogisticPredictionHistory(),
     loadModelComparison(),
     loadRollingModelComparison(),
-    loadDigitPredictionHistory(),
+    loadCatBoostHistory(),
+    loadCatBoostComparison(),
+    loadCatBoostRecentNumbers(),
     loadResults(),
     loadBacktests(),
     loadDigitBacktests(),
   ]);
+
+  // Luôn tô màu các số vừa ra; công tắc chỉ quyết định có loại chúng khỏi dãy
+  // được chọn hay không. Số ở kỳ mới nhất nhận ngôi sao duy nhất trên bảng.
+  renderCatBoostPrediction(state.latestCatBoostPrediction);
 
   // Khi dữ liệu kết quả vừa được đồng bộ, cập nhật lại ngay tập loại trừ
   // đang bật để bảng hiển thị và chuỗi sao chép không dùng danh sách cũ.
@@ -2000,16 +2103,16 @@ el('fortune-prediction-form').addEventListener('submit', (event) => {
   );
 });
 
-el('digit-prediction-form').addEventListener('submit', (event) => {
+el('catboost-prediction-form').addEventListener('submit', (event) => {
   event.preventDefault();
   const button = event.currentTarget.querySelector('button');
-  const payload = {};
+  const payload = { selected_count: Number(el('catboost-selected-count').value) };
   runAction(
-    button, '🔒 Đang xếp hạng 0–9…',
-    () => api('/api/digit-predictions/generate', { method: 'POST', body: JSON.stringify(payload) }),
+    button, '🐾 CatBoost đang huấn luyện…',
+    () => api('/api/catboost-predictions/generate', { method: 'POST', body: JSON.stringify(payload) }),
     (result) => result.created
-      ? `✅ Đã khóa số ${result.prediction.predicted_digit} cho ngày ${result.prediction.prediction_date}.`
-      : `Dự đoán một số ngày ${result.prediction.prediction_date} đã tồn tại — không ghi đè.`,
+      ? `✅ Đã khóa CatBoost Top ${result.prediction.selected_count} ngày ${result.prediction.prediction_date}.`
+      : `Snapshot CatBoost ngày ${result.prediction.prediction_date} đã tồn tại — không ghi đè.`,
   );
 });
 
@@ -2139,6 +2242,7 @@ function startSmartAutoRefresh() {
   initExcludeRecentToggle();
   initExportBar();
   initFortunePage();
+  initCatBoostPage();
   startCountdown();
   startSmartAutoRefresh(); // Tự động cập nhật kết quả sau 18:15
 

@@ -256,6 +256,31 @@ Kết quả được ghi vào `reports/logistic_comparison/summary.json` và `da
 Trang Thần Tài hiển thị riêng backtest lịch sử và kết quả live đã khóa; backtest không
 được coi là bằng chứng chắc chắn cho dữ liệu tương lai.
 
+### Mô hình CatBoost trực tiếp 00–99
+
+Trang `/du-doan-1-so` hiện là trang **CatBoost** và thay thế luồng tạo dự đoán một
+chữ số mới. Mô hình `direct_catboost_multiclass_v2_context2000` học trực tiếp 100 lớp
+`00–99` từ ngữ cảnh 2.000 kỳ trước. Để thời gian huấn luyện khả thi, mô hình giữ 14 kỳ
+gần nhất theo đúng thứ tự và nén toàn bộ 2.000 kỳ thành tần suất 00–99 ở cửa sổ
+365/2.000 kỳ cùng các thống kê nhiều cửa sổ. `has_time=True` giữ thứ tự thời gian; không có kết quả của kỳ dự đoán hoặc
+tương lai trong dữ liệu train. Phân phối đầu ra được co 15% về phân phối đều để hạn
+chế điểm quá tự tin khi dữ liệu lịch sử còn thưa.
+
+Phiên bản này cần tối thiểu **2.730 kết quả lịch sử**: 2.000 kỳ làm cửa sổ đặc
+trưng và 730 mẫu để huấn luyện. Nếu dữ liệu chưa đủ, API từ chối tạo snapshot thay
+vì âm thầm rút ngắn cửa sổ hoặc trộn với mô hình 14 kỳ cũ.
+
+CatBoost tạo cùng một loại snapshot Top 60/65/70/75/80 trong collection `predictions`,
+nên cơ chế khóa, đối chiếu HIT/MISS và lịch sử dùng chung với hai mô hình hiện có.
+`/api/model-comparison/three-way` chỉ ghép những ngày mà Tần suất A, Logistic B và
+CatBoost C đều đã khóa trước kỳ quay và đã được đánh giá; không đủ kỳ ghép thì không
+được suy ra mô hình nào tốt hơn.
+
+`catboost>=1.2.10` là dependency native khá lớn. Khi deploy Vercel, cần chạy thử build
+Production sau khi cài dependency; nếu vượt giới hạn gói hoặc thời gian chạy của plan,
+hãy để Vercel chỉ gọi cron/API và chuyển bước huấn luyện CatBoost sang worker/container
+riêng, vẫn ghi snapshot về MongoDB.
+
 ## Có cần API key AI không?
 
 Không. Collector, prediction, backtest, MongoDB và dashboard đều chạy local mà không

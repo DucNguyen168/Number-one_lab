@@ -50,7 +50,7 @@ def test_scheduler_retries_transient_failures(monkeypatch) -> None:
     assert delays == [1, 2]
 
 
-def test_sync_creates_both_predictions_for_next_day_after_result(monkeypatch) -> None:
+def test_sync_creates_next_day_model_snapshots_after_result(monkeypatch) -> None:
     draw_results = _DrawResults(result_exists=True)
     scheduler = DailyScheduler(
         SimpleNamespace(draw_results=draw_results),
@@ -76,7 +76,7 @@ def test_sync_creates_both_predictions_for_next_day_after_result(monkeypatch) ->
         return {
             "prediction_date": target.isoformat(),
             "two_digit_created": True,
-            "one_digit_created": True,
+            "catboost_two_digit_created": True,
         }
 
     monkeypatch.setattr(scheduler, "_generate_prediction", generate)
@@ -87,7 +87,7 @@ def test_sync_creates_both_predictions_for_next_day_after_result(monkeypatch) ->
     assert outcome["next_prediction"] == {
         "prediction_date": "2026-09-06",
         "two_digit_created": True,
-        "one_digit_created": True,
+        "catboost_two_digit_created": True,
     }
     assert draw_results.queries == [
         (
@@ -131,7 +131,7 @@ def test_sync_waits_for_result_before_creating_next_day_prediction(
     assert outcome["next_prediction"] is None
 
 
-def test_generate_prediction_creates_two_digit_and_one_digit_snapshots(
+def test_generate_prediction_creates_three_two_digit_model_snapshots(
     monkeypatch,
 ) -> None:
     database = SimpleNamespace()
@@ -145,8 +145,8 @@ def test_generate_prediction_creates_two_digit_and_one_digit_snapshots(
         calls.append(("two-digit", target, selected_count))
         return {"prediction_date": target.isoformat()}, True
 
-    def create_one_digit(db, target: date):
-        calls.append(("one-digit", target, None))
+    def create_catboost(db, target: date, selected_count: int):
+        calls.append(("catboost-two-digit", target, selected_count))
         return {"prediction_date": target.isoformat()}, True
 
     def create_logistic(db, target: date, selected_count: int):
@@ -159,8 +159,8 @@ def test_generate_prediction_creates_two_digit_and_one_digit_snapshots(
         create_logistic,
     )
     monkeypatch.setattr(
-        "app.services.scheduler.create_digit_prediction",
-        create_one_digit,
+        "app.services.scheduler.create_catboost_prediction",
+        create_catboost,
     )
 
     outcome = asyncio.run(scheduler._generate_prediction(date(2026, 9, 6)))
@@ -168,7 +168,7 @@ def test_generate_prediction_creates_two_digit_and_one_digit_snapshots(
     assert calls == [
         ("two-digit", date(2026, 9, 6), 65),
         ("logistic-two-digit", date(2026, 9, 6), 65),
-        ("one-digit", date(2026, 9, 6), None),
+        ("catboost-two-digit", date(2026, 9, 6), 65),
     ]
     assert outcome == {
         "prediction_date": "2026-09-06",
@@ -176,5 +176,6 @@ def test_generate_prediction_creates_two_digit_and_one_digit_snapshots(
         "two_digit_created": True,
         "logistic_two_digit_created": True,
         "logistic_two_digit_error": None,
-        "one_digit_created": True,
+        "catboost_two_digit_created": True,
+        "catboost_two_digit_error": None,
     }
