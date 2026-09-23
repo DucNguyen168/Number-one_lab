@@ -13,15 +13,21 @@ dependencies = [
   "pymongo>=4.10,<5.0",
   "python-dotenv>=1.0,<2.0",
   "tzdata>=2025.2",
-  "uvicorn[standard]>=0.34,<1.0",
   "scikit-learn>=1.6,<2.0",
   "catboost>=1.2.10,<2.0",
 ]
 
 [project.optional-dependencies]
+server = [
+  "uvicorn[standard]>=0.34,<1.0",
+]
 dev = [
   "pytest>=8.3,<10.0",
 ]
+
+[tool.uv]
+# CatBoost imports these only for plots/widgets; prediction uses numeric arrays.
+exclude-dependencies = ["matplotlib", "plotly"]
 
 [project.scripts]
 xsmb-lab = "app.cli:main"

@@ -6,8 +6,6 @@ import sys
 from datetime import date
 from typing import Any
 
-import uvicorn
-
 from app.config import settings
 from app.database import MongoDatabase, serialize_document
 from app.services.backtest import run_walk_forward_backtest
@@ -80,6 +78,10 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = build_parser().parse_args()
     if args.command == "serve":
+        try:
+            import uvicorn
+        except ImportError as exc:
+            raise RuntimeError("Install the server extra: pip install -e '.[server]'") from exc
         uvicorn.run("app.main:app", host=args.host, port=args.port, reload=args.reload)
         return
 

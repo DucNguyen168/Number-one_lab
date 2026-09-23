@@ -77,6 +77,8 @@ Copy-Item .env.example .env
 ```
 
 Nếu MongoDB dùng URI hoặc database khác, sửa `.env` trước khi chạy.
+Nếu cài bằng `pyproject.toml` và cần lệnh `xsmb-lab serve`, cài thêm
+`.[server]` (hoặc dùng `requirements.txt`, vốn đã có Uvicorn).
 
 ## Nhập dữ liệu và khởi động
 
@@ -276,10 +278,15 @@ nên cơ chế khóa, đối chiếu HIT/MISS và lịch sử dùng chung với 
 CatBoost C đều đã khóa trước kỳ quay và đã được đánh giá; không đủ kỳ ghép thì không
 được suy ra mô hình nào tốt hơn.
 
-`catboost>=1.2.10` là dependency native khá lớn. Khi deploy Vercel, cần chạy thử build
-Production sau khi cài dependency; nếu vượt giới hạn gói hoặc thời gian chạy của plan,
-hãy để Vercel chỉ gọi cron/API và chuyển bước huấn luyện CatBoost sang worker/container
-riêng, vẫn ghi snapshot về MongoDB.
+`catboost>=1.2.10` là dependency native khá lớn. Bản deploy Vercel bỏ Uvicorn
+(chỉ cần khi chạy server local), loại Plotly/Matplotlib khỏi đồ thị dependency
+do mô hình chỉ dự đoán bằng mảng số, và không đóng gói test/tài liệu/báo cáo vào
+Function. CatBoost, NumPy, SciPy, pandas và scikit-learn vẫn được giữ nguyên.
+Vì tổng gói vẫn có thể vượt 500 MB, `vercel.json` bật Fluid Compute cùng cờ
+Large Functions `VERCEL_SUPPORT_LARGE_FUNCTIONS=1` ở build. Sau khi push, kiểm tra
+Production build và Function trên dashboard; nếu dự án chưa được bật beta, đặt thêm
+biến này trong **Project Settings → Environment Variables** rồi redeploy. Tính năng
+Large Functions phụ thuộc Vercel và không thay thế bước kiểm tra build thực tế.
 
 ## Có cần API key AI không?
 
