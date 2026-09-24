@@ -106,7 +106,7 @@ Mở:
 - Tổng quan: <http://127.0.0.1:8000/>
 - Kết quả và đồng bộ dữ liệu: <http://127.0.0.1:8000/ket-qua>
 - Dự đoán hai số cuối: <http://127.0.0.1:8000/du-doan-2-so>
-- Dự đoán một số cuối: <http://127.0.0.1:8000/du-doan-1-so>
+- Dự đoán một số cuối: <http://127.0.0.1:8000/du-doan-catboost-2-so>
 - Backtest hai mô hình: <http://127.0.0.1:8000/backtest>
 - API docs: <http://127.0.0.1:8000/docs>
 
@@ -260,7 +260,7 @@ Trang Thần Tài hiển thị riêng backtest lịch sử và kết quả live 
 
 ### Mô hình CatBoost trực tiếp 00–99
 
-Trang `/du-doan-1-so` hiện là trang **CatBoost** và thay thế luồng tạo dự đoán một
+Trang `/du-doan-catboost-2-so` hiện là trang **CatBoost** và thay thế luồng tạo dự đoán một
 chữ số mới. Mô hình `direct_catboost_multiclass_v2_context2000` học trực tiếp 100 lớp
 `00–99` từ ngữ cảnh 2.000 kỳ trước. Để thời gian huấn luyện khả thi, mô hình giữ 14 kỳ
 gần nhất theo đúng thứ tự và nén toàn bộ 2.000 kỳ thành tần suất 00–99 ở cửa sổ

@@ -102,7 +102,7 @@ def _db(request: Request):
 
 
 @app.get("/backtest", include_in_schema=False)
-@app.get("/du-doan-1-so", include_in_schema=False)
+@app.get("/du-doan-catboost-2-so", include_in_schema=False)
 @app.get("/du-doan-than-tai", include_in_schema=False)
 @app.get("/du-doan-2-so", include_in_schema=False)
 @app.get("/ket-qua", include_in_schema=False)

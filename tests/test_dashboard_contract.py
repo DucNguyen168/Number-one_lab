@@ -42,7 +42,7 @@ def test_feature_pages_have_matching_links_views_and_server_routes() -> None:
         "/ket-qua",
         "/du-doan-2-so",
         "/du-doan-than-tai",
-        "/du-doan-1-so",
+        "/du-doan-catboost-2-so",
         "/backtest",
     } <= server_paths
     assert "/api/model-comparison/rolling" in server_paths

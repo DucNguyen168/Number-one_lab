@@ -10,7 +10,7 @@ APP_ROUTES = {
     "/ket-qua",
     "/du-doan-2-so",
     "/du-doan-than-tai",
-    "/du-doan-1-so",
+    "/du-doan-catboost-2-so",
     "/backtest",
 }
 PROJECT_ROOT = Path(__file__).resolve().parents[1]

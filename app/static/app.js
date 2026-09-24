@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    XSMB Research Lab — app.js
    ============================================================ */
 
@@ -68,7 +68,7 @@ const PAGE_CONFIG = {
     description: 'Mô hình Logistic độc lập để kiểm chứng chéo với mô hình tần suất bằng kết quả thực.',
   },
   'one-digit': {
-    path: '/du-doan-1-so',
+    path: '/du-doan-catboost-2-so',
     eyebrow: 'MODEL C · CATBOOST 00–99',
     title: 'Dự đoán CatBoost hai số cuối',
     description: 'Mô hình cây tăng cường đa lớp để kiểm chứng chéo Tần suất A và Logistic B.',
