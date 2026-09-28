@@ -5,12 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Công cụ phân tích dữ liệu lịch sử và tạo dự đoán XSMB — backtest nghiêm ngặt, không rò rỉ tương lai." />
     <title>XSMB Research Lab</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20260924-1" />
+    <link rel="stylesheet" href="/static/styles.css?v=20260928-2" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" />
   </head>
   <body data-current-page="overview">
+    <dialog id="usage-rules" class="usage-rules" aria-labelledby="usage-rules-title" aria-describedby="usage-rules-description">
+      <div class="usage-rules-topline"><span>XSMB RESEARCH LAB</span><span>THÔNG BÁO QUAN TRỌNG</span></div>
+      <div class="usage-rules-content">
+        <header class="usage-rules-heading">
+          <span class="usage-rules-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 4 6v6c0 4 8 9 8 9s8-5 8-9V6l-8-3Z"/><path d="M12 8v5m0 3v1"/></svg>
+          </span>
+          <p class="usage-rules-eyebrow">VUI LÒNG ĐỌC TRƯỚC KHI TIẾP TỤC</p>
+          <h1 id="usage-rules-title">Luật cứng cần tuân thủ</h1>
+          <p id="usage-rules-description">Kỷ luật trước quyết định. Bảo vệ vốn trước lợi nhuận. Đọc kỹ và cam kết thực hiện các nguyên tắc dưới đây.</p>
+        </header>
+        <section id="usage-rules-list" class="usage-rules-list" aria-label="Nội dung quy định">
+          <ol>
+            <li>
+              <strong>Tuyệt đối tập trung đúng việc cần làm.</strong>
+              <p>Bám sát kế hoạch đã đặt ra. Không để tin đồn, cảm xúc hoặc kết quả nhất thời làm lệch mục tiêu.</p>
+            </li>
+            <li>
+              <strong>Nghỉ thứ Bảy và Chủ nhật.</strong>
+              <p>Dành cuối tuần để nghỉ ngơi, giữ sức khỏe và cân bằng cuộc sống. Không phá lịch nghỉ vì muốn kiếm thêm hoặc gỡ lỗ.</p>
+            </li>
+            <li>
+              <strong>Ưu tiên thuật toán có tỷ lệ lựa chọn đúng cao nhất.</strong>
+              <p>So sánh trên cùng số lượng lựa chọn, cùng giai đoạn và dữ liệu chưa dùng để huấn luyện. Kiểm chứng qua nhiều kỳ, đối chiếu với chọn ngẫu nhiên; không chọn chỉ vì vài lần đúng gần nhất. Tỷ lệ đúng cao chưa đồng nghĩa có lợi nhuận.</p>
+            </li>
+            <li>
+              <strong>Bảo vệ tiền sinh hoạt và quỹ dự phòng.</strong>
+              <p>Chỉ sử dụng phần vốn có thể chấp nhận rủi ro. Không dùng tiền sinh hoạt, tiền trả nợ hoặc quỹ khẩn cấp cho quyết định có nguy cơ mất vốn.</p>
+            </li>
+            <li>
+              <strong>Không vay tiền, không dùng đòn bẩy để gỡ lỗ.</strong>
+              <p>Không tăng vốn hoặc nhân đôi mức tiền chỉ vì vừa thua. Khi tâm lý muốn “gỡ cho bằng được” xuất hiện, dừng lại.</p>
+            </li>
+            <li>
+              <strong>Đặt giới hạn rủi ro trước khi bắt đầu.</strong>
+              <p>Viết rõ ngân sách và mức tổn thất tối đa có thể chấp nhận. Chạm giới hạn thì dừng quyết định mới và đánh giá lại; không nạp thêm để phá giới hạn.</p>
+            </li>
+            <li>
+              <strong>Chưa hiểu rõ thì chưa xuống tiền.</strong>
+              <p>Tìm hiểu sản phẩm, chi phí, khả năng rút tiền và nguy cơ mất vốn. Không chạy theo đám đông hoặc lời hứa lợi nhuận chắc chắn; có thể chọn đứng ngoài.</p>
+            </li>
+            <li>
+              <strong>Đầu tư tài chính cần phân bổ rủi ro.</strong>
+              <p>Tránh dồn toàn bộ vốn vào một tài sản; phân bổ theo mục tiêu, thời gian nắm giữ và khả năng chịu lỗ. Đa dạng hóa không loại bỏ hoàn toàn rủi ro.</p>
+            </li>
+            <li>
+              <strong>Ghi chép quyết định và đánh giá định kỳ.</strong>
+              <p>Lưu lý do, số vốn, kết quả và chi phí thực tế. Đánh giá cả mức lỗ lẫn lợi nhuận, điều chỉnh theo dữ liệu; không đổi phương pháp liên tục vì một lần sai.</p>
+            </li>
+          </ol>
+          <p class="usage-rules-reminder">Dự đoán XSMB chỉ phục vụ tham khảo và nghiên cứu, không phải sản phẩm đầu tư. Kết quả quá khứ không bảo đảm kết quả tương lai.</p>
+          <p class="usage-rules-source">Tham khảo nguyên tắc đầu tư: <a href="https://www.investor.gov/introduction-investing/getting-started/asset-allocation" target="_blank" rel="noopener noreferrer">Investor.gov — phân bổ vốn và rủi ro ↗</a></p>
+        </section>
+      </div>
+      <form id="usage-rules-form" class="usage-rules-footer">
+        <label class="usage-rules-consent" for="usage-rules-agree">
+          <input id="usage-rules-agree" type="checkbox" required />
+          <span>Tôi đã đọc và đồng ý với các quy định trên.</span>
+        </label>
+        <button id="usage-rules-continue" class="usage-rules-continue" type="submit" disabled>Đồng ý &amp; tiếp tục <span aria-hidden="true">→</span></button>
+        <p class="usage-rules-note">Thông báo hiển thị mỗi lần truy cập website.</p>
+      </form>
+    </dialog>
     <div id="app-backdrop" class="app-backdrop" aria-hidden="true"></div>
     <div id="fortune-glitter-rain" class="fortune-glitter-rain" aria-hidden="true"></div>
     <div class="page-shell">
@@ -769,6 +832,7 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="/static/usage-rules.js?v=20260928-1" defer></script>
     <script src="/static/app.js?v=20260924-1" defer></script>
   </body>
 </html>
