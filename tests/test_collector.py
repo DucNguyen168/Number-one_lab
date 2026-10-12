@@ -1,5 +1,6 @@
 import hashlib
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
+from threading import Event
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -263,3 +264,50 @@ def test_sync_range_skips_completed_history_unless_forced(monkeypatch) -> None:
         "completed",
     ]
     assert sorted(called) == [2019, 2020, 2021]
+
+
+def test_latest_sync_stores_fast_source_before_slow_source_and_only_target(monkeypatch):
+    stored = Event()
+    draws = [CollectedDraw("2026-10-11", "11111", "11"),
+             CollectedDraw("2026-10-12", "00123", "23")]
+    collector = KqxsCollector(SimpleNamespace(
+        collector_runs=_CollectorRuns(),
+        draw_results=SimpleNamespace(find_one=lambda *args: None),
+    ), SimpleNamespace())
+    writes = []
+
+    def slow_fetch():
+        assert stored.wait(2), "Fast source was blocked by the slower source"
+        raise httpx.ConnectTimeout("slow source")
+
+    monkeypatch.setattr(collector, "_source_specs", lambda year: [
+        ("fast", "fast", lambda: ("html", "https://fast.test"), lambda *args: draws),
+        ("slow", "slow", slow_fetch, lambda *args: draws),
+    ])
+
+    def store(**kwargs):
+        writes.extend(kwargs["draws"])
+        stored.set()
+        return {"inserted": len(kwargs["draws"])}
+
+    monkeypatch.setattr(collector, "_store_source_draws", store)
+    result = collector.sync_latest(date(2026, 10, 12))
+    assert writes == [draws[1]]
+    assert result["status"] == "partial"
+    assert result["records_received"] == 1
+    assert result["sources"][1]["error_type"] == "ConnectTimeout"
+
+
+def test_latest_sync_skips_sources_if_valid_result_already_exists(monkeypatch):
+    queries = []
+
+    def find(query, projection):
+        queries.append(query)
+        return {"_id": "today"}
+
+    collector = KqxsCollector(SimpleNamespace(
+        draw_results=SimpleNamespace(find_one=find),
+    ), SimpleNamespace())
+    result = collector.sync_latest(date(2026, 10, 12))
+    assert result["status"] == "already_available"
+    assert queries == [{"draw_date": "2026-10-12", "status": {"$ne": "conflict"}}]

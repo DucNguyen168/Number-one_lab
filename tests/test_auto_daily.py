@@ -18,6 +18,7 @@ def _configure_cycle(monkeypatch, *, has_today: bool, hour: int = 19):
         local_today=lambda: date(2026, 9, 10),
         local_now=lambda: datetime(2026, 9, 10, hour, 10),
         result_sync_times=("18:35", "18:50", "19:10"),
+        result_poll_start_time="18:30",
         auto_prediction=True,
         auto_prediction_count=65,
     )
@@ -28,6 +29,9 @@ def _configure_cycle(monkeypatch, *, has_today: bool, hour: int = 19):
 
         def sync_year(self, year: int):
             return {"year": year, "status": "completed"}
+
+        def sync_latest(self, target: date):
+            return {"draw_date": target.isoformat(), "status": "completed"}
 
     monkeypatch.setattr(app_main, "settings", settings)
     monkeypatch.setattr(app_main, "KqxsCollector", Collector)

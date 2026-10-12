@@ -9,6 +9,10 @@ from fastapi import HTTPException
 STATIC_DIR = Path(__file__).parents[1] / "app" / "static"
 
 
+def _visible_html(html: str) -> str:
+    return re.sub(r"<!--.*?-->", "", html, flags=re.DOTALL)
+
+
 def test_every_javascript_element_id_exists_in_dashboard() -> None:
     javascript = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
@@ -23,6 +27,7 @@ def test_feature_pages_have_matching_links_views_and_server_routes() -> None:
     from app.main import app
 
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    visible_html = _visible_html(html)
     page_names = {
         "overview",
         "results",
@@ -31,11 +36,11 @@ def test_feature_pages_have_matching_links_views_and_server_routes() -> None:
         "one-digit",
         "backtest",
     }
-    link_pages = set(re.findall(r'data-page-link="([^"]+)"', html))
+    link_pages = set(re.findall(r'data-page-link="([^"]+)"', visible_html))
     view_pages = set(re.findall(r'data-page-view="([^"]+)"', html))
     server_paths = {route.path for route in app.routes}
 
-    assert link_pages == page_names
+    assert link_pages == page_names - {"backtest"}
     assert view_pages == page_names
     assert {
         "/",
@@ -50,13 +55,14 @@ def test_feature_pages_have_matching_links_views_and_server_routes() -> None:
 
 def test_app_shell_has_button_navigation_and_versioned_assets() -> None:
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
+    visible_html = _visible_html(html)
 
     assert 'class="app-brand"' in html
-    assert html.count('class="nav-icon"') == 6
-    assert html.count('class="nav-label"') == 6
+    assert visible_html.count('class="nav-icon"') == 5
+    assert visible_html.count('class="nav-label"') == 5
     assert '/static/styles.css?v=' in html
     assert '/static/app.js?v=' in html
-    assert html.count('class="nav-logo') == 6
+    assert visible_html.count('class="nav-logo') == 5
 
 
 def test_two_digit_form_always_uses_automatic_prediction_date() -> None:
@@ -120,7 +126,7 @@ def test_fortune_page_has_local_art_glitter_and_center_out_highlight() -> None:
     assert "prefers-reduced-motion: reduce" in css
     assert '[data-theme="dark"] .fortune-number.selected' in css
     assert "max-width: 720px" in css
-    assert '/img/icon_nav_home_active.svg' in html
+    assert '/img/travel.png' in html
     assert 'class="page-sticker sticker-fortune' in html
     assert '/api/model-comparison/rolling' in javascript
 
@@ -175,6 +181,51 @@ def test_cron_secret_is_checked_when_configured(monkeypatch) -> None:
             "Request",
             (),
             {"headers": {"authorization": "Bearer a-secure-test-secret"}},
+        )()
+    )
+
+
+def test_cron_auth_fails_closed_on_vercel_without_secret(monkeypatch) -> None:
+    import app.main as app_main
+
+    monkeypatch.delenv("CRON_SECRET", raising=False)
+    monkeypatch.setattr(
+        app_main,
+        "settings",
+        type("Settings", (), {"is_vercel": True})(),
+    )
+
+    with pytest.raises(HTTPException) as error:
+        app_main._authorize_cron_request(type("Request", (), {"headers": {}})())
+
+    assert error.value.status_code == 503
+
+
+def test_admin_auth_accepts_header_and_bearer_token(monkeypatch) -> None:
+    import app.main as app_main
+
+    monkeypatch.setattr(
+        app_main,
+        "settings",
+        type(
+            "Settings",
+            (),
+            {"require_admin_auth": True, "admin_api_key": "admin-test-key"},
+        )(),
+    )
+
+    with pytest.raises(HTTPException) as error:
+        app_main._authorize_admin_request(type("Request", (), {"headers": {}})())
+    assert error.value.status_code == 401
+
+    app_main._authorize_admin_request(
+        type("Request", (), {"headers": {"x-admin-key": "admin-test-key"}})()
+    )
+    app_main._authorize_admin_request(
+        type(
+            "Request",
+            (),
+            {"headers": {"authorization": "Bearer admin-test-key"}},
         )()
     )
 

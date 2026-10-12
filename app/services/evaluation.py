@@ -27,10 +27,12 @@ def evaluate_pending_predictions(db: Database) -> dict[str, int]:
             "hit": hit,
             "evaluated_at": datetime.now(timezone.utc),
         }
-        db.predictions.update_one(
+        updated = db.predictions.update_one(
             {"_id": prediction["_id"], "evaluation.status": "pending"},
             {"$set": {"evaluation": evaluation, "status": "evaluated"}},
         )
+        if not updated.modified_count:
+            continue
         counters["evaluated"] += 1
         counters["hits" if hit else "misses"] += 1
     return counters

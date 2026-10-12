@@ -14,7 +14,7 @@ const state = {
   currentSort: 'rank',     // 'rank' | 'number' | 'days'
   countdownTimer: null,
   autoRefreshTimer: null,
-  smartRefreshTimer: null, // Smart auto-refresh timer
+  resultPoller: null,
   smartRefreshSeenDate: null, // Ngày kết quả đã phát hiện
   detailCache: new Map(),
   // Exclude recent numbers feature
@@ -462,7 +462,11 @@ async function loadMetrics() {
 // LATEST RESULT
 // ═══════════════════════════════════════════════════════════
 async function loadLatestResult() {
-  const result = await api('/api/results/latest');
+  const result = await api('/api/results/latest', { cache: 'no-store' });
+  renderLatestResult(result);
+}
+
+function renderLatestResult(result) {
   const root = el('latest-result');
   root.replaceChildren();
   if (!result) {
@@ -478,6 +482,10 @@ async function loadLatestResult() {
   dateNode.textContent = result.draw_date;
   const statusBadge = badge(result.status, result.status === 'conflict' ? 'conflict' : 'observed');
   left.append(dateNode, statusBadge);
+  const updated = document.createElement('div');
+  updated.className = 'result-date';
+  updated.textContent = `Cập nhật: ${formatDateTime(result.updated_at || result.created_at)}`;
+  left.append(updated);
 
   const number = document.createElement('div');
   number.className = 'result-number';
@@ -2167,71 +2175,52 @@ document.addEventListener('keydown', (event) => {
 // SMART AUTO-REFRESH — Tự động cập nhật sau khi có kết quả XSMB
 // ═══════════════════════════════════════════════════════════
 
-/**
- * Khởng giờ polling: 18:15 – 21:00 giờ Việt Nam.
- * Cứ 2 phút gọi /api/results/latest một lần.
- * Nếu kết quả hôm nay xuất hiện lần đầu → refresh dashboard + toast.
- * Dừng polling khi ra khỏi khung giờ hoặc đã nhận kết quả.
- */
-function startSmartAutoRefresh() {
-  function isInRefreshWindow() {
-    const now = new Date();
-    // Convert to UTC+7 (Việt Nam)
-    const vnOffset = 7 * 60;
-    const utcMin = now.getUTCHours() * 60 + now.getUTCMinutes();
-    const vnMin = (utcMin + vnOffset) % (24 * 60);
-    // 18:15 = 1095 phút, 21:00 = 1260 phút
-    return vnMin >= 1095 && vnMin < 1260;
+async function startSmartAutoRefresh() {
+  let settings = {};
+  try {
+    settings = await api('/api/settings/public', { cache: 'no-store' });
+  } catch (error) {
+    console.warn('Using default result refresh schedule:', error);
   }
-
-  function todayVN() {
-    const now = new Date();
-    const vnTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-    return vnTime.toISOString().slice(0, 10);
-  }
-
-  async function poll() {
-    // Dừng nếu ngoài khung giờ
-    if (!isInRefreshWindow()) {
-      state.smartRefreshTimer = setTimeout(poll, 5 * 60 * 1000); // thử lại sau 5 phút
-      return;
-    }
-
-    const today = todayVN();
-
-    try {
-      const result = await api('/api/results/latest');
-      if (result && result.draw_date === today) {
-        // Kết quả hôm nay đã xuất hiện!
-        if (state.smartRefreshSeenDate !== today) {
-          state.smartRefreshSeenDate = today;
-          // Refresh toàn bộ dashboard
-          await refreshDashboard();
-          toast(`✅ Kết quả ngày ${today} vừa cập nhật! Giải đặc biệt: ${result.special_prize}`, 'success');
-        }
+  state.resultPoller?.stop();
+  state.resultPoller = createResultPoller({
+    api,
+    timezone: settings.timezone,
+    startTime: settings.result_poll_start_time,
+    intervalSeconds: settings.result_poll_interval_seconds,
+    async onResult(result, today) {
+      renderLatestResult(result);
+      if (result.draw_date !== today) return;
+      if (result.status !== 'conflict' && state.smartRefreshSeenDate !== today) {
+        state.smartRefreshSeenDate = today;
+        toast(`✅ Kết quả ngày ${today} vừa cập nhật! Giải đặc biệt: ${result.special_prize}`, 'success');
       }
-    } catch (err) {
-      // Không throw — để polling tiếp tục
-      console.warn('Smart refresh poll failed:', err);
-    }
-
-    // Tiếp tục poll mỗi 2 phút
-    state.smartRefreshTimer = setTimeout(poll, 2 * 60 * 1000);
-  }
-
-  // Khởi động: nếu đang trong khung giờ thì poll ngay, ngược lại đợi đến đó
-  if (isInRefreshWindow()) {
-    poll();
-  } else {
-    // Tính số ms đến 18:15 VN tiếp theo
-    const now = new Date();
-    const vnNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-    const vnToday1815 = new Date(vnNow);
-    vnToday1815.setUTCHours(11, 15, 0, 0); // 18:15 VN = 11:15 UTC
-    let msUntilWindow = vnToday1815.getTime() - now.getTime();
-    if (msUntilWindow < 0) msUntilWindow += 24 * 60 * 60 * 1000; // ngày mai
-    state.smartRefreshTimer = setTimeout(poll, msUntilWindow);
-  }
+      // Refresh results/evaluations without running expensive comparison reports.
+      await Promise.allSettled([
+        loadMetrics(), loadResults(), loadLatestPrediction(),
+        loadLatestLogisticPrediction(), loadLatestCatBoostPrediction(),
+        loadPredictionHistory(), loadLogisticPredictionHistory(), loadCatBoostHistory(),
+        loadCatBoostRecentNumbers(),
+      ]);
+      renderCatBoostPrediction(state.latestCatBoostPrediction);
+      if (state.excludeRecentEnabled) {
+        await loadRecentNumbers(state.excludeRecentDays);
+        updateExcludeRecentChips();
+        renderNumberGrid(state.latestPrediction);
+        updateSelectedExport(state.latestPrediction);
+      }
+      if (state.fortuneExcludeRecentEnabled) {
+        await loadFortuneRecentNumbers(state.fortuneExcludeRecentDays);
+        updateFortuneExcludeRecentChips();
+        renderFortunePrediction(state.latestLogisticPrediction);
+      }
+    },
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) state.resultPoller.wake();
+  });
+  window.addEventListener('online', () => state.resultPoller.wake());
+  await state.resultPoller.start();
 }
 
 (async () => {
@@ -2244,7 +2233,7 @@ function startSmartAutoRefresh() {
   initFortunePage();
   initCatBoostPage();
   startCountdown();
-  startSmartAutoRefresh(); // Tự động cập nhật kết quả sau 18:15
+  startSmartAutoRefresh(); // Kiểm tra kết quả mỗi 10 giây từ 18:30
 
   try {
     await loadHealth();

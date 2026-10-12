@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfoNotFoundError
 
 from dotenv import load_dotenv
 
@@ -21,8 +23,17 @@ def _as_bool(value: str | None, default: bool) -> bool:
 def _as_int(value: str | None, default: int) -> int:
     try:
         return int(value) if value is not None else default
-    except ValueError:
-        return default
+    except ValueError as exc:
+        raise ValueError(f"Invalid integer configuration value: {value!r}") from exc
+
+
+_TIME_PATTERN = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+
+
+def _validate_time(value: str, name: str) -> str:
+    if not _TIME_PATTERN.fullmatch(value):
+        raise ValueError(f"{name} must use HH:MM in 24-hour format")
+    return value
 
 
 @dataclass(frozen=True, slots=True)
@@ -41,10 +52,14 @@ class Settings:
     sync_on_startup: bool
     scheduler_retry_attempts: int
     scheduler_retry_delay_seconds: int
+    admin_api_key: str
+    require_admin_auth: bool
     auto_prediction: bool
     auto_prediction_count: int
     prediction_time: str
     result_sync_times: tuple[str, ...]
+    result_poll_start_time: str
+    result_poll_interval_seconds: int
     ai_configured: bool
     is_vercel: bool
 
@@ -53,15 +68,37 @@ class Settings:
         selected_count = _as_int(os.getenv("AUTO_PREDICTION_COUNT"), 65)
         if not 60 <= selected_count <= 80:
             selected_count = 65
+        timezone_name = os.getenv("APP_TIMEZONE", "Asia/Ho_Chi_Minh").strip()
+        try:
+            ZoneInfo(timezone_name)
+        except ZoneInfoNotFoundError as exc:
+            raise ValueError(f"Unknown APP_TIMEZONE: {timezone_name!r}") from exc
+
+        prediction_time = _validate_time(
+            os.getenv("PREDICTION_TIME", "17:30").strip(),
+            "PREDICTION_TIME",
+        )
         sync_times = tuple(
             item.strip()
-            for item in os.getenv("RESULT_SYNC_TIMES", "18:35,18:50,19:10").split(",")
+            for item in os.getenv("RESULT_SYNC_TIMES", "18:30,18:50,19:10").split(",")
             if item.strip()
+        )
+        if not sync_times:
+            raise ValueError("RESULT_SYNC_TIMES must contain at least one time")
+        sync_times = tuple(
+            _validate_time(item, "RESULT_SYNC_TIMES entry") for item in sync_times
+        )
+        if tuple(sorted(set(sync_times))) != sync_times:
+            raise ValueError("RESULT_SYNC_TIMES must be unique and sorted")
+
+        is_vercel = (
+            _as_bool(os.getenv("VERCEL"), False)
+            or bool(os.getenv("VERCEL_ENV") or os.getenv("VERCEL_URL"))
         )
         return cls(
             mongodb_uri=os.getenv("MONGODB_URI") or os.getenv("MONGO_URI") or "mongodb://127.0.0.1:27017",
             mongodb_database=os.getenv("MONGODB_DATABASE", "xsmb_research"),
-            timezone_name=os.getenv("APP_TIMEZONE", "Asia/Ho_Chi_Minh"),
+            timezone_name=timezone_name,
             kqxs_base_url=os.getenv("KQXS_BASE_URL", "https://www.kqxs.vn").rstrip("/"),
             xosodaiphat_base_url=os.getenv(
                 "XOSODAIPHAT_BASE_URL", "https://xosodaiphat.com"
@@ -87,15 +124,24 @@ class Settings:
             scheduler_retry_delay_seconds=max(
                 1, min(60, _as_int(os.getenv("SCHEDULER_RETRY_DELAY_SECONDS"), 5))
             ),
+            admin_api_key=os.getenv("ADMIN_API_KEY", "").strip(),
+            require_admin_auth=_as_bool(
+                os.getenv("REQUIRE_ADMIN_AUTH"),
+                is_vercel,
+            ),
             auto_prediction=_as_bool(os.getenv("AUTO_PREDICTION"), True),
             auto_prediction_count=selected_count,
-            prediction_time=os.getenv("PREDICTION_TIME", "17:30"),
+            prediction_time=prediction_time,
             result_sync_times=sync_times,
-            ai_configured=bool(os.getenv("AI_API_KEY", "").strip()),
-            is_vercel=(
-                _as_bool(os.getenv("VERCEL"), False)
-                or bool(os.getenv("VERCEL_ENV") or os.getenv("VERCEL_URL"))
+            result_poll_start_time=_validate_time(
+                os.getenv("RESULT_POLL_START_TIME", "18:30").strip(),
+                "RESULT_POLL_START_TIME",
             ),
+            result_poll_interval_seconds=max(
+                10, _as_int(os.getenv("RESULT_POLL_INTERVAL_SECONDS"), 10)
+            ),
+            ai_configured=bool(os.getenv("AI_API_KEY", "").strip()),
+            is_vercel=is_vercel,
         )
 
     @property

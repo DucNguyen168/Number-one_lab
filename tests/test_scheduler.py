@@ -1,6 +1,8 @@
 import asyncio
-from datetime import date
+from datetime import date, datetime, timedelta
 from types import SimpleNamespace
+
+import pytest
 
 from app.services.scheduler import DailyScheduler
 
@@ -179,3 +181,79 @@ def test_generate_prediction_creates_three_two_digit_model_snapshots(
         "catboost_two_digit_created": True,
         "catboost_two_digit_error": None,
     }
+
+
+def _polling_scheduler(monkeypatch, *, result_available=False):
+    current = [datetime(2026, 10, 12, 18, 29, 59)]
+    scheduler = DailyScheduler(SimpleNamespace(), SimpleNamespace(
+        auto_prediction=False, prediction_time="17:30",
+        result_poll_start_time="18:30", result_poll_interval_seconds=10,
+        result_sync_times=("18:30", "18:50", "19:10"),
+        scheduler_retry_attempts=1, scheduler_retry_delay_seconds=1,
+        local_now=lambda: current[0],
+    ))
+    calls = []
+
+    async def sync(target, *, latest_only=False):
+        calls.append((target, latest_only))
+        return {"result_available": result_available}
+
+    monkeypatch.setattr(scheduler, "_sync_and_evaluate", sync)
+    return scheduler, current, calls
+
+
+def test_poll_starts_at_1830_and_repeats_until_result(monkeypatch) -> None:
+    scheduler, current, calls = _polling_scheduler(monkeypatch)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert calls == []
+    current[0] += timedelta(seconds=1)
+    asyncio.run(scheduler._run_once(current[0]))
+    current[0] += timedelta(seconds=9)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert len(calls) == 1
+    current[0] += timedelta(seconds=1)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert calls == [(date(2026, 10, 12), True)] * 2
+
+
+def test_ready_result_stops_fast_poll_but_keeps_reconciliation(monkeypatch) -> None:
+    scheduler, current, calls = _polling_scheduler(monkeypatch, result_available=True)
+    current[0] = datetime(2026, 10, 12, 18, 30)
+    asyncio.run(scheduler._run_once(current[0]))
+    current[0] += timedelta(seconds=10)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert len(calls) == 1
+    current[0] = datetime(2026, 10, 12, 18, 51)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert calls[-1] == (date(2026, 10, 12), False)
+    current[0] = datetime(2026, 10, 13, 18, 30)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert calls[-1] == (date(2026, 10, 13), True)
+
+
+def test_poll_failure_retries_after_interval_not_every_tick(monkeypatch) -> None:
+    scheduler, current, calls = _polling_scheduler(monkeypatch)
+
+    async def fail(*args, **kwargs):
+        calls.append("failed")
+        raise RuntimeError("offline")
+
+    monkeypatch.setattr(scheduler, "_sync_and_evaluate", fail)
+    current[0] = datetime(2026, 10, 12, 18, 30)
+    asyncio.run(scheduler._run_once(current[0]))
+    current[0] += timedelta(seconds=1)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert calls == ["failed"]
+    current[0] += timedelta(seconds=9)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert calls == ["failed", "failed"]
+
+
+@pytest.mark.parametrize("hour,minute", [(18, 42), (23, 59)])
+def test_poll_catches_up_on_late_start_and_keeps_trying_all_evening(
+    monkeypatch, hour, minute,
+) -> None:
+    scheduler, current, calls = _polling_scheduler(monkeypatch)
+    current[0] = datetime(2026, 10, 12, hour, minute)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert calls == [(date(2026, 10, 12), True)]

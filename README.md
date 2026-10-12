@@ -176,7 +176,10 @@ SKIP_COMPLETED_HISTORY=true
 Mặc định scheduler:
 
 - Tạo đồng thời prediction 65 số và prediction Top‑1 chữ số cuối lúc `17:30` theo giờ `Asia/Ho_Chi_Minh`.
-- Đồng bộ kết quả lúc `18:35`, `18:50` và `19:10`.
+- Bắt đầu kiểm tra kết quả lúc `18:30` giờ Việt Nam, thử lại mỗi `10` giây
+  sau khi lượt trước kết thúc cho đến khi có kết quả hợp lệ trong ngày.
+  Nếu chưa có kết quả, tiếp tục đến hết ngày; nguồn lỗi cũng được thử lại.
+- Đồng bộ/đối chiếu bổ sung lúc `18:30`, `18:50` và `19:10`.
 - Sau mỗi lần đồng bộ, tự đánh giá prediction cùng ngày.
 - Ngay khi xác nhận đã có kết quả hợp lệ của hôm nay, tự khóa prediction 65 số và
   prediction Top‑1 cho ngày mai. Nếu snapshot ngày mai đã tồn tại thì giữ nguyên,
@@ -187,7 +190,9 @@ Có thể thay đổi trong `.env`:
 ```dotenv
 AUTO_PREDICTION_COUNT=65
 PREDICTION_TIME=17:30
-RESULT_SYNC_TIMES=18:35,18:50,19:10
+RESULT_POLL_START_TIME=18:30
+RESULT_POLL_INTERVAL_SECONDS=10
+RESULT_SYNC_TIMES=18:30,18:50,19:10
 SYNC_ON_STARTUP=true
 SCHEDULER_RETRY_ATTEMPTS=3
 SCHEDULER_RETRY_DELAY_SECONDS=5
@@ -208,7 +213,7 @@ Vercel chạy FastAPI dưới dạng serverless Function, vì vậy scheduler tr
 Vercel Cron gọi `GET /api/auto-daily` thay thế. Các mốc trong `vercel.json` là UTC:
 
 - `30 10 * * *`: chuẩn bị prediction lúc 17:30 giờ Việt Nam.
-- `35 11 * * *`, `50 11 * * *`, `10 12 * * *`: đồng bộ/đối chiếu sau kỳ quay và
+- `30 11 * * *`, `50 11 * * *`, `10 12 * * *`: đồng bộ/đối chiếu sau kỳ quay và
   tạo prediction ngày mai ngay khi kết quả hôm nay xuất hiện.
 
 Endpoint cron dùng MongoDB lease để tránh hai invocation chạy chồng nhau và có thể bảo
@@ -216,9 +221,33 @@ vệ bằng biến môi trường `CRON_SECRET`. Hãy tạo chuỗi ngẫu nhiê
 Vercel **Project Settings → Environment Variables**, áp dụng cho Production rồi redeploy.
 Vercel tự gửi giá trị này dưới header `Authorization: Bearer ...`.
 
-Trên gói Hobby, cron chỉ đảm bảo chạy trong giờ đã cấu hình, có thể lệch tối đa 59 phút;
-gói Pro có độ chính xác theo phút. Sau mỗi lần sửa `vercel.json` phải tạo production
-deployment mới thì lịch cron mới được cập nhật.
+Trên gói Hobby, cron chỉ đảm bảo chạy trong giờ đã cấu hình, có thể lệch tối đa 59 phút.
+Lịch trên vẫn dùng các cron hằng ngày tương thích Hobby; không dùng cron mỗi phút
+vì Vercel sẽ từ chối deploy trên gói này.
+[Giới hạn chính thức của Vercel](https://vercel.com/docs/cron-jobs/usage-and-pricing).
+Sau mỗi lần sửa `vercel.json` phải tạo production deployment mới thì lịch cron mới
+được cập nhật.
+
+**Cập nhật nhanh trên Hobby khi trang đang mở:** từ `18:30`, trình duyệt kiểm tra
+mỗi 10 giây và gọi `POST /api/results/refresh` nếu hôm nay chưa có kết quả hợp lệ.
+Endpoint chỉ thu thập kết quả của ngày hiện tại, không tạo/huấn luyện dự đoán.
+Các nguồn được tải song song và lưu ngay khi từng nguồn trả về; vẫn giữ kiểm tra
+xung đột. MongoDB lease dùng chung với cron và nhật ký lần thử giới hạn số lượt
+gọi nguồn trên toàn bộ người xem, kể cả khi nguồn lỗi. Kết quả hợp lệ đã có thì
+không tải lại nguồn. Giao diện tiếp tục kiểm tra mỗi phút để cập nhật đánh giá và
+các thay đổi đối chiếu, hiển thị thời điểm lưu kết quả và bỏ cache khi đọc kết quả.
+Khi quay lại tab hoặc có mạng trở lại, trang kiểm tra ngay. Trình duyệt có thể làm
+chậm timer ở tab nền; thời gian nhận dữ liệu còn phụ thuộc lúc nguồn công bố và
+tốc độ mạng, không bảo đảm kết quả xuất hiện đúng 18:30.
+
+**Cập nhật nhanh ngay cả khi không mở trang:** cần dịch vụ lịch bên ngoài gọi
+`POST https://<ten-mien>/api/results/refresh` từ 18:30 đến hết ngày giờ Việt Nam
+(11:30–16:59 UTC), mỗi 10–60 giây tùy dịch vụ. Endpoint tự bỏ qua trước khung giờ
+và giới hạn lượt gọi nguồn, không yêu cầu gửi khóa admin ra trình duyệt.
+Các lịch cron hằng ngày vẫn tạo dự đoán ngày tiếp theo. Dự án chưa tự đăng ký hay
+cấu hình dịch vụ lịch bên ngoài; chỉ deploy mã nguồn không tạo ra dịch vụ này.
+Nếu chạy API trên máy tính/VPS liên tục với `ENABLE_SCHEDULER=true`, scheduler
+tích hợp đã tự kiểm tra mỗi 10 giây và không cần mở trang.
 
 ## Mô hình hiện tại
 

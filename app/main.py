@@ -63,11 +63,37 @@ def _in_process_scheduler_enabled() -> bool:
 def _authorize_cron_request(request: Request) -> None:
     cron_secret = os.getenv("CRON_SECRET", "").strip()
     if not cron_secret:
+        if getattr(settings, "is_vercel", False):
+            raise HTTPException(
+                status_code=503,
+                detail="CRON_SECRET must be configured in the Vercel environment",
+            )
         return
     authorization = request.headers.get("authorization", "")
     expected = f"Bearer {cron_secret}"
     if not secrets.compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Invalid cron authorization")
+
+
+def _authorize_admin_request(request: Request) -> None:
+    """Protect write endpoints while keeping local development frictionless."""
+    admin_api_key = getattr(settings, "admin_api_key", "")
+    auth_required = getattr(settings, "require_admin_auth", False) or bool(admin_api_key)
+    if not auth_required:
+        return
+    if not admin_api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="ADMIN_API_KEY must be configured before admin actions are enabled",
+        )
+
+    supplied = request.headers.get("x-admin-key", "").strip()
+    if not supplied:
+        authorization = request.headers.get("authorization", "")
+        if authorization.lower().startswith("bearer "):
+            supplied = authorization[7:].strip()
+    if not supplied or not secrets.compare_digest(supplied, admin_api_key):
+        raise HTTPException(status_code=401, detail="Invalid admin authorization")
 
 
 @asynccontextmanager
@@ -138,6 +164,8 @@ def public_settings() -> dict[str, Any]:
         "auto_prediction_count": settings.auto_prediction_count,
         "prediction_time": settings.prediction_time,
         "result_sync_times": settings.result_sync_times,
+        "result_poll_start_time": settings.result_poll_start_time,
+        "result_poll_interval_seconds": settings.result_poll_interval_seconds,
         "ai_required": False,
         "ai_configured": settings.ai_configured,
         "ai_note": (
@@ -148,6 +176,7 @@ def public_settings() -> dict[str, Any]:
 
 @app.post("/api/sync/current")
 def sync_current(request: Request) -> dict[str, Any]:
+    _authorize_admin_request(request)
     db = _db(request)
     collector = KqxsCollector(db, settings)
     try:
@@ -176,6 +205,7 @@ def sync_backfill(
     end_year: Annotated[int | None, Query(ge=2019)] = None,
     force: Annotated[bool, Query()] = False,
 ) -> dict[str, Any]:
+    _authorize_admin_request(request)
     current_year = settings.local_today().year
     final_year = end_year or current_year
     if final_year > current_year:
@@ -240,9 +270,54 @@ def list_results(
 
 
 @app.get("/api/results/latest")
-def latest_result(request: Request) -> dict[str, Any] | None:
+def latest_result(request: Request, response: Response) -> dict[str, Any] | None:
+    response.headers["Cache-Control"] = "no-store, max-age=0"
     result = _db(request).draw_results.find_one(sort=[("draw_date", -1)])
     return serialize_document(result) if result else None
+
+
+@app.post("/api/results/refresh")
+def refresh_latest_result(request: Request, response: Response) -> dict[str, Any]:
+    """Public, bounded refresh for Hobby: only today's result after the draw.
+
+    The shared cron lease and persisted attempt time throttle all visitors together.
+    No caller can choose a date, change settings, or trigger model training here.
+    """
+    response.headers["Cache-Control"] = "no-store, max-age=0"
+    db = _db(request)
+    now = settings.local_now()
+    today = now.date()
+
+    def outcome(status: str) -> dict[str, Any]:
+        latest = db.draw_results.find_one(sort=[("draw_date", -1)])
+        return {"status": status, "result": serialize_document(latest)}
+
+    if now.strftime("%H:%M") < settings.result_poll_start_time:
+        return outcome("outside_window")
+    try:
+        with mongo_cron_lease(db, "auto-daily", lease_seconds=75):
+            recent_attempt = db.collector_runs.find_one(
+                {
+                    "type": "latest_sync",
+                    "draw_date": today.isoformat(),
+                    "started_at": {"$gte": now - timedelta(
+                        seconds=settings.result_poll_interval_seconds
+                    )},
+                },
+                {"_id": 1},
+            )
+            if recent_attempt:
+                return outcome("throttled")
+            sync = KqxsCollector(db, settings).sync_latest(today)
+            evaluate_pending_predictions(db)
+            evaluate_pending_digit_predictions(db)
+            return outcome(sync["status"])
+    except CronAlreadyRunning:
+        return outcome("already_running")
+    except (CollectorSourcesUnavailable, httpx.HTTPError):
+        # A missing/failed source is retried on the next permitted poll.
+        response.status_code = 502
+        return outcome("source_failed")
 
 
 @app.get("/api/results/recent-last-two")
@@ -294,14 +369,24 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
     3. Tạo dự đoán 2 số cho ngày tiếp theo (nếu chưa có)
     4. Tạo dự đoán 1 số cho ngày tiếp theo (nếu chưa có)
     """
-    today = settings.local_today()
+    now = settings.local_now()
+    today = now.date()
 
     # Bước 1: Sync kết quả
     collector = KqxsCollector(db, settings)
     sync_result: dict[str, Any] = {}
     sync_error: str | None = None
     try:
-        sync_result = collector.sync_year(today.year)
+        if (
+            now.strftime("%H:%M") >= settings.result_poll_start_time
+            and db.draw_results.find_one(
+                {"draw_date": today.isoformat(), "status": {"$ne": "conflict"}},
+                {"_id": 1},
+            ) is None
+        ):
+            sync_result = collector.sync_latest(today)
+        else:
+            sync_result = collector.sync_year(today.year)
     except CollectorSourcesUnavailable as exc:
         sync_error = str(exc)
     except httpx.HTTPError as exc:
@@ -324,8 +409,8 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
     if today_result:
         target = today + timedelta(days=1)
     else:
-        first_sync = min(settings.result_sync_times, default="18:35")
-        if settings.local_now().strftime("%H:%M") >= first_sync:
+        first_sync = min(settings.result_poll_start_time, *settings.result_sync_times)
+        if now.strftime("%H:%M") >= first_sync:
             target = None
 
     pred_result: dict[str, Any] = {}
@@ -418,6 +503,7 @@ def generate_prediction(
     request: Request,
     payload: Annotated[GeneratePredictionRequest, Body()],
 ) -> dict[str, Any]:
+    _authorize_admin_request(request)
     db = _db(request)
     target = payload.prediction_date or settings.local_today()
     if payload.prediction_date is None and db.draw_results.find_one(
@@ -464,6 +550,7 @@ def generate_logistic_prediction(
     request: Request,
     payload: Annotated[GeneratePredictionRequest, Body()],
 ) -> dict[str, Any]:
+    _authorize_admin_request(request)
     db = _db(request)
     target = payload.prediction_date or settings.local_today()
     if payload.prediction_date is None and db.draw_results.find_one(
@@ -519,6 +606,7 @@ def generate_catboost_prediction(
     request: Request,
     payload: Annotated[GeneratePredictionRequest, Body()],
 ) -> dict[str, Any]:
+    _authorize_admin_request(request)
     db = _db(request)
     target = payload.prediction_date or settings.local_today()
     if payload.prediction_date is None and db.draw_results.find_one(
@@ -637,6 +725,7 @@ def prediction_detail(request: Request, prediction_id: str) -> dict[str, Any]:
 
 @app.post("/api/evaluations/run")
 def evaluate_predictions(request: Request) -> dict[str, Any]:
+    _authorize_admin_request(request)
     db = _db(request)
     evaluation = evaluate_pending_predictions(db)
     return {
@@ -655,6 +744,7 @@ def run_backtest(
     request: Request,
     payload: Annotated[BacktestRequest, Body()],
 ) -> dict[str, Any]:
+    _authorize_admin_request(request)
     try:
         result = run_walk_forward_backtest(
             _db(request),
@@ -689,6 +779,7 @@ def generate_digit_prediction(
     request: Request,
     payload: Annotated[GenerateDigitPredictionRequest, Body()],
 ) -> dict[str, Any]:
+    _authorize_admin_request(request)
     db = _db(request)
     target = payload.prediction_date or settings.local_today()
     if payload.prediction_date is None and db.draw_results.find_one(
@@ -742,6 +833,7 @@ def run_digit_backtest(
     request: Request,
     payload: Annotated[DigitBacktestRequest, Body()],
 ) -> dict[str, Any]:
+    _authorize_admin_request(request)
     try:
         result = run_digit_walk_forward_backtest(
             _db(request),

@@ -62,6 +62,10 @@ class MongoDatabase:
             [("started_at", DESCENDING)], name="collector_started_at"
         )
         self.db.collector_runs.create_index(
+            [("type", ASCENDING), ("draw_date", ASCENDING), ("started_at", DESCENDING)],
+            name="collector_latest_attempt",
+        )
+        self.db.collector_runs.create_index(
             [
                 ("source", ASCENDING),
                 ("type", ASCENDING),

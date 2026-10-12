@@ -26,7 +26,7 @@
     },
     {
       "path": "/api/auto-daily",
-      "schedule": "35 11 * * *"
+      "schedule": "30 11 * * *"
     },
     {
       "path": "/api/auto-daily",

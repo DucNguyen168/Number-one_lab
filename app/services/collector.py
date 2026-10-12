@@ -580,11 +580,24 @@ class KqxsCollector:
         with self._lock_for_year(year):
             return self._sync_year_locked(year)
 
-    def _sync_year_locked(self, year: int) -> dict[str, Any]:
+    def sync_latest(self, target: date) -> dict[str, Any]:
+        """Poll only the requested draw; persist each source as soon as it returns."""
+        with self._lock_for_year(target.year):
+            if self.db.draw_results.find_one(
+                {"draw_date": target.isoformat(), "status": {"$ne": "conflict"}},
+                {"_id": 1},
+            ):
+                return {"draw_date": target.isoformat(), "status": "already_available"}
+            return self._sync_year_locked(target.year, target=target)
+
+    def _sync_year_locked(
+        self, year: int, *, target: date | None = None
+    ) -> dict[str, Any]:
         timer = perf_counter()
         started_at = datetime.now(timezone.utc)
         run = {
-            "type": "year_sync",
+            "type": "latest_sync" if target else "year_sync",
+            "draw_date": target.isoformat() if target else None,
             "year": year,
             "source": self.source_name,
             "started_at": started_at,
@@ -592,6 +605,30 @@ class KqxsCollector:
         }
         run_id = self.db.collector_runs.insert_one(run).inserted_id
         source_summaries: list[dict[str, Any]] = []
+        counters = {
+            "inserted": 0,
+            "matched": 0,
+            "conflicts": 0,
+            "unchanged": 0,
+            "write_operations": 0,
+        }
+        write_seconds = 0.0
+
+        def store_payload(payload: dict[str, Any]) -> None:
+            nonlocal write_seconds
+            write_started = perf_counter()
+            source_counters = self._store_source_draws(
+                draws=payload["draws"],
+                source_name=payload["name"],
+                source_key=payload["key"],
+                source_url=payload["url"],
+                page_checksum=payload["checksum"],
+                fetched_at=datetime.now(timezone.utc),
+            )
+            for key in counters:
+                counters[key] += source_counters.get(key, 0)
+            write_seconds += perf_counter() - write_started
+
         try:
             source_specs = self._source_specs(year)
             ordered_results: list[
@@ -607,6 +644,13 @@ class KqxsCollector:
                 ]
                 for future in as_completed(futures):
                     index, payload, summary = future.result()
+                    if target is not None and payload is not None:
+                        payload["draws"] = [
+                            draw for draw in payload["draws"]
+                            if draw.draw_date == target.isoformat()
+                        ]
+                        # A slow or failed source must not delay a faster source's write.
+                        store_payload(payload)
                     ordered_results[index] = (payload, summary)
 
             payloads: list[dict[str, Any]] = []
@@ -627,28 +671,12 @@ class KqxsCollector:
                     f"All result sources failed for {year}. {errors}"
                 )
 
-            fetch_finished = perf_counter()
-            counters = {
-                "inserted": 0,
-                "matched": 0,
-                "conflicts": 0,
-                "unchanged": 0,
-                "write_operations": 0,
-            }
+            fetch_seconds = perf_counter() - timer - write_seconds
             unique_dates: set[str] = set()
-            fetched_at = datetime.now(timezone.utc)
             for payload in payloads:
                 unique_dates.update(draw.draw_date for draw in payload["draws"])
-                source_counters = self._store_source_draws(
-                    draws=payload["draws"],
-                    source_name=payload["name"],
-                    source_key=payload["key"],
-                    source_url=payload["url"],
-                    page_checksum=payload["checksum"],
-                    fetched_at=fetched_at,
-                )
-                for key in counters:
-                    counters[key] += source_counters.get(key, 0)
+                if target is None:
+                    store_payload(payload)
 
             finished_at = datetime.now(timezone.utc)
             source_failures = sum(
@@ -669,12 +697,8 @@ class KqxsCollector:
                 "source_failures": source_failures,
                 "fallback_used": source_failures > 0,
                 "sources": source_summaries,
-                "fetch_duration_ms": round(
-                    (fetch_finished - timer) * 1_000
-                ),
-                "write_duration_ms": round(
-                    (perf_counter() - fetch_finished) * 1_000
-                ),
+                "fetch_duration_ms": round(fetch_seconds * 1_000),
+                "write_duration_ms": round(write_seconds * 1_000),
                 "duration_ms": round((perf_counter() - timer) * 1_000),
                 "page_checksum": hashlib.sha256(
                     checksum_material.encode("utf-8")
