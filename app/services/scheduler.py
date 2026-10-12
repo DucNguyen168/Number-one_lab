@@ -17,6 +17,7 @@ from app.services.evaluation import (
 )
 from app.services.logistic_prediction import create_prediction as create_logistic_prediction
 from app.services.prediction import create_prediction
+from app.services import prediction_protocol as protocol
 
 
 logger = logging.getLogger(__name__)
@@ -151,9 +152,12 @@ class DailyScheduler:
         }
         prediction_token = f"prediction:{today.isoformat()}"
         first_sync = min(self.config.result_poll_start_time, *self.config.result_sync_times)
+        # Older deployments used 17:30, which is now the strict locking deadline.
+        prediction_time = (self.config.prediction_time if self.config.prediction_time < protocol.DEADLINE_TIME
+                           else "17:00")
         if (
             self.config.auto_prediction
-            and self.config.prediction_time <= current_time < first_sync
+            and prediction_time <= current_time < min(first_sync, protocol.DEADLINE_TIME)
             and prediction_token not in self._completed_tokens
         ):
             succeeded = await self._run_with_retries(

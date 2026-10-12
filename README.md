@@ -175,21 +175,20 @@ SKIP_COMPLETED_HISTORY=true
 
 Mặc định scheduler:
 
-- Tạo đồng thời prediction 65 số và prediction Top‑1 chữ số cuối lúc `17:30` theo giờ `Asia/Ho_Chi_Minh`.
+- Tạo dự đoán Top 65 cho Tần suất, Logistic và CatBoost lúc `17:00` theo giờ `Asia/Ho_Chi_Minh`; khóa trước deadline `17:30`.
 - Bắt đầu kiểm tra kết quả lúc `18:30` giờ Việt Nam, thử lại mỗi `10` giây
   sau khi lượt trước kết thúc cho đến khi có kết quả hợp lệ trong ngày.
   Nếu chưa có kết quả, tiếp tục đến hết ngày; nguồn lỗi cũng được thử lại.
 - Đồng bộ/đối chiếu bổ sung lúc `18:30`, `18:50` và `19:10`.
 - Sau mỗi lần đồng bộ, tự đánh giá prediction cùng ngày.
-- Ngay khi xác nhận đã có kết quả hợp lệ của hôm nay, tự khóa prediction 65 số và
-  prediction Top‑1 cho ngày mai. Nếu snapshot ngày mai đã tồn tại thì giữ nguyên,
+- Ngay khi xác nhận đã có kết quả hợp lệ của hôm nay, tự khóa ba mô hình Top 65 cho ngày mai. Nếu snapshot ngày mai đã tồn tại thì giữ nguyên,
   không tạo trùng và không ghi đè.
 
 Có thể thay đổi trong `.env`:
 
 ```dotenv
 AUTO_PREDICTION_COUNT=65
-PREDICTION_TIME=17:30
+PREDICTION_TIME=17:00
 RESULT_POLL_START_TIME=18:30
 RESULT_POLL_INTERVAL_SECONDS=10
 RESULT_SYNC_TIMES=18:30,18:50,19:10
@@ -202,7 +201,7 @@ Scheduler chỉ hoạt động trong thời gian ứng dụng đang chạy. Nế
 dùng Windows Task Scheduler, NSSM hoặc container/service manager để giữ API hoạt động.
 Khi `SYNC_ON_STARTUP=true`, scheduler tự đồng bộ năm hiện tại ngay sau khi server chạy.
 Nếu kết quả hôm nay đã tồn tại, lượt khởi động này cũng tự kiểm tra và tạo prediction
-cho ngày mai; lịch `17:30` vẫn là phương án dự phòng nếu ứng dụng được bật trước giờ quay.
+cho ngày mai; lịch `17:00` vẫn là phương án dự phòng nếu ứng dụng được bật trước giờ quay.
 Mỗi mốc lỗi được thử lại theo `SCHEDULER_RETRY_ATTEMPTS` thay vì bị đánh dấu hoàn tất
 ngay ở lần lỗi đầu tiên.
 
@@ -212,7 +211,7 @@ Vercel chạy FastAPI dưới dạng serverless Function, vì vậy scheduler tr
 được dùng trên Vercel. Biến hệ thống `VERCEL=1` được nhận diện tự động và ứng dụng dùng
 Vercel Cron gọi `GET /api/auto-daily` thay thế. Các mốc trong `vercel.json` là UTC:
 
-- `30 10 * * *`: chuẩn bị prediction lúc 17:30 giờ Việt Nam.
+- `0 9 * * *`: chuẩn bị dự đoán từ 16:00 giờ Việt Nam, chừa thời gian cho độ trễ cron Hobby và deadline 17:30.
 - `30 11 * * *`, `50 11 * * *`, `10 12 * * *`: đồng bộ/đối chiếu sau kỳ quay và
   tạo prediction ngày mai ngay khi kết quả hôm nay xuất hiện.
 

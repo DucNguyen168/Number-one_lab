@@ -1,0 +1,111 @@
+{
+  "generated_at": "2026-10-12T14:16:55.073429+00:00",
+  "python": "3.13.0rc2",
+  "library_versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "catboost": "1.2.10"
+  },
+  "snapshot_sha256": "c470f8b3bde497a1dbe915c3b82e71dfcb7bf3d0921157f684004ade13b54066",
+  "dataset_hash": "586c32ad7a0dc633fae837286f5d81b65e3162ec1698f5e168f0dc5750c50074",
+  "draws": 2789,
+  "first": "2019-01-01",
+  "last": "2026-10-12",
+  "excluded": [],
+  "missing_calendar_dates": [
+    "2019-02-04",
+    "2019-02-05",
+    "2019-02-06",
+    "2019-02-07",
+    "2020-01-24",
+    "2020-01-25",
+    "2020-01-26",
+    "2020-01-27",
+    "2020-04-01",
+    "2020-04-02",
+    "2020-04-03",
+    "2020-04-04",
+    "2020-04-05",
+    "2020-04-06",
+    "2020-04-07",
+    "2020-04-08",
+    "2020-04-09",
+    "2020-04-10",
+    "2020-04-11",
+    "2020-04-12",
+    "2020-04-13",
+    "2020-04-14",
+    "2020-04-15",
+    "2020-04-16",
+    "2020-04-17",
+    "2020-04-18",
+    "2020-04-19",
+    "2020-04-20",
+    "2020-04-21",
+    "2020-04-22",
+    "2021-02-11",
+    "2021-02-12",
+    "2021-02-13",
+    "2021-02-14",
+    "2022-01-31",
+    "2022-02-01",
+    "2022-02-02",
+    "2022-02-03",
+    "2023-01-21",
+    "2023-01-22",
+    "2023-01-23",
+    "2023-01-24",
+    "2024-02-09",
+    "2024-02-10",
+    "2024-02-11",
+    "2025-01-28",
+    "2025-01-29",
+    "2025-01-30",
+    "2025-01-31",
+    "2026-02-16",
+    "2026-02-17",
+    "2026-02-18",
+    "2026-02-19"
+  ],
+  "chi_square_uniform_p": 0.7407898452714495,
+  "protocol": {
+    "type": "exploratory_audit_not_untouched_holdout",
+    "primary_count": 65,
+    "live_deadline_local": "17:30",
+    "naive_mongodb_timestamps": "UTC",
+    "validation": "one-step expanding walk-forward, only dates before target",
+    "candidates": {
+      "bayes365_a1000": {
+        "window": 365,
+        "total_prior_mass": 1000
+      },
+      "bayes_joint_digit_mix": {
+        "joint_weight": 0.5,
+        "digit_prior_mass": 100
+      },
+      "markov_shrunk_a100": {
+        "order": 1,
+        "row_prior_mass": 100,
+        "base": "bayes365_a1000"
+      },
+      "logistic_bayes_mix": {
+        "logistic_weight": 0.5,
+        "bayes_joint_digit_weight": 0.5
+      },
+      "logistic_uniform_half": {
+        "logistic_weight": 0.5,
+        "note": "ranking unchanged; probability diagnostic only"
+      }
+    },
+    "selection": "fixed candidates; no parameter search; all results retained",
+    "statistics": "Wilson 95%, one-sided binomial vs N/100, Holm across candidate Top65 tests; descriptive only"
+  },
+  "source_hashes": {
+    "audit_algorithms.py": "a689161d2af195ab3a332335712e3e8b56f4b09869ac7fa01602ce7ce167e604",
+    "catboost_prediction.py": "50b6d3164ff27eac7bf8dea14b8490eae90a84e3fa98f1b76267e30bdcf2ce2b",
+    "digit_prediction.py": "d2f2b0bbbbf0e33bd53bec7ab7332b0a47928bf32862d9019d2e467c0346977f",
+    "logistic_prediction.py": "b317a206694ed0191ed0816c13407d92e8c00d87dd7250ff59de79d47fdbe71d",
+    "prediction.py": "30725d8bad9abfe12f21da62ac25917570b46cd10463474be6baba3ba9f6881a"
+  }
+}

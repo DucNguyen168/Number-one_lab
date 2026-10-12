@@ -45,6 +45,7 @@ from app.services.logistic_prediction import (
 )
 from app.services.model_comparison import comparison_summary, three_way_comparison_summary
 from app.services.prediction import MODEL_VERSION, create_prediction
+from app.services.prediction_protocol import DEADLINE_TIME
 from app.services.rolling_comparison import (
     load_or_build_rolling_comparison,
     report_for_selected_count,
@@ -409,7 +410,7 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
     if today_result:
         target = today + timedelta(days=1)
     else:
-        first_sync = min(settings.result_poll_start_time, *settings.result_sync_times)
+        first_sync = min(DEADLINE_TIME, settings.result_poll_start_time, *settings.result_sync_times)
         if now.strftime("%H:%M") >= first_sync:
             target = None
 
@@ -660,16 +661,20 @@ def latest_catboost_prediction(
 @app.get("/api/model-comparison")
 def get_model_comparison(
     request: Request,
+    response: Response,
     selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
 ) -> dict[str, Any]:
+    response.headers["Cache-Control"] = "no-store, max-age=0"
     return serialize_document(comparison_summary(_db(request), selected_count))
 
 
 @app.get("/api/model-comparison/three-way")
 def get_three_way_model_comparison(
     request: Request,
+    response: Response,
     selected_count: Annotated[int, Query(ge=60, le=80)] = 65,
 ) -> dict[str, Any]:
+    response.headers["Cache-Control"] = "no-store, max-age=0"
     return serialize_document(
         three_way_comparison_summary(_db(request), selected_count)
     )

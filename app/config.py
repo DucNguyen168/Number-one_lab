@@ -75,7 +75,7 @@ class Settings:
             raise ValueError(f"Unknown APP_TIMEZONE: {timezone_name!r}") from exc
 
         prediction_time = _validate_time(
-            os.getenv("PREDICTION_TIME", "17:30").strip(),
+            os.getenv("PREDICTION_TIME", "17:00").strip(),
             "PREDICTION_TIME",
         )
         sync_times = tuple(

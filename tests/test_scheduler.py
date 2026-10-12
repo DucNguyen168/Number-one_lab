@@ -231,6 +231,24 @@ def test_ready_result_stops_fast_poll_but_keeps_reconciliation(monkeypatch) -> N
     assert calls[-1] == (date(2026, 10, 13), True)
 
 
+def test_legacy_prediction_schedule_runs_before_strict_deadline(monkeypatch) -> None:
+    scheduler, current, _ = _polling_scheduler(monkeypatch)
+    scheduler.config.auto_prediction = True
+    generated = []
+
+    async def generate(target):
+        generated.append(target)
+
+    monkeypatch.setattr(scheduler, "_generate_prediction", generate)
+    current[0] = datetime(2026, 10, 12, 17, 0)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert generated == [date(2026, 10, 12)]
+    scheduler._completed_tokens.clear()
+    current[0] = datetime(2026, 10, 12, 17, 30)
+    asyncio.run(scheduler._run_once(current[0]))
+    assert generated == [date(2026, 10, 12)]
+
+
 def test_poll_failure_retries_after_interval_not_every_tick(monkeypatch) -> None:
     scheduler, current, calls = _polling_scheduler(monkeypatch)
 

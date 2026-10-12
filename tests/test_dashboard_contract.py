@@ -162,7 +162,7 @@ def test_vercel_cron_uses_get_compatible_reconciliation_endpoint() -> None:
     assert {"GET", "POST"} <= cron_route.methods
     assert len(config["crons"]) == 4
     assert {job["path"] for job in config["crons"]} == {"/api/auto-daily"}
-    assert config["crons"][0]["schedule"] == "30 10 * * *"
+    assert config["crons"][0]["schedule"] == "0 9 * * *"
 
 
 def test_cron_secret_is_checked_when_configured(monkeypatch) -> None:

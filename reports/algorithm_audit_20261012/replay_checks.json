@@ -1,0 +1,666 @@
+[
+  {
+    "date": "2026-08-28",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.0015106696963468232,
+    "same_selected_numbers": false,
+    "saved_training_draw_count": 235,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-08-29",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.00191237070414557,
+    "same_selected_numbers": false,
+    "saved_training_draw_count": 612,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-01",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.0019133789948551343,
+    "same_selected_numbers": false,
+    "saved_training_draw_count": 615,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-02",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.0019137122099999997,
+    "same_selected_numbers": false,
+    "saved_training_draw_count": 616,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-03",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.0019140439035722004,
+    "same_selected_numbers": false,
+    "saved_training_draw_count": 617,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-05",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.0051084061976441174,
+    "same_selected_numbers": false,
+    "saved_training_draw_count": 700,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-06",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.896170274770739e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2752,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-07",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.998640390496689e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2753,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-08",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.960094834860485e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2754,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-09",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.92004006980018e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2755,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-10",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.931367814098309e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2756,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-11",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.900871375390636e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2757,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-12",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.919519652757387e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2758,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-13",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.901530570311508e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2759,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-14",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.0,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2760,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-15",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.0,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2761,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-16",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.994962776727618e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2762,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-17",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.941862891127968e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2763,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-18",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.989932078647286e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2764,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-19",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.903421418900322e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2765,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-20",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.94247004434456e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2766,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-21",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.991770885531821e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2767,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-22",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.961872926423361e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2768,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-22",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.938245992680557e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2768,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-23",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.969739897386916e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2769,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-23",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.984753929071495e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2769,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-24",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.10564888978049e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2770,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-24",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.957605506672458e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2770,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-24",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.939850611895835e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2770,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-25",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.407383395217291e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2771,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-25",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.965012775914879e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2771,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-25",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 3.469446951953614e-18,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2771,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-26",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.344057314726758e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2772,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-26",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.954925358902074e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2772,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-26",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.943667003542984e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2772,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-27",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 4.99961877453714e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2773,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-27",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.985508533783545e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2773,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-27",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.943823128655822e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2773,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-28",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 4.999999893284812e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2774,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-28",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.944031295472939e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2774,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-28",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.946416540252407e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2774,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-29",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.4113560854496257e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2775,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-29",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.928210617372031e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2775,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-29",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.943849149507962e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2775,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-30",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.095654280473649e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2776,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-30",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 3.469446951953614e-18,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2776,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-09-30",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.986063645295857e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2776,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-01",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 4.900000023788653e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2777,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-01",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.976722159377722e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2777,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-01",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.958360111384508e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2777,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-02",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.00000006675716e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2778,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-02",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.978500250940598e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2778,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-02",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.957596833055078e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2778,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-03",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.2053604482349414e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2779,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-03",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.815861251450393e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2779,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-03",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 0.0,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2779,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-04",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.202488440048114e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2780,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-04",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.966131672556884e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2780,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-04",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.893906460634589e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2780,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-05",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.0231334716710485e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2781,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-05",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.960303001677602e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2781,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-05",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.955272303597269e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2781,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-06",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.156707873210653e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2782,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-06",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 0.0,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2782,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-06",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.867495295712843e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2782,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-07",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 4.991550228705677e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2783,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-07",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.984727908219355e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2783,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-07",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.95372839970365e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2783,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-08",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 4.9985519195994144e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2784,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-08",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.988249396875588e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2784,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-08",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.966999034294872e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2784,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-09",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.0214506164270034e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2785,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-09",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.980356405059894e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2785,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-09",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.743289094832903e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2785,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-10",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 4.9912299987520115e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2786,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-10",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 0.0,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2786,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-10",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.74349726165002e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2786,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-11",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.1828246555585267e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2787,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-11",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.920595181312493e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2787,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-11",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.970485828481586e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2787,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-12",
+    "model": "direct_catboost_multiclass_v2_context2000",
+    "max_absolute_probability_difference": 5.3883180903269157e-11,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2788,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-12",
+    "model": "factorized_logistic_v1",
+    "max_absolute_probability_difference": 4.992534163861251e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2788,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  },
+  {
+    "date": "2026-10-12",
+    "model": "frequency_ensemble_v1",
+    "max_absolute_probability_difference": 4.931341793246169e-13,
+    "same_selected_numbers": true,
+    "saved_training_draw_count": 2788,
+    "note": "Replay uses the current full historical dataset; an older live snapshot may have had less history."
+  }
+]

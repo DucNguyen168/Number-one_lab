@@ -1,0 +1,53 @@
+{
+  "frequency_ensemble_v1 -> factorized_logistic_v1": {
+    "n": 365,
+    "a_only": 70,
+    "b_only": 90,
+    "delta_b_minus_a": 0.0547945205479452,
+    "mcnemar_exact_p": 0.13282253314752623,
+    "block_bootstrap_delta_ci95": {
+      "7": [
+        -0.00821917808219178,
+        0.1178082191780822
+      ],
+      "30": [
+        0.0027397260273972603,
+        0.1178082191780822
+      ]
+    }
+  },
+  "factorized_logistic_v1 -> logistic_bayes_mix": {
+    "n": 365,
+    "a_only": 17,
+    "b_only": 20,
+    "delta_b_minus_a": 0.00821917808219178,
+    "mcnemar_exact_p": 0.7428293587290682,
+    "block_bootstrap_delta_ci95": {
+      "7": [
+        -0.024657534246575342,
+        0.043835616438356165
+      ],
+      "30": [
+        -0.024657534246575342,
+        0.0410958904109589
+      ]
+    }
+  },
+  "frequency_ensemble_v1 -> logistic_bayes_mix": {
+    "n": 365,
+    "a_only": 58,
+    "b_only": 81,
+    "delta_b_minus_a": 0.06301369863013699,
+    "mcnemar_exact_p": 0.06164934251084397,
+    "block_bootstrap_delta_ci95": {
+      "7": [
+        0.00821917808219178,
+        0.1178082191780822
+      ],
+      "30": [
+        0.010958904109589041,
+        0.12054794520547946
+      ]
+    }
+  }
+}

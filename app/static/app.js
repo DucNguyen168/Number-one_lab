@@ -863,7 +863,7 @@ async function loadLatestPrediction() {
       chips.push({ text: `Kết quả: ${prediction.evaluation.actual_last_two}`, cls: '' });
     }
   } else {
-    chips.push({ text: '⏳ PENDING', cls: 'pending-chip' });
+    chips.push({ text: evalStatus === 'invalidated' ? '⚠️ Kết quả cần xác minh' : '⏳ PENDING', cls: 'pending-chip' });
   }
 
   chips.forEach(({ text, cls }) => {
@@ -903,7 +903,7 @@ function renderFortunePrediction(prediction) {
     `Coverage ${formatPercent(prediction.coverage_probability)}`,
     evaluation.status === 'evaluated'
       ? (evaluation.hit ? '✅ HIT' : '❌ MISS')
-      : '⏳ PENDING',
+      : evaluation.status === 'invalidated' ? '⚠️ Kết quả cần xác minh' : '⏳ PENDING',
   ];
   if (actual) chips.push(`Kết quả ${actual}`);
   chips.forEach((text) => {
@@ -1034,7 +1034,7 @@ async function loadLogisticPredictionHistory() {
     const status = document.createElement('td');
     status.append(evaluation.status === 'evaluated'
       ? badge(evaluation.hit ? 'HIT' : 'MISS', evaluation.hit ? 'hit' : 'miss')
-      : badge('PENDING', 'pending'));
+      : badge(evaluation.status === 'invalidated' ? 'CẦN ĐỐI CHIẾU LẠI' : 'PENDING', 'pending'));
     row.append(status);
     const action = document.createElement('td');
     const button = document.createElement('button');
@@ -1061,16 +1061,26 @@ function comparisonCard(label, value, detail = '') {
   return card;
 }
 
+function comparisonModelDetail(model, total) {
+  const ci = model?.confidence_interval_95;
+  const interval = Array.isArray(ci)
+    ? `CI 95% ${formatPercent(ci[0])} – ${formatPercent(ci[1])}`
+    : 'Chưa có khoảng tin cậy';
+  return `${model?.hits || 0}/${total} HIT · ${interval}`;
+}
+
 async function loadModelComparison() {
   const selectedCount = Number(el('fortune-selected-count').value);
   const comparison = await api(`/api/model-comparison?selected_count=${selectedCount}`);
   const root = el('fortune-comparison-summary');
   root.replaceChildren(
     comparisonCard('Kỳ ghép cặp', comparison.paired_predictions, `Top ${selectedCount}`),
-    comparisonCard('Mô hình tần suất', formatPercent(comparison.frequency_model.hit_rate), `${comparison.frequency_model.hits} HIT`),
-    comparisonCard('Mô hình Logistic', formatPercent(comparison.logistic_model.hit_rate), `${comparison.logistic_model.hits} HIT`),
-    comparisonCard('Chênh lệch B − A', formatPercent(comparison.lift_logistic_vs_frequency), `Baseline ${formatPercent(comparison.baseline, 0)}`),
+    comparisonCard('Mô hình tần suất', formatPercent(comparison.frequency_model.hit_rate), comparisonModelDetail(comparison.frequency_model, comparison.paired_predictions)),
+    comparisonCard('Mô hình Logistic', formatPercent(comparison.logistic_model.hit_rate), comparisonModelDetail(comparison.logistic_model, comparison.paired_predictions)),
+    comparisonCard('Chênh lệch B − A', formatPercent(comparison.lift_logistic_vs_frequency), `Baseline ${formatPercent(comparison.baseline, 0)} · McNemar p=${comparison.mcnemar_exact_p ?? '—'}`),
   );
+  const note = el('fortune-comparison-note');
+  if (note) note.textContent = comparison.note;
 
   const body = el('fortune-comparison-history');
   body.replaceChildren();
@@ -1109,8 +1119,8 @@ async function loadRollingModelComparison() {
       `Đối chiếu walk-forward song song theo dữ liệu đến ${report.dataset.last_date}. `
       + 'Báo cáo tự làm mới khi kết quả mới được đồng bộ.';
     el('fortune-historical-summary').replaceChildren(
-      comparisonCard('Tần suất A', formatPercent(metrics.frequency.hit_rate), `${metrics.frequency.hits} HIT`),
-      comparisonCard('Logistic B', formatPercent(metrics.logistic.hit_rate), `${metrics.logistic.hits} HIT`),
+      comparisonCard('Tần suất A', formatPercent(metrics.frequency.hit_rate), comparisonModelDetail(metrics.frequency, report.paired_predictions)),
+      comparisonCard('Logistic B', formatPercent(metrics.logistic.hit_rate), comparisonModelDetail(metrics.logistic, report.paired_predictions)),
       comparisonCard('Baseline', formatPercent(metrics.baseline, 0), `Top ${selectedCount}`),
       comparisonCard('B − A', formatPercent(metrics.delta_logistic_vs_frequency), `McNemar p=${metrics.mcnemar_exact_p}`),
     );
@@ -1348,7 +1358,7 @@ function renderCatBoostPrediction(prediction) {
     { text: `Train đến ${prediction.trained_through}`, cls: 'train' },
     { text: `Coverage ${formatPercent(prediction.coverage_probability)}`, cls: 'coverage' },
     {
-      text: evaluation.status === 'evaluated' ? (evaluation.hit ? '✅ HIT' : '❌ MISS') : '⏳ PENDING',
+      text: evaluation.status === 'evaluated' ? (evaluation.hit ? '✅ HIT' : '❌ MISS') : evaluation.status === 'invalidated' ? '⚠️ Kết quả cần xác minh' : '⏳ PENDING',
       cls: evaluation.status === 'evaluated' ? (evaluation.hit ? 'hit' : 'miss') : 'pending',
     },
   ].forEach(({ text, cls }) => {
@@ -1419,7 +1429,7 @@ async function loadCatBoostHistory() {
     const status = document.createElement('td');
     status.append(evaluation.status === 'evaluated'
       ? badge(evaluation.hit ? 'HIT' : 'MISS', evaluation.hit ? 'hit' : 'miss')
-      : badge('PENDING', 'pending'));
+      : badge(evaluation.status === 'invalidated' ? 'CẦN ĐỐI CHIẾU LẠI' : 'PENDING', 'pending'));
     row.append(status, cell(prediction.model_version));
     body.append(row);
   });
@@ -1442,7 +1452,11 @@ async function loadCatBoostComparison() {
   definitions.forEach(([label, model], index) => {
     const card = document.createElement('div');
     card.className = `catboost-metric model-${['a', 'b', 'c', 'baseline'][index]}${label === 'CatBoost C' ? ' featured' : ''}`;
-    card.innerHTML = `<span>${label}</span><strong>${formatPercent(model?.hit_rate)}</strong><small>${model?.hits == null ? `Top ${report.selected_count}` : `${model.hits}/${report.paired_predictions} HIT`}</small>`;
+    const caption = document.createElement('span'); caption.textContent = label;
+    const value = document.createElement('strong'); value.textContent = formatPercent(model?.hit_rate);
+    const detail = document.createElement('small');
+    detail.textContent = model?.hits == null ? `Top ${report.selected_count}` : comparisonModelDetail(model, report.paired_predictions);
+    card.append(caption, value, detail);
     cards.append(card);
   });
   (report.recent_pairs || []).forEach(item => {
@@ -1457,7 +1471,10 @@ async function loadCatBoostComparison() {
     const row = document.createElement('tr'); const td = cell('Chưa có ngày đủ cả ba snapshot đã đánh giá');
     td.colSpan = 5; td.style.textAlign = 'center'; row.append(td); body.append(row);
   }
-  note.textContent = report.note;
+  const paired = report.comparisons?.find(pair =>
+    pair.model_a === report.frequency_model.model_version && pair.model_b === report.catboost_model.model_version);
+  note.textContent = report.note + (paired?.mcnemar_holm_p == null ? ''
+    : ` Tần suất/CatBoost: McNemar p=${paired.mcnemar_exact_p}, sau Holm=${paired.mcnemar_holm_p}.`);
 }
 
 async function loadCatBoostRecentNumbers() {
@@ -1603,7 +1620,7 @@ function renderPredictionDetail(prediction) {
   const summary = el('prediction-detail-summary');
   summary.replaceChildren(
     detailSummaryItem('Ngày dự đoán', prediction.prediction_date),
-    detailSummaryItem('Đánh giá', evaluation.status === 'evaluated' ? (evaluation.hit ? 'HIT' : 'MISS') : 'PENDING'),
+    detailSummaryItem('Đánh giá', evaluation.status === 'evaluated' ? (evaluation.hit ? 'HIT' : 'MISS') : evaluation.status === 'invalidated' ? 'CẦN XÁC MINH' : 'PENDING'),
     detailSummaryItem('Mô hình', prediction.model_version),
     detailSummaryItem('Số lượng chọn', `Top ${prediction.selected_count}`),
     detailSummaryItem('Điểm coverage thô', formatPercent(prediction.coverage_probability, 4)),
@@ -1740,7 +1757,7 @@ async function loadPredictionHistory() {
     if (ev.status === 'evaluated') {
       statusCell.append(badge(ev.hit ? 'HIT' : 'MISS', ev.hit ? 'hit' : 'miss'));
     } else {
-      statusCell.append(badge('PENDING', 'pending'));
+      statusCell.append(badge(ev.status === 'invalidated' ? 'CẦN ĐỐI CHIẾU LẠI' : 'PENDING', 'pending'));
     }
     row.append(statusCell);
     const actionCell = document.createElement('td');
@@ -2195,11 +2212,12 @@ async function startSmartAutoRefresh() {
         state.smartRefreshSeenDate = today;
         toast(`✅ Kết quả ngày ${today} vừa cập nhật! Giải đặc biệt: ${result.special_prize}`, 'success');
       }
-      // Refresh results/evaluations without running expensive comparison reports.
+      // Live comparisons read saved metadata; rolling reports still run separately.
       await Promise.allSettled([
         loadMetrics(), loadResults(), loadLatestPrediction(),
         loadLatestLogisticPrediction(), loadLatestCatBoostPrediction(),
         loadPredictionHistory(), loadLogisticPredictionHistory(), loadCatBoostHistory(),
+        loadModelComparison(), loadCatBoostComparison(),
         loadCatBoostRecentNumbers(),
       ]);
       renderCatBoostPrediction(state.latestCatBoostPrediction);

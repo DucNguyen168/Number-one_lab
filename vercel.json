@@ -22,7 +22,7 @@
   "crons": [
     {
       "path": "/api/auto-daily",
-      "schedule": "30 10 * * *"
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/auto-daily",

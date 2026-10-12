@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import math
+import platform
 import random
 import time
 from datetime import datetime, timezone
 from typing import Any
 
 from pymongo.database import Database
+
+from app.services import prediction_protocol as protocol
 
 from app.services.logistic_prediction import (
     MODEL_VERSION as LOGISTIC_MODEL_VERSION,
@@ -97,6 +101,24 @@ def _probability_metrics(scores: list[dict[str, Any]], actual: str) -> tuple[flo
 def _dataset_hash(draws: list[dict[str, Any]]) -> str:
     material = "|".join(f"{draw['draw_date']}:{draw['last_two']}" for draw in draws)
     return hashlib.sha256(material.encode()).hexdigest()
+
+
+def _report_provenance(outer_periods: int) -> dict[str, Any]:
+    from app.services import logistic_prediction, prediction
+    from pathlib import Path
+
+    return {
+        "protocol": {"version": "expanding_walk_forward_v2", "outer_periods": outer_periods,
+                     "counts": SUPPORTED_COUNTS, "minimum_history": MINIMUM_HISTORY,
+                     "bootstrap": {"repetitions": 1000, "block_size": 7, "seed": 20260922}},
+        "models": {m.MODEL_VERSION: {"constants": protocol.constants(m.__name__),
+                                      "code_hash": protocol.code_hash(m.__name__)}
+                   for m in (prediction, logistic_prediction)},
+        "report_code_hash": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "library_versions": {name: importlib.metadata.version(name)
+                             for name in ("scikit-learn", "numpy", "scipy")},
+        "python_version": platform.python_version(),
+    }
 
 
 def run_rolling_comparison(
@@ -249,15 +271,20 @@ def load_or_build_rolling_comparison(
         and draw["last_two"].isdigit()
     ]
     fingerprint = _dataset_hash(draws)
-    cache_key = f"{REPORT_ID}:{outer_periods}"
+    provenance = _report_provenance(outer_periods)
+    provenance_hash = protocol.fingerprint(provenance)
+    cache_key = f"{REPORT_ID}:{outer_periods}:{provenance_hash}"
     cached = db.model_comparison_reports.find_one({"_id": cache_key})
-    if cached and cached.get("dataset_hash") == fingerprint:
+    if (cached and cached.get("dataset_hash") == fingerprint
+            and cached.get("provenance_hash") == provenance_hash):
         return cached, False
 
     summary, daily = run_rolling_comparison(draws, outer_periods=outer_periods)
     document = {
         "_id": cache_key,
         "dataset_hash": fingerprint,
+        "provenance_hash": provenance_hash,
+        "provenance": provenance,
         "dataset": {
             "draws": len(draws),
             "first_date": draws[0]["draw_date"],

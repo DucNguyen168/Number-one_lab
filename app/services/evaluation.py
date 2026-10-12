@@ -6,65 +6,71 @@ from typing import Any
 from pymongo.database import Database
 
 from app.services.prediction import MODEL_VERSION
+from app.services import prediction_protocol as protocol
+
+
+def _evaluate_snapshots(db, collection, *, digit=False):
+    counters = {"evaluated": 0, "hits": 0, "misses": 0, "skipped": 0,
+                "reevaluated": 0, "invalidated": 0}
+    predictions = list(collection.find(
+        {"evaluation.status": {"$in": ["pending", "evaluated", "invalidated"]}},
+        {"scores": 0, "window_details": 0, "evaluation_history": 0},
+    ))
+    days = sorted({p["prediction_date"] for p in predictions})
+    draws = {d["draw_date"]: d for d in db.draw_results.find(
+        {"draw_date": {"$in": days}},
+        {"draw_date": 1, "special_prize": 1, "last_two": 1, "status": 1},
+    )}
+    for prediction in predictions:
+        draw = draws.get(prediction["prediction_date"])
+        previous = prediction["evaluation"]
+        revision = protocol.actual_revision_hash(draw)
+        if not protocol.valid_actual(draw):
+            counters["skipped"] += 1
+            if previous["status"] == "pending":
+                continue
+            current = {"status": "invalidated", "actual_revision_hash": revision,
+                       "reason": "actual_unavailable_invalid_or_conflicting", "eligible_for_comparison": False}
+            if all(previous.get(k) == v for k, v in current.items()):
+                continue
+        else:
+            actual = draw["last_two"][-1] if digit else draw["last_two"]
+            hit = actual == prediction.get("predicted_digit") if digit else actual in prediction.get("numbers", [])
+            issues = protocol.eligibility_reasons(prediction, draw, check_evaluation=False)
+            current = {"status": "evaluated", "actual_special_prize": draw["special_prize"],
+                       "actual_digit" if digit else "actual_last_two": actual, "hit": hit,
+                       "actual_revision_hash": revision, "eligible_for_comparison": not issues,
+                       "eligibility_reasons": issues}
+            if all(previous.get(k) == v for k, v in current.items()):
+                continue
+        current["evaluated_at"] = datetime.now(timezone.utc)
+        update = {"$set": {"evaluation": current,
+                           "status": "evaluated" if current["status"] == "evaluated" else "evaluation_invalidated"}}
+        if previous["status"] != "pending":
+            update["$push"] = {"evaluation_history": {
+                "previous": previous, "changed_at": current["evaluated_at"],
+                "reason": "actual_revision_or_evaluation_changed",
+            }}
+        # Compare-and-set prevents two collectors from appending the same correction.
+        updated = collection.update_one({"_id": prediction["_id"], "evaluation": previous}, update)
+        if not updated.modified_count:
+            continue
+        if current["status"] == "invalidated":
+            counters["invalidated"] += 1
+        else:
+            counters["evaluated"] += 1
+            counters["hits" if current["hit"] else "misses"] += 1
+            counters["reevaluated"] += int(previous["status"] != "pending")
+    return counters
 
 
 def evaluate_pending_predictions(db: Database) -> dict[str, int]:
-    counters = {"evaluated": 0, "hits": 0, "misses": 0, "skipped": 0}
-    pending = db.predictions.find({"evaluation.status": "pending"})
-    for prediction in pending:
-        draw = db.draw_results.find_one(
-            {"draw_date": prediction["prediction_date"], "status": {"$ne": "conflict"}}
-        )
-        if draw is None:
-            counters["skipped"] += 1
-            continue
-        actual = draw["last_two"]
-        hit = actual in prediction.get("numbers", [])
-        evaluation = {
-            "status": "evaluated",
-            "actual_special_prize": draw["special_prize"],
-            "actual_last_two": actual,
-            "hit": hit,
-            "evaluated_at": datetime.now(timezone.utc),
-        }
-        updated = db.predictions.update_one(
-            {"_id": prediction["_id"], "evaluation.status": "pending"},
-            {"$set": {"evaluation": evaluation, "status": "evaluated"}},
-        )
-        if not updated.modified_count:
-            continue
-        counters["evaluated"] += 1
-        counters["hits" if hit else "misses"] += 1
-    return counters
+    """Score pending snapshots and reconcile saved scores with the current actual revision."""
+    return _evaluate_snapshots(db, db.predictions)
 
 
 def evaluate_pending_digit_predictions(db: Database) -> dict[str, int]:
-    counters = {"evaluated": 0, "hits": 0, "misses": 0, "skipped": 0}
-    pending = db.digit_predictions.find({"evaluation.status": "pending"})
-    for prediction in pending:
-        draw = db.draw_results.find_one(
-            {"draw_date": prediction["prediction_date"], "status": {"$ne": "conflict"}}
-        )
-        if draw is None:
-            counters["skipped"] += 1
-            continue
-        actual = draw["special_prize"][-1]
-        hit = actual == prediction.get("predicted_digit")
-        evaluation = {
-            "status": "evaluated",
-            "actual_special_prize": draw["special_prize"],
-            "actual_digit": actual,
-            "hit": hit,
-            "evaluated_at": datetime.now(timezone.utc),
-        }
-        updated = db.digit_predictions.update_one(
-            {"_id": prediction["_id"], "evaluation.status": "pending"},
-            {"$set": {"evaluation": evaluation, "status": "evaluated"}},
-        )
-        if updated.modified_count:
-            counters["evaluated"] += 1
-            counters["hits" if hit else "misses"] += 1
-    return counters
+    return _evaluate_snapshots(db, db.digit_predictions, digit=True)
 
 
 def metrics_summary(db: Database) -> dict[str, Any]:

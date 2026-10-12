@@ -4,11 +4,13 @@ import hashlib
 import importlib.metadata
 import json
 import math
-from datetime import date, datetime, timezone
+from datetime import date
 from typing import Any, Iterable, Protocol
 
 from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
+
+from app.services import prediction_protocol as protocol
 
 
 MODEL_ID = "direct-catboost"
@@ -296,22 +298,22 @@ def create_prediction(
     if existing is not None:
         return existing, False
 
+    protocol.ensure_open(target)
     draws = list(
         db.draw_results.find(
             {"draw_date": {"$lt": target}, "status": {"$ne": "conflict"}},
-            {"_id": 0, "draw_date": 1, "last_two": 1, "status": 1},
+            {"_id": 1, "draw_date": 1, "last_two": 1, "special_prize": 1, "status": 1},
         ).sort("draw_date", 1)
     )
+    draws = _history_before(draws, target)
+    information_cutoff_at = protocol.ensure_open(target)
     prediction = rank_numbers(draws, target, selected_count)
-    now = datetime.now(timezone.utc)
+    metadata = protocol.lock_metadata(db, draws, target, prediction, __name__, information_cutoff_at)
     document = {
         "prediction_date": target,
         **prediction,
-        "strategy_id": "raw_top_n_v1",
-        "information_cutoff_at": now,
         "status": "locked",
-        "created_at": now,
-        "locked_at": now,
+        **metadata,
         "evaluation": {"status": "pending"},
     }
     try:

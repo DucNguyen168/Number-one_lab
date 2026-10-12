@@ -2,6 +2,14 @@
 
 Ngày lập: 22/09/2026. Trạng thái: **đã triển khai lõi v1; đang chờ dữ liệu tương lai để xác nhận**.
 
+### Rà soát cập nhật ngày 12/10/2026
+
+Đã triển khai nâng cấp ưu tiên cao/vừa trong mã nguồn: xem `docs/NANG_CAP_KIEM_CHUNG_20261012.md`. Protocol mới khóa trước 17:30, lưu tập huấn luyện bất biến, kiểm tra cặp so sánh, cache theo cấu hình/code/thư viện, chấm lại actual revision và hiển thị CI. Các snapshot cũ thiếu metadata vẫn giữ trong lịch sử và chưa đủ điều kiện cho bảng so sánh mới. Kiểm tra toàn bộ: 110 Python + 9 JavaScript đạt; chưa deploy.
+
+Đã đối chiếu lại dữ liệu đến 12/10: 2.789 kỳ và các snapshot thực tế, chạy walk-forward 365 kỳ cho Tần suất/Logistic và 59 kỳ đủ điều kiện cho CatBoost v2. Trên 19 ngày snapshot chung cùng Top 65, Tần suất và CatBoost đều 15/19; Logistic 12/19. Trên 365 kỳ mới, Tần suất 220/365, Logistic 240/365; ứng viên Logistic + Bayesian 243/365, chỉ hơn Logistic ba kỳ và chưa đủ bằng chứng nâng thành mô hình chính thức.
+
+Ưu tiên nâng cấp kiểm chứng deadline dự đoán, dữ liệu/cấu hình đồng nhất và khoảng tin cậy trước khi thay mô hình. Phát hiện một snapshot Tần suất khóa muộn, đã loại trong audit đủ điều kiện. Các con số ngày 22/09 bên dưới là kết quả của cửa sổ cũ. Báo cáo đầy đủ, thuật toán tham chiếu và bằng chứng nằm tại `reports/algorithm_audit_20261012/report.md`; script ngoại tuyến: `scripts/audit_algorithms.py`.
+
 ### Cập nhật triển khai ngày 22/09/2026
 
 - Đã thêm `factorized_logistic_v1`, dùng Logistic Regression L2 cho hàng chục và hàng đơn vị, tạo đủ 100 xác suất và snapshot bất biến trong collection `predictions`.
