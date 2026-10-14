@@ -43,6 +43,10 @@ class MongoDatabase:
             [("prediction_date", DESCENDING), ("evaluation.status", ASCENDING)],
             name="prediction_date_evaluation",
         )
+        self.db.prediction_replays.create_index(
+            [("model_version", ASCENDING), ("prediction_date", DESCENDING)],
+            name="replay_model_date",
+        )
         self.db.backtest_runs.create_index(
             [("created_at", DESCENDING)], name="backtest_created_at"
         )

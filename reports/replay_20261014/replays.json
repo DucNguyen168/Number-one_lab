@@ -1,0 +1,2535 @@
+{
+  "prediction_date": "2026-10-14",
+  "selected_count": 65,
+  "status": "completed",
+  "models": [
+    {
+      "prediction_date": "2026-10-14",
+      "model_version": "frequency_ensemble_v1",
+      "selected_count": 65,
+      "status": "replayed",
+      "created": true,
+      "prediction": {
+        "_id": "ef5adb3a51cd8f47317a2f1d",
+        "code_hash": "c0fd0bebf2d88b096cbd86c6c3643ad053a1e600a564c2cda035524742734ae5",
+        "config_hash": "68f1dc36bf784b00c998e86fa42b56ae539f4beaece7f8a3acd86880ab715fe8",
+        "coverage_probability": 0.7660738935,
+        "created_at": "2026-10-14T13:43:31.500000",
+        "cutoff_probability": 0.0080031557,
+        "dataset_hash": "2510ecc6dbb8bd1bb9a4d7064c3feb1218952895b2cccdeb6205e37840b0feaf",
+        "evaluation": {
+          "status": "evaluated",
+          "actual_last_two": "59",
+          "actual_special_prize": "28259",
+          "actual_revision_hash": "853f09c4b9981097c1d56903eee6a3ad629da2391c11f52a896148b6d6ad9bb7",
+          "hit": false
+        },
+        "evaluation_protocol": "retrospective_replay_v1",
+        "excluded_from_live_metrics": true,
+        "locked_at": null,
+        "model_config": {
+          "MODEL_VERSION": "frequency_ensemble_v1",
+          "WINDOW_WEIGHTS": [
+            [
+              30,
+              0.35
+            ],
+            [
+              90,
+              0.25
+            ],
+            [
+              180,
+              0.2
+            ],
+            [
+              365,
+              0.15
+            ],
+            [
+              null,
+              0.05
+            ]
+          ],
+          "SMOOTHING_ALPHA": 1.0,
+          "RECENT_HIT_DAYS": 3
+        },
+        "model_version": "frequency_ensemble_v1",
+        "note": "Hồi kiểm sau khi có kết quả; không tính vào tỷ lệ dự đoán trực tiếp.",
+        "numbers": [
+          "54",
+          "51",
+          "38",
+          "83",
+          "22",
+          "39",
+          "32",
+          "96",
+          "44",
+          "42",
+          "67",
+          "61",
+          "60",
+          "87",
+          "53",
+          "35",
+          "63",
+          "37",
+          "18",
+          "08",
+          "65",
+          "23",
+          "12",
+          "88",
+          "21",
+          "68",
+          "28",
+          "04",
+          "29",
+          "43",
+          "90",
+          "73",
+          "06",
+          "17",
+          "15",
+          "79",
+          "47",
+          "52",
+          "80",
+          "78",
+          "81",
+          "33",
+          "00",
+          "13",
+          "25",
+          "16",
+          "99",
+          "36",
+          "11",
+          "91",
+          "55",
+          "70",
+          "26",
+          "66",
+          "97",
+          "72",
+          "57",
+          "34",
+          "94",
+          "92",
+          "45",
+          "10",
+          "14",
+          "76",
+          "09"
+        ],
+        "prediction_date": "2026-10-14",
+        "prediction_kind": "retrospective",
+        "recent_hit_window_days": 3,
+        "scores": [
+          {
+            "number": "54",
+            "rank": 1,
+            "probability": 0.0252556663,
+            "days_since_last_hit": 8,
+            "recent_hit": false
+          },
+          {
+            "number": "51",
+            "rank": 2,
+            "probability": 0.02179694,
+            "days_since_last_hit": 10,
+            "recent_hit": false
+          },
+          {
+            "number": "38",
+            "rank": 3,
+            "probability": 0.0203685984,
+            "days_since_last_hit": 24,
+            "recent_hit": false
+          },
+          {
+            "number": "83",
+            "rank": 4,
+            "probability": 0.0193926109,
+            "days_since_last_hit": 12,
+            "recent_hit": false
+          },
+          {
+            "number": "22",
+            "rank": 5,
+            "probability": 0.0189916205,
+            "days_since_last_hit": 22,
+            "recent_hit": false
+          },
+          {
+            "number": "39",
+            "rank": 6,
+            "probability": 0.0187993527,
+            "days_since_last_hit": 6,
+            "recent_hit": false
+          },
+          {
+            "number": "32",
+            "rank": 7,
+            "probability": 0.0181194392,
+            "days_since_last_hit": 18,
+            "recent_hit": false
+          },
+          {
+            "number": "96",
+            "rank": 8,
+            "probability": 0.0156714526,
+            "days_since_last_hit": 20,
+            "recent_hit": false
+          },
+          {
+            "number": "44",
+            "rank": 9,
+            "probability": 0.0155676464,
+            "days_since_last_hit": 28,
+            "recent_hit": false
+          },
+          {
+            "number": "42",
+            "rank": 10,
+            "probability": 0.0153579274,
+            "days_since_last_hit": 14,
+            "recent_hit": false
+          },
+          {
+            "number": "67",
+            "rank": 11,
+            "probability": 0.0147128458,
+            "days_since_last_hit": 26,
+            "recent_hit": false
+          },
+          {
+            "number": "61",
+            "rank": 12,
+            "probability": 0.0143729641,
+            "days_since_last_hit": 11,
+            "recent_hit": false
+          },
+          {
+            "number": "60",
+            "rank": 13,
+            "probability": 0.014286459,
+            "days_since_last_hit": 27,
+            "recent_hit": false
+          },
+          {
+            "number": "87",
+            "rank": 14,
+            "probability": 0.0141999538,
+            "days_since_last_hit": 2,
+            "recent_hit": true
+          },
+          {
+            "number": "53",
+            "rank": 15,
+            "probability": 0.0135985297,
+            "days_since_last_hit": 4,
+            "recent_hit": false
+          },
+          {
+            "number": "35",
+            "rank": 16,
+            "probability": 0.0135721732,
+            "days_since_last_hit": 5,
+            "recent_hit": false
+          },
+          {
+            "number": "63",
+            "rank": 17,
+            "probability": 0.0135202701,
+            "days_since_last_hit": 3,
+            "recent_hit": true
+          },
+          {
+            "number": "37",
+            "rank": 18,
+            "probability": 0.0131723727,
+            "days_since_last_hit": 39,
+            "recent_hit": false
+          },
+          {
+            "number": "18",
+            "rank": 19,
+            "probability": 0.0130481192,
+            "days_since_last_hit": 1,
+            "recent_hit": true
+          },
+          {
+            "number": "08",
+            "rank": 20,
+            "probability": 0.0129361471,
+            "days_since_last_hit": 13,
+            "recent_hit": false
+          },
+          {
+            "number": "65",
+            "rank": 21,
+            "probability": 0.0128210992,
+            "days_since_last_hit": 19,
+            "recent_hit": false
+          },
+          {
+            "number": "23",
+            "rank": 22,
+            "probability": 0.0126137166,
+            "days_since_last_hit": 55,
+            "recent_hit": false
+          },
+          {
+            "number": "12",
+            "rank": 23,
+            "probability": 0.0122217817,
+            "days_since_last_hit": 25,
+            "recent_hit": false
+          },
+          {
+            "number": "88",
+            "rank": 24,
+            "probability": 0.0119511839,
+            "days_since_last_hit": 7,
+            "recent_hit": false
+          },
+          {
+            "number": "21",
+            "rank": 25,
+            "probability": 0.0118994309,
+            "days_since_last_hit": 43,
+            "recent_hit": false
+          },
+          {
+            "number": "68",
+            "rank": 26,
+            "probability": 0.0117935979,
+            "days_since_last_hit": 47,
+            "recent_hit": false
+          },
+          {
+            "number": "28",
+            "rank": 27,
+            "probability": 0.0117783236,
+            "days_since_last_hit": 81,
+            "recent_hit": false
+          },
+          {
+            "number": "04",
+            "rank": 28,
+            "probability": 0.011724314,
+            "days_since_last_hit": 35,
+            "recent_hit": false
+          },
+          {
+            "number": "29",
+            "rank": 29,
+            "probability": 0.0115593991,
+            "days_since_last_hit": 29,
+            "recent_hit": false
+          },
+          {
+            "number": "43",
+            "rank": 30,
+            "probability": 0.0109235231,
+            "days_since_last_hit": 56,
+            "recent_hit": false
+          },
+          {
+            "number": "90",
+            "rank": 31,
+            "probability": 0.0108279624,
+            "days_since_last_hit": 37,
+            "recent_hit": false
+          },
+          {
+            "number": "73",
+            "rank": 32,
+            "probability": 0.0107931305,
+            "days_since_last_hit": 17,
+            "recent_hit": false
+          },
+          {
+            "number": "06",
+            "rank": 33,
+            "probability": 0.0107758295,
+            "days_since_last_hit": 21,
+            "recent_hit": false
+          },
+          {
+            "number": "17",
+            "rank": 34,
+            "probability": 0.0106874476,
+            "days_since_last_hit": 51,
+            "recent_hit": false
+          },
+          {
+            "number": "15",
+            "rank": 35,
+            "probability": 0.0105570551,
+            "days_since_last_hit": 16,
+            "recent_hit": false
+          },
+          {
+            "number": "79",
+            "rank": 36,
+            "probability": 0.0104341509,
+            "days_since_last_hit": 68,
+            "recent_hit": false
+          },
+          {
+            "number": "47",
+            "rank": 37,
+            "probability": 0.010382168,
+            "days_since_last_hit": 72,
+            "recent_hit": false
+          },
+          {
+            "number": "52",
+            "rank": 38,
+            "probability": 0.0098693557,
+            "days_since_last_hit": 33,
+            "recent_hit": false
+          },
+          {
+            "number": "80",
+            "rank": 39,
+            "probability": 0.0097024844,
+            "days_since_last_hit": 50,
+            "recent_hit": false
+          },
+          {
+            "number": "78",
+            "rank": 40,
+            "probability": 0.0095813771,
+            "days_since_last_hit": 60,
+            "recent_hit": false
+          },
+          {
+            "number": "81",
+            "rank": 41,
+            "probability": 0.0095640761,
+            "days_since_last_hit": 34,
+            "recent_hit": false
+          },
+          {
+            "number": "33",
+            "rank": 42,
+            "probability": 0.009529474,
+            "days_since_last_hit": 54,
+            "recent_hit": false
+          },
+          {
+            "number": "00",
+            "rank": 43,
+            "probability": 0.0092760975,
+            "days_since_last_hit": 78,
+            "recent_hit": false
+          },
+          {
+            "number": "13",
+            "rank": 44,
+            "probability": 0.0092760975,
+            "days_since_last_hit": 53,
+            "recent_hit": false
+          },
+          {
+            "number": "25",
+            "rank": 45,
+            "probability": 0.0092414954,
+            "days_since_last_hit": 71,
+            "recent_hit": false
+          },
+          {
+            "number": "16",
+            "rank": 46,
+            "probability": 0.0092241944,
+            "days_since_last_hit": 80,
+            "recent_hit": false
+          },
+          {
+            "number": "99",
+            "rank": 47,
+            "probability": 0.0091376892,
+            "days_since_last_hit": 31,
+            "recent_hit": false
+          },
+          {
+            "number": "36",
+            "rank": 48,
+            "probability": 0.0090837593,
+            "days_since_last_hit": 114,
+            "recent_hit": false
+          },
+          {
+            "number": "11",
+            "rank": 49,
+            "probability": 0.0089362158,
+            "days_since_last_hit": 41,
+            "recent_hit": false
+          },
+          {
+            "number": "91",
+            "rank": 50,
+            "probability": 0.0088497904,
+            "days_since_last_hit": 64,
+            "recent_hit": false
+          },
+          {
+            "number": "55",
+            "rank": 51,
+            "probability": 0.0085881683,
+            "days_since_last_hit": 117,
+            "recent_hit": false
+          },
+          {
+            "number": "70",
+            "rank": 52,
+            "probability": 0.0085791128,
+            "days_since_last_hit": 85,
+            "recent_hit": false
+          },
+          {
+            "number": "26",
+            "rank": 53,
+            "probability": 0.0084753066,
+            "days_since_last_hit": 63,
+            "recent_hit": false
+          },
+          {
+            "number": "66",
+            "rank": 54,
+            "probability": 0.0084753066,
+            "days_since_last_hit": 40,
+            "recent_hit": false
+          },
+          {
+            "number": "97",
+            "rank": 55,
+            "probability": 0.0083866949,
+            "days_since_last_hit": 100,
+            "recent_hit": false
+          },
+          {
+            "number": "72",
+            "rank": 56,
+            "probability": 0.0083715004,
+            "days_since_last_hit": 45,
+            "recent_hit": false
+          },
+          {
+            "number": "57",
+            "rank": 57,
+            "probability": 0.0083430374,
+            "days_since_last_hit": 65,
+            "recent_hit": false
+          },
+          {
+            "number": "34",
+            "rank": 58,
+            "probability": 0.0082738332,
+            "days_since_last_hit": 76,
+            "recent_hit": false
+          },
+          {
+            "number": "94",
+            "rank": 59,
+            "probability": 0.0082655876,
+            "days_since_last_hit": 94,
+            "recent_hit": false
+          },
+          {
+            "number": "92",
+            "rank": 60,
+            "probability": 0.0081618611,
+            "days_since_last_hit": 158,
+            "recent_hit": false
+          },
+          {
+            "number": "45",
+            "rank": 61,
+            "probability": 0.008152726,
+            "days_since_last_hit": 48,
+            "recent_hit": false
+          },
+          {
+            "number": "10",
+            "rank": 62,
+            "probability": 0.0081354249,
+            "days_since_last_hit": 75,
+            "recent_hit": false
+          },
+          {
+            "number": "14",
+            "rank": 63,
+            "probability": 0.008092657,
+            "days_since_last_hit": 123,
+            "recent_hit": false
+          },
+          {
+            "number": "76",
+            "rank": 64,
+            "probability": 0.0080122111,
+            "days_since_last_hit": 173,
+            "recent_hit": false
+          },
+          {
+            "number": "09",
+            "rank": 65,
+            "probability": 0.0080031557,
+            "days_since_last_hit": 73,
+            "recent_hit": false
+          },
+          {
+            "number": "69",
+            "rank": 66,
+            "probability": 0.007960308,
+            "days_since_last_hit": 153,
+            "recent_hit": false
+          },
+          {
+            "number": "89",
+            "rank": 67,
+            "probability": 0.007960308,
+            "days_since_last_hit": 98,
+            "recent_hit": false
+          },
+          {
+            "number": "48",
+            "rank": 68,
+            "probability": 0.0079257857,
+            "days_since_last_hit": 175,
+            "recent_hit": false
+          },
+          {
+            "number": "84",
+            "rank": 69,
+            "probability": 0.0078392008,
+            "days_since_last_hit": 120,
+            "recent_hit": false
+          },
+          {
+            "number": "85",
+            "rank": 70,
+            "probability": 0.0078218997,
+            "days_since_last_hit": 97,
+            "recent_hit": false
+          },
+          {
+            "number": "59",
+            "rank": 71,
+            "probability": 0.0076551082,
+            "days_since_last_hit": 170,
+            "recent_hit": false
+          },
+          {
+            "number": "93",
+            "rank": 72,
+            "probability": 0.0075513019,
+            "days_since_last_hit": 129,
+            "recent_hit": false
+          },
+          {
+            "number": "01",
+            "rank": 73,
+            "probability": 0.0075340009,
+            "days_since_last_hit": 95,
+            "recent_hit": false
+          },
+          {
+            "number": "64",
+            "rank": 74,
+            "probability": 0.0073498285,
+            "days_since_last_hit": 164,
+            "recent_hit": false
+          },
+          {
+            "number": "05",
+            "rank": 75,
+            "probability": 0.0072633234,
+            "days_since_last_hit": 128,
+            "recent_hit": false
+          },
+          {
+            "number": "50",
+            "rank": 76,
+            "probability": 0.0072114202,
+            "days_since_last_hit": 139,
+            "recent_hit": false
+          },
+          {
+            "number": "19",
+            "rank": 77,
+            "probability": 0.0070445489,
+            "days_since_last_hit": 91,
+            "recent_hit": false
+          },
+          {
+            "number": "24",
+            "rank": 78,
+            "probability": 0.0069581235,
+            "days_since_last_hit": 208,
+            "recent_hit": false
+          },
+          {
+            "number": "62",
+            "rank": 79,
+            "probability": 0.0069062204,
+            "days_since_last_hit": 263,
+            "recent_hit": false
+          },
+          {
+            "number": "86",
+            "rank": 80,
+            "probability": 0.0068543172,
+            "days_since_last_hit": 266,
+            "recent_hit": false
+          },
+          {
+            "number": "03",
+            "rank": 81,
+            "probability": 0.0068542375,
+            "days_since_last_hit": 119,
+            "recent_hit": false
+          },
+          {
+            "number": "40",
+            "rank": 82,
+            "probability": 0.0068196354,
+            "days_since_last_hit": 160,
+            "recent_hit": false
+          },
+          {
+            "number": "75",
+            "rank": 83,
+            "probability": 0.0068196354,
+            "days_since_last_hit": 167,
+            "recent_hit": false
+          },
+          {
+            "number": "77",
+            "rank": 84,
+            "probability": 0.0065836397,
+            "days_since_last_hit": 243,
+            "recent_hit": false
+          },
+          {
+            "number": "71",
+            "rank": 85,
+            "probability": 0.006566259,
+            "days_since_last_hit": 101,
+            "recent_hit": false
+          },
+          {
+            "number": "41",
+            "rank": 86,
+            "probability": 0.0065316569,
+            "days_since_last_hit": 161,
+            "recent_hit": false
+          },
+          {
+            "number": "82",
+            "rank": 87,
+            "probability": 0.0062783601,
+            "days_since_last_hit": 190,
+            "recent_hit": false
+          },
+          {
+            "number": "30",
+            "rank": 88,
+            "probability": 0.0062610591,
+            "days_since_last_hit": 242,
+            "recent_hit": false
+          },
+          {
+            "number": "49",
+            "rank": 89,
+            "probability": 0.006226457,
+            "days_since_last_hit": 222,
+            "recent_hit": false
+          },
+          {
+            "number": "20",
+            "rank": 90,
+            "probability": 0.0061226508,
+            "days_since_last_hit": 187,
+            "recent_hit": false
+          },
+          {
+            "number": "74",
+            "rank": 91,
+            "probability": 0.0061226508,
+            "days_since_last_hit": 261,
+            "recent_hit": false
+          },
+          {
+            "number": "95",
+            "rank": 92,
+            "probability": 0.0061053497,
+            "days_since_last_hit": 209,
+            "recent_hit": false
+          },
+          {
+            "number": "27",
+            "rank": 93,
+            "probability": 0.0060534466,
+            "days_since_last_hit": 274,
+            "recent_hit": false
+          },
+          {
+            "number": "46",
+            "rank": 94,
+            "probability": 0.0058519732,
+            "days_since_last_hit": 206,
+            "recent_hit": false
+          },
+          {
+            "number": "02",
+            "rank": 95,
+            "probability": 0.0058000701,
+            "days_since_last_hit": 342,
+            "recent_hit": false
+          },
+          {
+            "number": "98",
+            "rank": 96,
+            "probability": 0.0055120916,
+            "days_since_last_hit": 604,
+            "recent_hit": false
+          },
+          {
+            "number": "58",
+            "rank": 97,
+            "probability": 0.0054601884,
+            "days_since_last_hit": 509,
+            "recent_hit": false
+          },
+          {
+            "number": "07",
+            "rank": 98,
+            "probability": 0.0053909843,
+            "days_since_last_hit": 395,
+            "recent_hit": false
+          },
+          {
+            "number": "56",
+            "rank": 99,
+            "probability": 0.0053736832,
+            "days_since_last_hit": 458,
+            "recent_hit": false
+          },
+          {
+            "number": "31",
+            "rank": 100,
+            "probability": 0.0053563822,
+            "days_since_last_hit": 399,
+            "recent_hit": false
+          }
+        ],
+        "selected_count": 65,
+        "status": "replayed",
+        "trained_through": "2026-10-13",
+        "training_draw_count": 2790,
+        "training_snapshot_id": "b54c3e661390b6729170f833f2d246d536cab7edcd807f2b31b5e60bca35b8f3",
+        "window_details": [
+          {
+            "window": 30,
+            "weight": 0.35,
+            "observations": 30
+          },
+          {
+            "window": 90,
+            "weight": 0.25,
+            "observations": 90
+          },
+          {
+            "window": 180,
+            "weight": 0.2,
+            "observations": 180
+          },
+          {
+            "window": 365,
+            "weight": 0.15,
+            "observations": 365
+          },
+          {
+            "window": "all",
+            "weight": 0.05,
+            "observations": 2790
+          }
+        ]
+      }
+    },
+    {
+      "prediction_date": "2026-10-14",
+      "model_version": "factorized_logistic_v1",
+      "selected_count": 65,
+      "status": "replayed",
+      "created": true,
+      "prediction": {
+        "_id": "60e87b1c9bb554eaa8d14449",
+        "code_hash": "f03a9231fc153403168186fe08ca225911f3465f3597add9571df85506e18f37",
+        "config_hash": "b3329c84c653c4a4d52045f9781e6aaca0601a9b473b7b5c132a55b7678a4b71",
+        "coverage_probability": 0.7708899222,
+        "created_at": "2026-10-14T13:43:32.124000",
+        "cutoff_probability": 0.0083282033,
+        "dataset_hash": "2510ecc6dbb8bd1bb9a4d7064c3feb1218952895b2cccdeb6205e37840b0feaf",
+        "evaluation": {
+          "status": "evaluated",
+          "actual_last_two": "59",
+          "actual_special_prize": "28259",
+          "actual_revision_hash": "853f09c4b9981097c1d56903eee6a3ad629da2391c11f52a896148b6d6ad9bb7",
+          "hit": true
+        },
+        "evaluation_protocol": "retrospective_replay_v1",
+        "excluded_from_live_metrics": true,
+        "feature_version": "lag3_digits_weekday_gap_v1",
+        "library_versions": {
+          "scikit_learn": "1.9.1"
+        },
+        "locked_at": null,
+        "model_config": {
+          "model_id": "factorized-logistic",
+          "model_version": "factorized_logistic_v1",
+          "feature_version": "lag3_digits_weekday_gap_v1",
+          "regularization_c": 0.1,
+          "solver": "lbfgs",
+          "penalty": "l2",
+          "max_iter": 1000,
+          "tolerance": 1e-06,
+          "minimum_training_samples": 730
+        },
+        "model_explanation": "Hai Logistic Regression L2 học riêng hàng chục và hàng đơn vị từ ba kỳ trước, thứ trong tuần và khoảng cách ngày; 100 xác suất được ghép bằng tích hai phân phối chữ số.",
+        "model_id": "factorized-logistic",
+        "model_version": "factorized_logistic_v1",
+        "note": "Hồi kiểm sau khi có kết quả; không tính vào tỷ lệ dự đoán trực tiếp.",
+        "numbers": [
+          "46",
+          "47",
+          "48",
+          "42",
+          "66",
+          "67",
+          "68",
+          "96",
+          "62",
+          "97",
+          "98",
+          "92",
+          "86",
+          "87",
+          "88",
+          "41",
+          "82",
+          "43",
+          "61",
+          "49",
+          "63",
+          "91",
+          "56",
+          "57",
+          "58",
+          "69",
+          "93",
+          "52",
+          "44",
+          "99",
+          "64",
+          "40",
+          "94",
+          "60",
+          "81",
+          "90",
+          "83",
+          "06",
+          "07",
+          "08",
+          "89",
+          "02",
+          "51",
+          "45",
+          "53",
+          "84",
+          "36",
+          "37",
+          "38",
+          "65",
+          "59",
+          "26",
+          "16",
+          "32",
+          "80",
+          "27",
+          "28",
+          "17",
+          "18",
+          "95",
+          "22",
+          "12",
+          "54",
+          "50",
+          "01"
+        ],
+        "prediction_date": "2026-10-14",
+        "prediction_kind": "retrospective",
+        "recent_hit_window_days": 3,
+        "scores": [
+          {
+            "number": "46",
+            "rank": 1,
+            "probability": 0.0171557683,
+            "days_since_last_hit": 206,
+            "recent_hit": false
+          },
+          {
+            "number": "47",
+            "rank": 2,
+            "probability": 0.0169626462,
+            "days_since_last_hit": 72,
+            "recent_hit": false
+          },
+          {
+            "number": "48",
+            "rank": 3,
+            "probability": 0.0169580323,
+            "days_since_last_hit": 175,
+            "recent_hit": false
+          },
+          {
+            "number": "42",
+            "rank": 4,
+            "probability": 0.0165604809,
+            "days_since_last_hit": 14,
+            "recent_hit": false
+          },
+          {
+            "number": "66",
+            "rank": 5,
+            "probability": 0.0164780303,
+            "days_since_last_hit": 40,
+            "recent_hit": false
+          },
+          {
+            "number": "67",
+            "rank": 6,
+            "probability": 0.0162925374,
+            "days_since_last_hit": 26,
+            "recent_hit": false
+          },
+          {
+            "number": "68",
+            "rank": 7,
+            "probability": 0.0162881058,
+            "days_since_last_hit": 47,
+            "recent_hit": false
+          },
+          {
+            "number": "96",
+            "rank": 8,
+            "probability": 0.0159251706,
+            "days_since_last_hit": 20,
+            "recent_hit": false
+          },
+          {
+            "number": "62",
+            "rank": 9,
+            "probability": 0.0159062596,
+            "days_since_last_hit": 263,
+            "recent_hit": false
+          },
+          {
+            "number": "97",
+            "rank": 10,
+            "probability": 0.0157459013,
+            "days_since_last_hit": 100,
+            "recent_hit": false
+          },
+          {
+            "number": "98",
+            "rank": 11,
+            "probability": 0.0157416183,
+            "days_since_last_hit": 604,
+            "recent_hit": false
+          },
+          {
+            "number": "92",
+            "rank": 12,
+            "probability": 0.0153725836,
+            "days_since_last_hit": 158,
+            "recent_hit": false
+          },
+          {
+            "number": "86",
+            "rank": 13,
+            "probability": 0.0137728376,
+            "days_since_last_hit": 266,
+            "recent_hit": false
+          },
+          {
+            "number": "87",
+            "rank": 14,
+            "probability": 0.0136177971,
+            "days_since_last_hit": 2,
+            "recent_hit": true
+          },
+          {
+            "number": "88",
+            "rank": 15,
+            "probability": 0.013614093,
+            "days_since_last_hit": 7,
+            "recent_hit": false
+          },
+          {
+            "number": "41",
+            "rank": 16,
+            "probability": 0.0135946849,
+            "days_since_last_hit": 161,
+            "recent_hit": false
+          },
+          {
+            "number": "82",
+            "rank": 17,
+            "probability": 0.0132949344,
+            "days_since_last_hit": 190,
+            "recent_hit": false
+          },
+          {
+            "number": "43",
+            "rank": 18,
+            "probability": 0.0132296478,
+            "days_since_last_hit": 56,
+            "recent_hit": false
+          },
+          {
+            "number": "61",
+            "rank": 19,
+            "probability": 0.0130576273,
+            "days_since_last_hit": 11,
+            "recent_hit": false
+          },
+          {
+            "number": "49",
+            "rank": 20,
+            "probability": 0.0129336039,
+            "days_since_last_hit": 222,
+            "recent_hit": false
+          },
+          {
+            "number": "63",
+            "rank": 21,
+            "probability": 0.012707011,
+            "days_since_last_hit": 3,
+            "recent_hit": true
+          },
+          {
+            "number": "91",
+            "rank": 22,
+            "probability": 0.0126195267,
+            "days_since_last_hit": 64,
+            "recent_hit": false
+          },
+          {
+            "number": "56",
+            "rank": 23,
+            "probability": 0.0126074364,
+            "days_since_last_hit": 458,
+            "recent_hit": false
+          },
+          {
+            "number": "57",
+            "rank": 24,
+            "probability": 0.0124655147,
+            "days_since_last_hit": 65,
+            "recent_hit": false
+          },
+          {
+            "number": "58",
+            "rank": 25,
+            "probability": 0.0124621241,
+            "days_since_last_hit": 509,
+            "recent_hit": false
+          },
+          {
+            "number": "69",
+            "rank": 26,
+            "probability": 0.0124226623,
+            "days_since_last_hit": 153,
+            "recent_hit": false
+          },
+          {
+            "number": "93",
+            "rank": 27,
+            "probability": 0.012280674,
+            "days_since_last_hit": 129,
+            "recent_hit": false
+          },
+          {
+            "number": "52",
+            "rank": 28,
+            "probability": 0.0121699714,
+            "days_since_last_hit": 33,
+            "recent_hit": false
+          },
+          {
+            "number": "44",
+            "rank": 29,
+            "probability": 0.0121049748,
+            "days_since_last_hit": 28,
+            "recent_hit": false
+          },
+          {
+            "number": "99",
+            "rank": 30,
+            "probability": 0.0120058656,
+            "days_since_last_hit": 31,
+            "recent_hit": false
+          },
+          {
+            "number": "64",
+            "rank": 31,
+            "probability": 0.0116267681,
+            "days_since_last_hit": 164,
+            "recent_hit": false
+          },
+          {
+            "number": "40",
+            "rank": 32,
+            "probability": 0.0115997143,
+            "days_since_last_hit": 160,
+            "recent_hit": false
+          },
+          {
+            "number": "94",
+            "rank": 33,
+            "probability": 0.0112366747,
+            "days_since_last_hit": 94,
+            "recent_hit": false
+          },
+          {
+            "number": "60",
+            "rank": 34,
+            "probability": 0.0111414679,
+            "days_since_last_hit": 27,
+            "recent_hit": false
+          },
+          {
+            "number": "81",
+            "rank": 35,
+            "probability": 0.0109139611,
+            "days_since_last_hit": 34,
+            "recent_hit": false
+          },
+          {
+            "number": "90",
+            "rank": 36,
+            "probability": 0.010767657,
+            "days_since_last_hit": 37,
+            "recent_hit": false
+          },
+          {
+            "number": "83",
+            "rank": 37,
+            "probability": 0.0106209053,
+            "days_since_last_hit": 12,
+            "recent_hit": false
+          },
+          {
+            "number": "06",
+            "rank": 38,
+            "probability": 0.010509749,
+            "days_since_last_hit": 21,
+            "recent_hit": false
+          },
+          {
+            "number": "07",
+            "rank": 39,
+            "probability": 0.0103914409,
+            "days_since_last_hit": 395,
+            "recent_hit": false
+          },
+          {
+            "number": "08",
+            "rank": 40,
+            "probability": 0.0103886144,
+            "days_since_last_hit": 13,
+            "recent_hit": false
+          },
+          {
+            "number": "89",
+            "rank": 41,
+            "probability": 0.0103832381,
+            "days_since_last_hit": 98,
+            "recent_hit": false
+          },
+          {
+            "number": "02",
+            "rank": 42,
+            "probability": 0.0101450715,
+            "days_since_last_hit": 342,
+            "recent_hit": false
+          },
+          {
+            "number": "51",
+            "rank": 43,
+            "probability": 0.0099904663,
+            "days_since_last_hit": 10,
+            "recent_hit": false
+          },
+          {
+            "number": "45",
+            "rank": 44,
+            "probability": 0.0099215181,
+            "days_since_last_hit": 48,
+            "recent_hit": false
+          },
+          {
+            "number": "53",
+            "rank": 45,
+            "probability": 0.0097222077,
+            "days_since_last_hit": 4,
+            "recent_hit": false
+          },
+          {
+            "number": "84",
+            "rank": 46,
+            "probability": 0.0097180056,
+            "days_since_last_hit": 120,
+            "recent_hit": false
+          },
+          {
+            "number": "36",
+            "rank": 47,
+            "probability": 0.0096814807,
+            "days_since_last_hit": 114,
+            "recent_hit": false
+          },
+          {
+            "number": "37",
+            "rank": 48,
+            "probability": 0.0095724964,
+            "days_since_last_hit": 39,
+            "recent_hit": false
+          },
+          {
+            "number": "38",
+            "rank": 49,
+            "probability": 0.0095698927,
+            "days_since_last_hit": 24,
+            "recent_hit": false
+          },
+          {
+            "number": "65",
+            "rank": 50,
+            "probability": 0.0095295689,
+            "days_since_last_hit": 19,
+            "recent_hit": false
+          },
+          {
+            "number": "59",
+            "rank": 51,
+            "probability": 0.0095046509,
+            "days_since_last_hit": 170,
+            "recent_hit": false
+          },
+          {
+            "number": "26",
+            "rank": 52,
+            "probability": 0.0094065865,
+            "days_since_last_hit": 63,
+            "recent_hit": false
+          },
+          {
+            "number": "16",
+            "rank": 53,
+            "probability": 0.0093606522,
+            "days_since_last_hit": 80,
+            "recent_hit": false
+          },
+          {
+            "number": "32",
+            "rank": 54,
+            "probability": 0.0093455433,
+            "days_since_last_hit": 18,
+            "recent_hit": false
+          },
+          {
+            "number": "80",
+            "rank": 55,
+            "probability": 0.0093123769,
+            "days_since_last_hit": 50,
+            "recent_hit": false
+          },
+          {
+            "number": "27",
+            "rank": 56,
+            "probability": 0.0093006967,
+            "days_since_last_hit": 274,
+            "recent_hit": false
+          },
+          {
+            "number": "28",
+            "rank": 57,
+            "probability": 0.0092981669,
+            "days_since_last_hit": 81,
+            "recent_hit": false
+          },
+          {
+            "number": "17",
+            "rank": 58,
+            "probability": 0.0092552795,
+            "days_since_last_hit": 51,
+            "recent_hit": false
+          },
+          {
+            "number": "18",
+            "rank": 59,
+            "probability": 0.0092527621,
+            "days_since_last_hit": 1,
+            "recent_hit": true
+          },
+          {
+            "number": "95",
+            "rank": 60,
+            "probability": 0.0092098393,
+            "days_since_last_hit": 209,
+            "recent_hit": false
+          },
+          {
+            "number": "22",
+            "rank": 61,
+            "probability": 0.0090801876,
+            "days_since_last_hit": 22,
+            "recent_hit": false
+          },
+          {
+            "number": "12",
+            "rank": 62,
+            "probability": 0.0090358472,
+            "days_since_last_hit": 25,
+            "recent_hit": false
+          },
+          {
+            "number": "54",
+            "rank": 63,
+            "probability": 0.0088957076,
+            "days_since_last_hit": 8,
+            "recent_hit": false
+          },
+          {
+            "number": "50",
+            "rank": 64,
+            "probability": 0.0085244017,
+            "days_since_last_hit": 139,
+            "recent_hit": false
+          },
+          {
+            "number": "01",
+            "rank": 65,
+            "probability": 0.0083282033,
+            "days_since_last_hit": 95,
+            "recent_hit": false
+          },
+          {
+            "number": "03",
+            "rank": 66,
+            "probability": 0.0081045789,
+            "days_since_last_hit": 119,
+            "recent_hit": false
+          },
+          {
+            "number": "85",
+            "rank": 67,
+            "probability": 0.0079651028,
+            "days_since_last_hit": 97,
+            "recent_hit": false
+          },
+          {
+            "number": "09",
+            "rank": 68,
+            "probability": 0.0079232202,
+            "days_since_last_hit": 73,
+            "recent_hit": false
+          },
+          {
+            "number": "31",
+            "rank": 69,
+            "probability": 0.0076718616,
+            "days_since_last_hit": 399,
+            "recent_hit": false
+          },
+          {
+            "number": "33",
+            "rank": 70,
+            "probability": 0.0074658609,
+            "days_since_last_hit": 54,
+            "recent_hit": false
+          },
+          {
+            "number": "21",
+            "rank": 71,
+            "probability": 0.0074540281,
+            "days_since_last_hit": 43,
+            "recent_hit": false
+          },
+          {
+            "number": "11",
+            "rank": 72,
+            "probability": 0.0074176286,
+            "days_since_last_hit": 41,
+            "recent_hit": false
+          },
+          {
+            "number": "04",
+            "rank": 73,
+            "probability": 0.007415596,
+            "days_since_last_hit": 35,
+            "recent_hit": false
+          },
+          {
+            "number": "39",
+            "rank": 74,
+            "probability": 0.007298795,
+            "days_since_last_hit": 6,
+            "recent_hit": false
+          },
+          {
+            "number": "55",
+            "rank": 75,
+            "probability": 0.0072911284,
+            "days_since_last_hit": 117,
+            "recent_hit": false
+          },
+          {
+            "number": "23",
+            "rank": 76,
+            "probability": 0.0072538766,
+            "days_since_last_hit": 55,
+            "recent_hit": false
+          },
+          {
+            "number": "13",
+            "rank": 77,
+            "probability": 0.0072184544,
+            "days_since_last_hit": 53,
+            "recent_hit": false
+          },
+          {
+            "number": "00",
+            "rank": 78,
+            "probability": 0.0071060697,
+            "days_since_last_hit": 78,
+            "recent_hit": false
+          },
+          {
+            "number": "29",
+            "rank": 79,
+            "probability": 0.0070915544,
+            "days_since_last_hit": 29,
+            "recent_hit": false
+          },
+          {
+            "number": "19",
+            "rank": 80,
+            "probability": 0.0070569248,
+            "days_since_last_hit": 91,
+            "recent_hit": false
+          },
+          {
+            "number": "34",
+            "rank": 81,
+            "probability": 0.0068311764,
+            "days_since_last_hit": 76,
+            "recent_hit": false
+          },
+          {
+            "number": "76",
+            "rank": 82,
+            "probability": 0.0067562239,
+            "days_since_last_hit": 173,
+            "recent_hit": false
+          },
+          {
+            "number": "77",
+            "rank": 83,
+            "probability": 0.0066801692,
+            "days_since_last_hit": 243,
+            "recent_hit": false
+          },
+          {
+            "number": "78",
+            "rank": 84,
+            "probability": 0.0066783522,
+            "days_since_last_hit": 60,
+            "recent_hit": false
+          },
+          {
+            "number": "24",
+            "rank": 85,
+            "probability": 0.0066372132,
+            "days_since_last_hit": 208,
+            "recent_hit": false
+          },
+          {
+            "number": "14",
+            "rank": 86,
+            "probability": 0.0066048023,
+            "days_since_last_hit": 123,
+            "recent_hit": false
+          },
+          {
+            "number": "30",
+            "rank": 87,
+            "probability": 0.0065460437,
+            "days_since_last_hit": 242,
+            "recent_hit": false
+          },
+          {
+            "number": "72",
+            "rank": 88,
+            "probability": 0.0065217899,
+            "days_since_last_hit": 45,
+            "recent_hit": false
+          },
+          {
+            "number": "20",
+            "rank": 89,
+            "probability": 0.0063601766,
+            "days_since_last_hit": 187,
+            "recent_hit": false
+          },
+          {
+            "number": "10",
+            "rank": 90,
+            "probability": 0.0063291185,
+            "days_since_last_hit": 75,
+            "recent_hit": false
+          },
+          {
+            "number": "05",
+            "rank": 91,
+            "probability": 0.0060779945,
+            "days_since_last_hit": 128,
+            "recent_hit": false
+          },
+          {
+            "number": "35",
+            "rank": 92,
+            "probability": 0.0055989906,
+            "days_since_last_hit": 5,
+            "recent_hit": false
+          },
+          {
+            "number": "25",
+            "rank": 93,
+            "probability": 0.0054400139,
+            "days_since_last_hit": 71,
+            "recent_hit": false
+          },
+          {
+            "number": "15",
+            "rank": 94,
+            "probability": 0.0054134492,
+            "days_since_last_hit": 16,
+            "recent_hit": false
+          },
+          {
+            "number": "71",
+            "rank": 95,
+            "probability": 0.0053538106,
+            "days_since_last_hit": 101,
+            "recent_hit": false
+          },
+          {
+            "number": "73",
+            "rank": 96,
+            "probability": 0.005210053,
+            "days_since_last_hit": 17,
+            "recent_hit": false
+          },
+          {
+            "number": "79",
+            "rank": 97,
+            "probability": 0.005093466,
+            "days_since_last_hit": 68,
+            "recent_hit": false
+          },
+          {
+            "number": "74",
+            "rank": 98,
+            "probability": 0.0047671383,
+            "days_since_last_hit": 261,
+            "recent_hit": false
+          },
+          {
+            "number": "70",
+            "rank": 99,
+            "probability": 0.0045681584,
+            "days_since_last_hit": 85,
+            "recent_hit": false
+          },
+          {
+            "number": "75",
+            "rank": 100,
+            "probability": 0.0039072571,
+            "days_since_last_hit": 167,
+            "recent_hit": false
+          }
+        ],
+        "selected_count": 65,
+        "status": "replayed",
+        "trained_through": "2026-10-13",
+        "training_dataset_hash": "2510ecc6dbb8bd1bb9a4d7064c3feb1218952895b2cccdeb6205e37840b0feaf",
+        "training_draw_count": 2790,
+        "training_sample_count": 2787,
+        "training_snapshot_id": "b54c3e661390b6729170f833f2d246d536cab7edcd807f2b31b5e60bca35b8f3"
+      }
+    },
+    {
+      "prediction_date": "2026-10-14",
+      "model_version": "direct_catboost_multiclass_v2_context2000",
+      "selected_count": 65,
+      "status": "replayed",
+      "created": true,
+      "prediction": {
+        "_id": "412e05e0473add0aed7e8ff7",
+        "code_hash": "b1283e842a272a9e288aede04ef25d662eeff741bd84f3c81590bf7b45953655",
+        "config_hash": "746f84c8c787ef9563019f37f917ab47250b4ba48cd5a6e5a938f81a2d605d8c",
+        "coverage_probability": 0.6855567086,
+        "created_at": "2026-10-14T13:43:44.150000",
+        "cutoff_probability": 0.009521377,
+        "dataset_hash": "2510ecc6dbb8bd1bb9a4d7064c3feb1218952895b2cccdeb6205e37840b0feaf",
+        "evaluation": {
+          "status": "evaluated",
+          "actual_last_two": "59",
+          "actual_special_prize": "28259",
+          "actual_revision_hash": "853f09c4b9981097c1d56903eee6a3ad629da2391c11f52a896148b6d6ad9bb7",
+          "hit": true
+        },
+        "evaluation_protocol": "retrospective_replay_v1",
+        "excluded_from_live_metrics": true,
+        "feature_lookback_draw_count": 2000,
+        "feature_version": "context2000_compact_v2",
+        "library_versions": {
+          "catboost": "1.2.10"
+        },
+        "locked_at": null,
+        "model_config": {
+          "model_id": "direct-catboost",
+          "model_version": "direct_catboost_multiclass_v2_context2000",
+          "feature_version": "context2000_compact_v2",
+          "objective": "MultiClass",
+          "iterations": 48,
+          "depth": 4,
+          "learning_rate": 0.06,
+          "l2_leaf_reg": 12.0,
+          "has_time": true,
+          "uniform_shrinkage": 0.15,
+          "lag_count": 2000,
+          "raw_lag_count": 14,
+          "frequency_windows": [
+            365,
+            2000
+          ],
+          "summary_windows": [
+            7,
+            14,
+            30,
+            90,
+            365,
+            730,
+            2000
+          ],
+          "feature_count": 287,
+          "minimum_training_samples": 730,
+          "random_seed": 20260923
+        },
+        "model_explanation": "CatBoost đa lớp học trực tiếp 100 nhãn 00-99 từ ngữ cảnh 2.000 kỳ: 14 kỳ gần nhất theo đúng thứ tự, tần suất 00-99 ở cửa sổ 365/2.000 kỳ, thống kê nhiều cửa sổ, lịch và khoảng cách ngày. has_time giữ nguyên thứ tự thời gian; phân phối được co 15% về đều để hạn chế quá tự tin.",
+        "model_id": "direct-catboost",
+        "model_version": "direct_catboost_multiclass_v2_context2000",
+        "note": "Hồi kiểm sau khi có kết quả; không tính vào tỷ lệ dự đoán trực tiếp.",
+        "numbers": [
+          "54",
+          "51",
+          "38",
+          "83",
+          "68",
+          "22",
+          "32",
+          "35",
+          "42",
+          "39",
+          "44",
+          "37",
+          "87",
+          "04",
+          "60",
+          "65",
+          "17",
+          "21",
+          "08",
+          "23",
+          "53",
+          "18",
+          "28",
+          "96",
+          "63",
+          "29",
+          "61",
+          "88",
+          "52",
+          "33",
+          "80",
+          "36",
+          "78",
+          "94",
+          "43",
+          "81",
+          "92",
+          "90",
+          "99",
+          "50",
+          "09",
+          "67",
+          "59",
+          "01",
+          "06",
+          "12",
+          "48",
+          "62",
+          "25",
+          "86",
+          "97",
+          "79",
+          "15",
+          "13",
+          "47",
+          "24",
+          "73",
+          "19",
+          "70",
+          "05",
+          "57",
+          "66",
+          "00",
+          "76",
+          "55"
+        ],
+        "prediction_date": "2026-10-14",
+        "prediction_kind": "retrospective",
+        "recent_hit_window_days": 3,
+        "scores": [
+          {
+            "number": "54",
+            "rank": 1,
+            "probability": 0.0136679582,
+            "days_since_last_hit": 8,
+            "recent_hit": false
+          },
+          {
+            "number": "51",
+            "rank": 2,
+            "probability": 0.0136625323,
+            "days_since_last_hit": 10,
+            "recent_hit": false
+          },
+          {
+            "number": "38",
+            "rank": 3,
+            "probability": 0.0132247583,
+            "days_since_last_hit": 24,
+            "recent_hit": false
+          },
+          {
+            "number": "83",
+            "rank": 4,
+            "probability": 0.0127029316,
+            "days_since_last_hit": 12,
+            "recent_hit": false
+          },
+          {
+            "number": "68",
+            "rank": 5,
+            "probability": 0.0121852296,
+            "days_since_last_hit": 47,
+            "recent_hit": false
+          },
+          {
+            "number": "22",
+            "rank": 6,
+            "probability": 0.0118877799,
+            "days_since_last_hit": 22,
+            "recent_hit": false
+          },
+          {
+            "number": "32",
+            "rank": 7,
+            "probability": 0.0118556893,
+            "days_since_last_hit": 18,
+            "recent_hit": false
+          },
+          {
+            "number": "35",
+            "rank": 8,
+            "probability": 0.0117450874,
+            "days_since_last_hit": 5,
+            "recent_hit": false
+          },
+          {
+            "number": "42",
+            "rank": 9,
+            "probability": 0.0116527459,
+            "days_since_last_hit": 14,
+            "recent_hit": false
+          },
+          {
+            "number": "39",
+            "rank": 10,
+            "probability": 0.0114447776,
+            "days_since_last_hit": 6,
+            "recent_hit": false
+          },
+          {
+            "number": "44",
+            "rank": 11,
+            "probability": 0.0113804036,
+            "days_since_last_hit": 28,
+            "recent_hit": false
+          },
+          {
+            "number": "37",
+            "rank": 12,
+            "probability": 0.011270243,
+            "days_since_last_hit": 39,
+            "recent_hit": false
+          },
+          {
+            "number": "87",
+            "rank": 13,
+            "probability": 0.011155022,
+            "days_since_last_hit": 2,
+            "recent_hit": true
+          },
+          {
+            "number": "04",
+            "rank": 14,
+            "probability": 0.0111314487,
+            "days_since_last_hit": 35,
+            "recent_hit": false
+          },
+          {
+            "number": "60",
+            "rank": 15,
+            "probability": 0.0111294546,
+            "days_since_last_hit": 27,
+            "recent_hit": false
+          },
+          {
+            "number": "65",
+            "rank": 16,
+            "probability": 0.0110552791,
+            "days_since_last_hit": 19,
+            "recent_hit": false
+          },
+          {
+            "number": "17",
+            "rank": 17,
+            "probability": 0.0109820352,
+            "days_since_last_hit": 51,
+            "recent_hit": false
+          },
+          {
+            "number": "21",
+            "rank": 18,
+            "probability": 0.0109681932,
+            "days_since_last_hit": 43,
+            "recent_hit": false
+          },
+          {
+            "number": "08",
+            "rank": 19,
+            "probability": 0.0109357709,
+            "days_since_last_hit": 13,
+            "recent_hit": false
+          },
+          {
+            "number": "23",
+            "rank": 20,
+            "probability": 0.0108689685,
+            "days_since_last_hit": 55,
+            "recent_hit": false
+          },
+          {
+            "number": "53",
+            "rank": 21,
+            "probability": 0.01072299,
+            "days_since_last_hit": 4,
+            "recent_hit": false
+          },
+          {
+            "number": "18",
+            "rank": 22,
+            "probability": 0.010684012,
+            "days_since_last_hit": 1,
+            "recent_hit": true
+          },
+          {
+            "number": "28",
+            "rank": 23,
+            "probability": 0.010633963,
+            "days_since_last_hit": 81,
+            "recent_hit": false
+          },
+          {
+            "number": "96",
+            "rank": 24,
+            "probability": 0.0106249429,
+            "days_since_last_hit": 20,
+            "recent_hit": false
+          },
+          {
+            "number": "63",
+            "rank": 25,
+            "probability": 0.0105865071,
+            "days_since_last_hit": 3,
+            "recent_hit": true
+          },
+          {
+            "number": "29",
+            "rank": 26,
+            "probability": 0.010504192,
+            "days_since_last_hit": 29,
+            "recent_hit": false
+          },
+          {
+            "number": "61",
+            "rank": 27,
+            "probability": 0.010421727,
+            "days_since_last_hit": 11,
+            "recent_hit": false
+          },
+          {
+            "number": "88",
+            "rank": 28,
+            "probability": 0.0103322892,
+            "days_since_last_hit": 7,
+            "recent_hit": false
+          },
+          {
+            "number": "52",
+            "rank": 29,
+            "probability": 0.0103275347,
+            "days_since_last_hit": 33,
+            "recent_hit": false
+          },
+          {
+            "number": "33",
+            "rank": 30,
+            "probability": 0.0102881388,
+            "days_since_last_hit": 54,
+            "recent_hit": false
+          },
+          {
+            "number": "80",
+            "rank": 31,
+            "probability": 0.0102788421,
+            "days_since_last_hit": 50,
+            "recent_hit": false
+          },
+          {
+            "number": "36",
+            "rank": 32,
+            "probability": 0.0102333488,
+            "days_since_last_hit": 114,
+            "recent_hit": false
+          },
+          {
+            "number": "78",
+            "rank": 33,
+            "probability": 0.010192014,
+            "days_since_last_hit": 60,
+            "recent_hit": false
+          },
+          {
+            "number": "94",
+            "rank": 34,
+            "probability": 0.0101730725,
+            "days_since_last_hit": 94,
+            "recent_hit": false
+          },
+          {
+            "number": "43",
+            "rank": 35,
+            "probability": 0.0101672835,
+            "days_since_last_hit": 56,
+            "recent_hit": false
+          },
+          {
+            "number": "81",
+            "rank": 36,
+            "probability": 0.0101376319,
+            "days_since_last_hit": 34,
+            "recent_hit": false
+          },
+          {
+            "number": "92",
+            "rank": 37,
+            "probability": 0.010118827,
+            "days_since_last_hit": 158,
+            "recent_hit": false
+          },
+          {
+            "number": "90",
+            "rank": 38,
+            "probability": 0.0101068969,
+            "days_since_last_hit": 37,
+            "recent_hit": false
+          },
+          {
+            "number": "99",
+            "rank": 39,
+            "probability": 0.0100987961,
+            "days_since_last_hit": 31,
+            "recent_hit": false
+          },
+          {
+            "number": "50",
+            "rank": 40,
+            "probability": 0.0100278376,
+            "days_since_last_hit": 139,
+            "recent_hit": false
+          },
+          {
+            "number": "09",
+            "rank": 41,
+            "probability": 0.0100073123,
+            "days_since_last_hit": 73,
+            "recent_hit": false
+          },
+          {
+            "number": "67",
+            "rank": 42,
+            "probability": 0.0099999026,
+            "days_since_last_hit": 26,
+            "recent_hit": false
+          },
+          {
+            "number": "59",
+            "rank": 43,
+            "probability": 0.0099912067,
+            "days_since_last_hit": 170,
+            "recent_hit": false
+          },
+          {
+            "number": "01",
+            "rank": 44,
+            "probability": 0.0099600611,
+            "days_since_last_hit": 95,
+            "recent_hit": false
+          },
+          {
+            "number": "06",
+            "rank": 45,
+            "probability": 0.0099568164,
+            "days_since_last_hit": 21,
+            "recent_hit": false
+          },
+          {
+            "number": "12",
+            "rank": 46,
+            "probability": 0.0099358471,
+            "days_since_last_hit": 25,
+            "recent_hit": false
+          },
+          {
+            "number": "48",
+            "rank": 47,
+            "probability": 0.0099122838,
+            "days_since_last_hit": 175,
+            "recent_hit": false
+          },
+          {
+            "number": "62",
+            "rank": 48,
+            "probability": 0.0098191988,
+            "days_since_last_hit": 263,
+            "recent_hit": false
+          },
+          {
+            "number": "25",
+            "rank": 49,
+            "probability": 0.0098080525,
+            "days_since_last_hit": 71,
+            "recent_hit": false
+          },
+          {
+            "number": "86",
+            "rank": 50,
+            "probability": 0.0097919342,
+            "days_since_last_hit": 266,
+            "recent_hit": false
+          },
+          {
+            "number": "97",
+            "rank": 51,
+            "probability": 0.0097840566,
+            "days_since_last_hit": 100,
+            "recent_hit": false
+          },
+          {
+            "number": "79",
+            "rank": 52,
+            "probability": 0.0097840294,
+            "days_since_last_hit": 68,
+            "recent_hit": false
+          },
+          {
+            "number": "15",
+            "rank": 53,
+            "probability": 0.0097732545,
+            "days_since_last_hit": 16,
+            "recent_hit": false
+          },
+          {
+            "number": "13",
+            "rank": 54,
+            "probability": 0.0097529542,
+            "days_since_last_hit": 53,
+            "recent_hit": false
+          },
+          {
+            "number": "47",
+            "rank": 55,
+            "probability": 0.0097137972,
+            "days_since_last_hit": 72,
+            "recent_hit": false
+          },
+          {
+            "number": "24",
+            "rank": 56,
+            "probability": 0.0096924467,
+            "days_since_last_hit": 208,
+            "recent_hit": false
+          },
+          {
+            "number": "73",
+            "rank": 57,
+            "probability": 0.0096754126,
+            "days_since_last_hit": 17,
+            "recent_hit": false
+          },
+          {
+            "number": "19",
+            "rank": 58,
+            "probability": 0.0096583662,
+            "days_since_last_hit": 91,
+            "recent_hit": false
+          },
+          {
+            "number": "70",
+            "rank": 59,
+            "probability": 0.0096360686,
+            "days_since_last_hit": 85,
+            "recent_hit": false
+          },
+          {
+            "number": "05",
+            "rank": 60,
+            "probability": 0.009613573,
+            "days_since_last_hit": 128,
+            "recent_hit": false
+          },
+          {
+            "number": "57",
+            "rank": 61,
+            "probability": 0.0095570843,
+            "days_since_last_hit": 65,
+            "recent_hit": false
+          },
+          {
+            "number": "66",
+            "rank": 62,
+            "probability": 0.0095570808,
+            "days_since_last_hit": 40,
+            "recent_hit": false
+          },
+          {
+            "number": "00",
+            "rank": 63,
+            "probability": 0.0095506034,
+            "days_since_last_hit": 78,
+            "recent_hit": false
+          },
+          {
+            "number": "76",
+            "rank": 64,
+            "probability": 0.0095368324,
+            "days_since_last_hit": 173,
+            "recent_hit": false
+          },
+          {
+            "number": "55",
+            "rank": 65,
+            "probability": 0.009521377,
+            "days_since_last_hit": 117,
+            "recent_hit": false
+          },
+          {
+            "number": "45",
+            "rank": 66,
+            "probability": 0.0095180766,
+            "days_since_last_hit": 48,
+            "recent_hit": false
+          },
+          {
+            "number": "16",
+            "rank": 67,
+            "probability": 0.009459303,
+            "days_since_last_hit": 80,
+            "recent_hit": false
+          },
+          {
+            "number": "11",
+            "rank": 68,
+            "probability": 0.00945074,
+            "days_since_last_hit": 41,
+            "recent_hit": false
+          },
+          {
+            "number": "77",
+            "rank": 69,
+            "probability": 0.0094199372,
+            "days_since_last_hit": 243,
+            "recent_hit": false
+          },
+          {
+            "number": "93",
+            "rank": 70,
+            "probability": 0.0093851366,
+            "days_since_last_hit": 129,
+            "recent_hit": false
+          },
+          {
+            "number": "69",
+            "rank": 71,
+            "probability": 0.0093359046,
+            "days_since_last_hit": 153,
+            "recent_hit": false
+          },
+          {
+            "number": "14",
+            "rank": 72,
+            "probability": 0.0093254768,
+            "days_since_last_hit": 123,
+            "recent_hit": false
+          },
+          {
+            "number": "64",
+            "rank": 73,
+            "probability": 0.0093190683,
+            "days_since_last_hit": 164,
+            "recent_hit": false
+          },
+          {
+            "number": "85",
+            "rank": 74,
+            "probability": 0.0093070479,
+            "days_since_last_hit": 97,
+            "recent_hit": false
+          },
+          {
+            "number": "72",
+            "rank": 75,
+            "probability": 0.0092484002,
+            "days_since_last_hit": 45,
+            "recent_hit": false
+          },
+          {
+            "number": "89",
+            "rank": 76,
+            "probability": 0.0092368225,
+            "days_since_last_hit": 98,
+            "recent_hit": false
+          },
+          {
+            "number": "91",
+            "rank": 77,
+            "probability": 0.0092161238,
+            "days_since_last_hit": 64,
+            "recent_hit": false
+          },
+          {
+            "number": "26",
+            "rank": 78,
+            "probability": 0.0091968094,
+            "days_since_last_hit": 63,
+            "recent_hit": false
+          },
+          {
+            "number": "34",
+            "rank": 79,
+            "probability": 0.0091928967,
+            "days_since_last_hit": 76,
+            "recent_hit": false
+          },
+          {
+            "number": "30",
+            "rank": 80,
+            "probability": 0.0091583217,
+            "days_since_last_hit": 242,
+            "recent_hit": false
+          },
+          {
+            "number": "03",
+            "rank": 81,
+            "probability": 0.0090401342,
+            "days_since_last_hit": 119,
+            "recent_hit": false
+          },
+          {
+            "number": "82",
+            "rank": 82,
+            "probability": 0.0089974453,
+            "days_since_last_hit": 190,
+            "recent_hit": false
+          },
+          {
+            "number": "46",
+            "rank": 83,
+            "probability": 0.0089924857,
+            "days_since_last_hit": 206,
+            "recent_hit": false
+          },
+          {
+            "number": "27",
+            "rank": 84,
+            "probability": 0.0089688191,
+            "days_since_last_hit": 274,
+            "recent_hit": false
+          },
+          {
+            "number": "84",
+            "rank": 85,
+            "probability": 0.0089227131,
+            "days_since_last_hit": 120,
+            "recent_hit": false
+          },
+          {
+            "number": "49",
+            "rank": 86,
+            "probability": 0.0089108535,
+            "days_since_last_hit": 222,
+            "recent_hit": false
+          },
+          {
+            "number": "75",
+            "rank": 87,
+            "probability": 0.0089018352,
+            "days_since_last_hit": 167,
+            "recent_hit": false
+          },
+          {
+            "number": "74",
+            "rank": 88,
+            "probability": 0.0088963005,
+            "days_since_last_hit": 261,
+            "recent_hit": false
+          },
+          {
+            "number": "40",
+            "rank": 89,
+            "probability": 0.0088657653,
+            "days_since_last_hit": 160,
+            "recent_hit": false
+          },
+          {
+            "number": "71",
+            "rank": 90,
+            "probability": 0.0088352711,
+            "days_since_last_hit": 101,
+            "recent_hit": false
+          },
+          {
+            "number": "58",
+            "rank": 91,
+            "probability": 0.0087446926,
+            "days_since_last_hit": 509,
+            "recent_hit": false
+          },
+          {
+            "number": "56",
+            "rank": 92,
+            "probability": 0.0086281161,
+            "days_since_last_hit": 458,
+            "recent_hit": false
+          },
+          {
+            "number": "95",
+            "rank": 93,
+            "probability": 0.0086244868,
+            "days_since_last_hit": 209,
+            "recent_hit": false
+          },
+          {
+            "number": "41",
+            "rank": 94,
+            "probability": 0.0086166273,
+            "days_since_last_hit": 161,
+            "recent_hit": false
+          },
+          {
+            "number": "10",
+            "rank": 95,
+            "probability": 0.0086004661,
+            "days_since_last_hit": 75,
+            "recent_hit": false
+          },
+          {
+            "number": "02",
+            "rank": 96,
+            "probability": 0.0085029108,
+            "days_since_last_hit": 342,
+            "recent_hit": false
+          },
+          {
+            "number": "20",
+            "rank": 97,
+            "probability": 0.008481882,
+            "days_since_last_hit": 187,
+            "recent_hit": false
+          },
+          {
+            "number": "98",
+            "rank": 98,
+            "probability": 0.0084198554,
+            "days_since_last_hit": 604,
+            "recent_hit": false
+          },
+          {
+            "number": "07",
+            "rank": 99,
+            "probability": 0.0083995176,
+            "days_since_last_hit": 395,
+            "recent_hit": false
+          },
+          {
+            "number": "31",
+            "rank": 100,
+            "probability": 0.0083230483,
+            "days_since_last_hit": 399,
+            "recent_hit": false
+          }
+        ],
+        "selected_count": 65,
+        "status": "replayed",
+        "trained_through": "2026-10-13",
+        "training_dataset_hash": "2510ecc6dbb8bd1bb9a4d7064c3feb1218952895b2cccdeb6205e37840b0feaf",
+        "training_draw_count": 2790,
+        "training_sample_count": 790,
+        "training_snapshot_id": "b54c3e661390b6729170f833f2d246d536cab7edcd807f2b31b5e60bca35b8f3"
+      }
+    }
+  ],
+  "note": "Hồi kiểm sau khi có kết quả; không tính vào tỷ lệ dự đoán trực tiếp."
+}

@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import os
-import secrets
 from contextlib import asynccontextmanager
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -21,6 +19,7 @@ from app.models import (
     DigitBacktestRequest,
     GenerateDigitPredictionRequest,
     GeneratePredictionRequest,
+    ReplayPredictionRequest,
 )
 from app.services.backtest import run_walk_forward_backtest
 from app.services.catboost_prediction import (
@@ -46,6 +45,7 @@ from app.services.logistic_prediction import (
 from app.services.model_comparison import comparison_summary, three_way_comparison_summary
 from app.services.prediction import MODEL_VERSION, create_prediction
 from app.services.prediction_protocol import DEADLINE_TIME
+from app.services.prediction_replay import create_missing_replays, history_with_replays, replay_evaluation
 from app.services.rolling_comparison import (
     load_or_build_rolling_comparison,
     report_for_selected_count,
@@ -55,46 +55,35 @@ from app.services.scheduler import DailyScheduler
 
 STATIC_DIR = Path(__file__).parent / "static"
 IMG_DIR = Path(__file__).parent.parent / "img"
+AUTO_DAILY_LEASE_SECONDS = 330  # Longer than Vercel's 300-second invocation budget.
 
 
 def _in_process_scheduler_enabled() -> bool:
     return settings.enable_scheduler and not settings.is_vercel
 
 
-def _authorize_cron_request(request: Request) -> None:
-    cron_secret = os.getenv("CRON_SECRET", "").strip()
-    if not cron_secret:
-        if getattr(settings, "is_vercel", False):
-            raise HTTPException(
-                status_code=503,
-                detail="CRON_SECRET must be configured in the Vercel environment",
-            )
-        return
-    authorization = request.headers.get("authorization", "")
-    expected = f"Bearer {cron_secret}"
-    if not secrets.compare_digest(authorization, expected):
-        raise HTTPException(status_code=401, detail="Invalid cron authorization")
-
-
-def _authorize_admin_request(request: Request) -> None:
-    """Protect write endpoints while keeping local development frictionless."""
-    admin_api_key = getattr(settings, "admin_api_key", "")
-    auth_required = getattr(settings, "require_admin_auth", False) or bool(admin_api_key)
-    if not auth_required:
-        return
-    if not admin_api_key:
-        raise HTTPException(
-            status_code=503,
-            detail="ADMIN_API_KEY must be configured before admin actions are enabled",
-        )
-
-    supplied = request.headers.get("x-admin-key", "").strip()
-    if not supplied:
-        authorization = request.headers.get("authorization", "")
-        if authorization.lower().startswith("bearer "):
-            supplied = authorization[7:].strip()
-    if not supplied or not secrets.compare_digest(supplied, admin_api_key):
-        raise HTTPException(status_code=401, detail="Invalid admin authorization")
+def _automation_status(db: Any) -> dict[str, Any]:
+    latest = db.automation_state.find_one({"_id": "auto-daily"})
+    # Return only operational metadata, never source errors, headers or secrets.
+    last_run = None
+    if latest:
+        last_run = {key: latest.get(key) for key in (
+            "status", "trigger", "started_at", "finished_at", "target_date"
+        )}
+        for field in ("started_at", "finished_at"):
+            value = last_run[field]
+            if isinstance(value, datetime) and value.tzinfo is None:
+                last_run[field] = value.replace(tzinfo=timezone.utc)
+        started = last_run["started_at"]
+        if last_run["status"] == "running" and isinstance(started, datetime):
+            if (datetime.now(timezone.utc) - started).total_seconds() > AUTO_DAILY_LEASE_SECONDS:
+                last_run["status"] = "interrupted"
+    return serialize_document({
+        "mode": "vercel_cron" if settings.is_vercel else "scheduler",
+        "configured": settings.is_vercel or _in_process_scheduler_enabled(),
+        "auto_prediction": settings.auto_prediction,
+        "last_run": last_run,
+    })
 
 
 @asynccontextmanager
@@ -139,7 +128,8 @@ def dashboard() -> FileResponse:
 
 
 @app.get("/api/health")
-def health(request: Request) -> dict[str, Any]:
+def health(request: Request, response: Response) -> dict[str, Any]:
+    response.headers["Cache-Control"] = "no-store"
     try:
         mongo_ok = request.app.state.mongo.ping()
     except Exception as exc:
@@ -151,6 +141,7 @@ def health(request: Request) -> dict[str, Any]:
         "database": settings.mongodb_database,
         "scheduler_enabled": _in_process_scheduler_enabled(),
         "automation_mode": "vercel_cron" if settings.is_vercel else "scheduler",
+        "automation": _automation_status(_db(request)),
         "model_version": MODEL_VERSION,
         "logistic_model_version": LOGISTIC_MODEL_VERSION,
         "digit_model_version": DIGIT_MODEL_VERSION,
@@ -177,7 +168,6 @@ def public_settings() -> dict[str, Any]:
 
 @app.post("/api/sync/current")
 def sync_current(request: Request) -> dict[str, Any]:
-    _authorize_admin_request(request)
     db = _db(request)
     collector = KqxsCollector(db, settings)
     try:
@@ -206,7 +196,6 @@ def sync_backfill(
     end_year: Annotated[int | None, Query(ge=2019)] = None,
     force: Annotated[bool, Query()] = False,
 ) -> dict[str, Any]:
-    _authorize_admin_request(request)
     current_year = settings.local_today().year
     final_year = end_year or current_year
     if final_year > current_year:
@@ -346,12 +335,30 @@ def recent_last_two(
 
 @app.api_route("/api/auto-daily", methods=["GET", "POST"])
 def auto_daily(request: Request, response: Response) -> dict[str, Any]:
-    _authorize_cron_request(request)
+    return _execute_auto_daily(request, response, trigger="cron" if request.method == "GET" else "manual")
+
+
+def _execute_auto_daily(request: Request, response: Response, *, trigger: str) -> dict[str, Any]:
     response.headers["Cache-Control"] = "no-store, max-age=0"
     db = _db(request)
     try:
-        with mongo_cron_lease(db, "auto-daily"):
-            result = _run_auto_daily(db)
+        with mongo_cron_lease(db, "auto-daily", lease_seconds=AUTO_DAILY_LEASE_SECONDS):
+            db.automation_state.update_one({"_id": "auto-daily"}, {"$set": {
+                "status": "running", "trigger": trigger,
+                "started_at": datetime.now(timezone.utc),
+                "finished_at": None, "target_date": None,
+            }}, upsert=True)
+            try:
+                result = _run_auto_daily(db)
+            except Exception:
+                db.automation_state.update_one({"_id": "auto-daily"}, {"$set": {
+                    "status": "failed", "finished_at": datetime.now(timezone.utc),
+                }})
+                raise
+            db.automation_state.update_one({"_id": "auto-daily"}, {"$set": {
+                "status": result["status"], "target_date": result["target_date"],
+                "finished_at": datetime.now(timezone.utc),
+            }})
     except CronAlreadyRunning:
         return {
             "ok": True,
@@ -360,6 +367,8 @@ def auto_daily(request: Request, response: Response) -> dict[str, Any]:
         }
     if result.get("sync_error"):
         response.status_code = 502
+    elif not result.get("ok"):
+        response.status_code = 500
     return result
 
 
@@ -475,7 +484,7 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
     model_error = any(
         error is not None
         for error in (pred_error, logistic_pred_error, catboost_pred_error)
-    ) and target is not None
+    ) and target is not None and settings.auto_prediction
     return serialize_document({
         "ok": sync_error is None and not model_error,
         "status": (
@@ -483,6 +492,10 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
             if sync_error is not None
             else "partial_failure"
             if model_error
+            else "disabled"
+            if not settings.auto_prediction
+            else "waiting_result"
+            if target is None
             else "completed"
         ),
         "target_date": str(target) if target else None,
@@ -504,7 +517,6 @@ def generate_prediction(
     request: Request,
     payload: Annotated[GeneratePredictionRequest, Body()],
 ) -> dict[str, Any]:
-    _authorize_admin_request(request)
     db = _db(request)
     target = payload.prediction_date or settings.local_today()
     if payload.prediction_date is None and db.draw_results.find_one(
@@ -518,24 +530,29 @@ def generate_prediction(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@app.post("/api/prediction-replays/generate")
+def generate_replays(request: Request, response: Response, payload: ReplayPredictionRequest) -> dict[str, Any]:
+    response.headers["Cache-Control"] = "no-store"
+    db = _db(request)
+    try:
+        with mongo_cron_lease(db, "prediction-replay", lease_seconds=AUTO_DAILY_LEASE_SECONDS):
+            result = create_missing_replays(db, payload.prediction_date.isoformat(), payload.selected_count)
+    except CronAlreadyRunning as exc:
+        raise HTTPException(status_code=409, detail="Một lượt hồi kiểm đang chạy. Vui lòng thử lại sau.") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if result["status"] == "partial_failure":
+        response.status_code = 500
+        result["detail"] = "; ".join(item["error"] for item in result["models"] if item.get("error"))
+    return serialize_document(result)
+
+
 @app.get("/api/predictions")
 def list_predictions(
     request: Request,
     limit: Annotated[int, Query(ge=1, le=500)] = 30,
 ) -> list[dict[str, Any]]:
-    projection = {
-        "numbers": 0,
-        "scores": 0,
-        "window_details": 0,
-        "dataset_hash": 0,
-    }
-    documents = (
-        _db(request)
-        .predictions.find({"model_version": MODEL_VERSION}, projection)
-        .sort([("prediction_date", -1), ("locked_at", -1)])
-        .limit(limit)
-    )
-    return serialize_document(list(documents))
+    return serialize_document(history_with_replays(_db(request), MODEL_VERSION, limit))
 
 
 @app.get("/api/predictions/latest")
@@ -551,7 +568,6 @@ def generate_logistic_prediction(
     request: Request,
     payload: Annotated[GeneratePredictionRequest, Body()],
 ) -> dict[str, Any]:
-    _authorize_admin_request(request)
     db = _db(request)
     target = payload.prediction_date or settings.local_today()
     if payload.prediction_date is None and db.draw_results.find_one(
@@ -572,19 +588,7 @@ def list_logistic_predictions(
     request: Request,
     limit: Annotated[int, Query(ge=1, le=500)] = 30,
 ) -> list[dict[str, Any]]:
-    projection = {
-        "numbers": 0,
-        "scores": 0,
-        "dataset_hash": 0,
-        "training_dataset_hash": 0,
-    }
-    documents = (
-        _db(request)
-        .predictions.find({"model_version": LOGISTIC_MODEL_VERSION}, projection)
-        .sort([("prediction_date", -1), ("locked_at", -1)])
-        .limit(limit)
-    )
-    return serialize_document(list(documents))
+    return serialize_document(history_with_replays(_db(request), LOGISTIC_MODEL_VERSION, limit))
 
 
 @app.get("/api/logistic-predictions/latest")
@@ -607,7 +611,6 @@ def generate_catboost_prediction(
     request: Request,
     payload: Annotated[GeneratePredictionRequest, Body()],
 ) -> dict[str, Any]:
-    _authorize_admin_request(request)
     db = _db(request)
     target = payload.prediction_date or settings.local_today()
     if payload.prediction_date is None and db.draw_results.find_one(
@@ -628,19 +631,7 @@ def list_catboost_predictions(
     request: Request,
     limit: Annotated[int, Query(ge=1, le=500)] = 30,
 ) -> list[dict[str, Any]]:
-    projection = {
-        "numbers": 0,
-        "scores": 0,
-        "dataset_hash": 0,
-        "training_dataset_hash": 0,
-    }
-    documents = (
-        _db(request)
-        .predictions.find({"model_version": CATBOOST_MODEL_VERSION}, projection)
-        .sort([("prediction_date", -1), ("locked_at", -1)])
-        .limit(limit)
-    )
-    return serialize_document(list(documents))
+    return serialize_document(history_with_replays(_db(request), CATBOOST_MODEL_VERSION, limit))
 
 
 @app.get("/api/catboost-predictions/latest")
@@ -724,13 +715,17 @@ def prediction_detail(request: Request, prediction_id: str) -> dict[str, Any]:
         raise HTTPException(status_code=400, detail="Invalid prediction ID")
     prediction = _db(request).predictions.find_one({"_id": ObjectId(prediction_id)})
     if prediction is None:
+        prediction = _db(request).prediction_replays.find_one({"_id": ObjectId(prediction_id)})
+        if prediction:
+            prediction = replay_evaluation(prediction, _db(request).draw_results.find_one(
+                {"draw_date": prediction["prediction_date"]}))
+    if prediction is None:
         raise HTTPException(status_code=404, detail="Prediction not found")
     return serialize_document(prediction)
 
 
 @app.post("/api/evaluations/run")
 def evaluate_predictions(request: Request) -> dict[str, Any]:
-    _authorize_admin_request(request)
     db = _db(request)
     evaluation = evaluate_pending_predictions(db)
     return {
@@ -749,7 +744,6 @@ def run_backtest(
     request: Request,
     payload: Annotated[BacktestRequest, Body()],
 ) -> dict[str, Any]:
-    _authorize_admin_request(request)
     try:
         result = run_walk_forward_backtest(
             _db(request),
@@ -784,7 +778,6 @@ def generate_digit_prediction(
     request: Request,
     payload: Annotated[GenerateDigitPredictionRequest, Body()],
 ) -> dict[str, Any]:
-    _authorize_admin_request(request)
     db = _db(request)
     target = payload.prediction_date or settings.local_today()
     if payload.prediction_date is None and db.draw_results.find_one(
@@ -838,7 +831,6 @@ def run_digit_backtest(
     request: Request,
     payload: Annotated[DigitBacktestRequest, Body()],
 ) -> dict[str, Any]:
-    _authorize_admin_request(request)
     try:
         result = run_digit_walk_forward_backtest(
             _db(request),

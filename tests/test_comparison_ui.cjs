@@ -6,6 +6,8 @@ const vm = require('node:vm');
 class Element {
   constructor() { this.children = []; this.style = {}; this.value = '65'; this.dataset = {}; this.textContent = ''; }
   append(...nodes) { this.children.push(...nodes); }
+  prepend(...nodes) { this.children.unshift(...nodes); }
+  addEventListener() {}
   replaceChildren(...nodes) { this.children = nodes; }
   get text() { return this.textContent + this.children.map(node => node.text).join(' '); }
 }
@@ -57,4 +59,17 @@ test('latest prediction renders invalidation without retaining HIT or MISS', asy
   const text = elements.get('prediction-meta').text;
   assert.match(text, /Kết quả cần xác minh/);
   assert.doesNotMatch(text, /HIT|MISS/);
+});
+
+test('all three histories clearly label retrospective predictions', async () => {
+  const { context, elements } = harness([{ _id: 'replay', prediction_date: '2026-10-14',
+    selected_count: 65, trained_through: '2026-10-13', prediction_kind: 'retrospective',
+    model_version: 'test-model', evaluation: { status: 'evaluated', actual_last_two: '59', hit: true } }]);
+  await context.loadPredictionHistory();
+  await context.loadLogisticPredictionHistory();
+  await context.loadCatBoostHistory();
+  for (const id of ['prediction-history', 'fortune-prediction-history', 'catboost-prediction-history']) {
+    assert.match(elements.get(id).text, /2026-10-14.*HỒI KIỂM/);
+    assert.match(elements.get(id).text, /59/);
+  }
 });

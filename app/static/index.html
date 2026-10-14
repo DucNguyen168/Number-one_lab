@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Công cụ phân tích dữ liệu lịch sử và tạo dự đoán XSMB — backtest nghiêm ngặt, không rò rỉ tương lai." />
     <title>XSMB Research Lab</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20260928-2" />
+    <link rel="stylesheet" href="/static/styles.css?v=20261014-2" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" />
@@ -74,6 +74,33 @@
         <p class="usage-rules-note">Thông báo hiển thị mỗi lần truy cập website.</p>
       </form>
     </dialog>
+    <dialog id="automation-dialog" class="automation-dialog" aria-labelledby="automation-title">
+      <div class="automation-dialog-heading">
+        <h2 id="automation-title">Tự động và bổ sung lịch sử</h2>
+        <button id="automation-close-btn" type="button" aria-label="Đóng bảng tự động">Đóng</button>
+      </div>
+      <p id="automation-message" class="automation-message" role="status" aria-live="polite"></p>
+      <hr />
+      <h3>Tự động hằng ngày</h3>
+      <p id="automation-status">Đang kiểm tra trạng thái tự động…</p>
+      <p>Chạy bù sẽ đồng bộ kết quả và bổ sung dự đoán còn thiếu theo ngày hợp lệ. Snapshot đã khóa được giữ nguyên.</p>
+      <div class="automation-actions">
+        <button id="automation-run-btn" class="button primary" type="button">Chạy tự động ngay</button>
+      </div>
+      <hr />
+      <h3>Bổ sung ngày thiếu bằng hồi kiểm</h3>
+      <p>Chỉ dùng dữ liệu trước ngày chọn. Bản tạo sau kết quả có nhãn HỒI KIỂM trong lịch sử cả ba mô hình và không tính vào tỷ lệ dự đoán trực tiếp.</p>
+      <form id="replay-form">
+        <label for="replay-date">Ngày đã có kết quả</label>
+        <input id="replay-date" name="prediction_date" type="date" required />
+        <label for="replay-count">Số lượng chọn</label>
+        <select id="replay-count" name="selected_count">
+          <option value="60">60 số</option><option value="65" selected>65 số</option>
+          <option value="70">70 số</option><option value="75">75 số</option><option value="80">80 số</option>
+        </select>
+        <button id="replay-run-btn" class="button primary" type="submit">Bổ sung cả 3 mô hình</button>
+      </form>
+    </dialog>
     <div id="app-backdrop" class="app-backdrop" aria-hidden="true"></div>
     <div id="fortune-glitter-rain" class="fortune-glitter-rain" aria-hidden="true"></div>
     <div class="page-shell">
@@ -116,8 +143,9 @@
         <div class="hero-right">
           <div class="status-stack">
             <span id="health-pill" class="pill neutral">Đang kết nối…</span>
-            <span id="scheduler-pill" class="pill subtle">Scheduler</span>
+            <button id="scheduler-pill" type="button" class="pill subtle">Tự động</button>
           </div>
+          <button id="automation-open-btn" class="pill neutral" type="button">Tự động</button>
           <!-- Sky Toggle: kéo cloud che sun = dark, che moon = light -->
           <div class="sky-toggle-wrap">
             <div class="sky-toggle" id="sky-toggle" role="button" tabindex="0" aria-label="Chuyển giao diện sáng/tối" title="Kéo mây để chuyển sáng/tối">
@@ -835,6 +863,6 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="/static/usage-rules.js?v=20260928-1" defer></script>
     <script src="/static/result-refresh.js?v=20261012-1" defer></script>
-    <script src="/static/app.js?v=20261012-2" defer></script>
+    <script src="/static/app.js?v=20261014-2" defer></script>
   </body>
 </html>

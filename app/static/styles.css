@@ -5,6 +5,36 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+/* Automation diagnostics */
+.automation-dialog {
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100dvh - 40px);
+  margin: auto;
+  padding: 24px;
+  overflow-y: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  color: var(--ink);
+  background: var(--bg);
+  box-shadow: 0 24px 80px #0006;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.automation-dialog::backdrop { background: #111827b8; }
+.automation-dialog [hidden] { display: none !important; }
+.automation-dialog-heading, .automation-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.automation-dialog h2 { font-size: 20px; }
+.automation-dialog h3 { font-size: 16px; }
+.automation-dialog p, .automation-dialog hr { margin: 14px 0; }
+.automation-dialog hr { border: 0; border-top: 1px solid var(--line); }
+.automation-dialog ol { margin: 12px 0; padding-left: 22px; }
+.automation-dialog code { overflow-wrap: anywhere; }
+.automation-dialog input { width: 100%; margin: 6px 0 12px; }
+.automation-dialog select { width: 100%; margin: 6px 0 12px; }
+.automation-dialog .automation-message { color: var(--ink); font-weight: 600; }
+#automation-close-btn { padding: 6px 12px; color: var(--ink); border: 1px solid var(--line-strong); border-radius: 8px; background: var(--bg-secondary); }
+#automation-open-btn, #scheduler-pill { cursor: pointer; }
+
 /* ── Entry notice ── */
 body.usage-rules-open { overflow: hidden; }
 .usage-rules {

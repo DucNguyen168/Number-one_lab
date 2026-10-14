@@ -14,6 +14,11 @@ class GenerateDigitPredictionRequest(BaseModel):
     prediction_date: date | None = None
 
 
+class ReplayPredictionRequest(BaseModel):
+    prediction_date: date
+    selected_count: int = Field(default=65, ge=60, le=80)
+
+
 class BacktestRequest(BaseModel):
     selected_count: int = Field(default=65, ge=60, le=80)
     start_date: date | None = None

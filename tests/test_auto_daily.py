@@ -91,4 +91,20 @@ def test_auto_daily_does_not_create_late_prediction_without_result(
 
     assert result["ok"] is True
     assert result["target_date"] is None
+    assert result["status"] == "waiting_result"
     assert "waiting for the next cron run" in result["prediction_error"]
+
+
+def test_auto_daily_reports_disabled_without_training_or_failure(monkeypatch):
+    database = _configure_cycle(monkeypatch, has_today=True)
+    app_main.settings.auto_prediction = False
+
+    def must_not_train(*args, **kwargs):
+        raise AssertionError("disabled models must not run")
+
+    for function in ("create_prediction", "create_logistic_prediction", "create_catboost_prediction"):
+        monkeypatch.setattr(app_main, function, must_not_train)
+
+    result = app_main._run_auto_daily(database)
+    assert result["ok"] is True
+    assert result["status"] == "disabled"

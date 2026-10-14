@@ -52,8 +52,6 @@ class Settings:
     sync_on_startup: bool
     scheduler_retry_attempts: int
     scheduler_retry_delay_seconds: int
-    admin_api_key: str
-    require_admin_auth: bool
     auto_prediction: bool
     auto_prediction_count: int
     prediction_time: str
@@ -123,11 +121,6 @@ class Settings:
             ),
             scheduler_retry_delay_seconds=max(
                 1, min(60, _as_int(os.getenv("SCHEDULER_RETRY_DELAY_SECONDS"), 5))
-            ),
-            admin_api_key=os.getenv("ADMIN_API_KEY", "").strip(),
-            require_admin_auth=_as_bool(
-                os.getenv("REQUIRE_ADMIN_AUTH"),
-                is_vercel,
             ),
             auto_prediction=_as_bool(os.getenv("AUTO_PREDICTION"), True),
             auto_prediction_count=selected_count,

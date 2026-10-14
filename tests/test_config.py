@@ -17,14 +17,15 @@ def test_settings_reject_unsorted_sync_times(monkeypatch) -> None:
         Settings.from_env()
 
 
-def test_vercel_defaults_to_admin_auth(monkeypatch) -> None:
+def test_vercel_ignores_removed_auth_configuration(monkeypatch):
     monkeypatch.setenv("VERCEL", "1")
-    monkeypatch.delenv("REQUIRE_ADMIN_AUTH", raising=False)
-
+    monkeypatch.setenv("REQUIRE_ADMIN_AUTH", "true")
+    monkeypatch.setenv("ADMIN_API_KEY", "unused-legacy-key")
+    monkeypatch.setenv("CRON_SECRET", "unused-legacy-key")
     settings = Settings.from_env()
-
     assert settings.is_vercel is True
-    assert settings.require_admin_auth is True
+    assert not hasattr(settings, "admin_api_key")
+    assert not hasattr(settings, "require_admin_auth")
 
 
 def test_result_poll_defaults_and_minimum_interval(monkeypatch) -> None:

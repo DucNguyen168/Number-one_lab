@@ -215,10 +215,27 @@ Vercel Cron gọi `GET /api/auto-daily` thay thế. Các mốc trong `vercel.jso
 - `30 11 * * *`, `50 11 * * *`, `10 12 * * *`: đồng bộ/đối chiếu sau kỳ quay và
   tạo prediction ngày mai ngay khi kết quả hôm nay xuất hiện.
 
-Endpoint cron dùng MongoDB lease để tránh hai invocation chạy chồng nhau và có thể bảo
-vệ bằng biến môi trường `CRON_SECRET`. Hãy tạo chuỗi ngẫu nhiên tối thiểu 16 ký tự tại
-Vercel **Project Settings → Environment Variables**, áp dụng cho Production rồi redeploy.
-Vercel tự gửi giá trị này dưới header `Authorization: Bearer ...`.
+Endpoint cron và thao tác thủ công không yêu cầu đăng nhập hoặc khóa API theo cấu hình
+hiện tại. `ADMIN_API_KEY`, `CRON_SECRET` và `REQUIRE_ADMIN_AUTH` không còn được đọc,
+kể cả khi biến cũ vẫn tồn tại trên Vercel. Các endpoint thao tác có thể được gọi bởi
+người truy cập website. MongoDB lease vẫn chống các lượt Cron chạy chồng nhau.
+
+Deploy mã nguồn mới lên Production, giữ `AUTO_PREDICTION=true`, rồi mở **Tự động →
+Chạy tự động ngay** để đồng bộ và bổ sung dự đoán ngày hợp lệ. `ENABLE_SCHEDULER`
+không điều khiển Vercel Cron. Lịch Cron cần được bật trong **Settings → Cron Jobs**.
+Giao diện hiển thị lượt chạy gần nhất; nhãn Vercel Cron mô tả chế độ hoạt động, không
+khẳng định Vercel đã thực thi lịch. Lỗi mô hình trả HTTP 500, lỗi nguồn trả 502.
+Function dùng Fluid Compute với giới hạn 300 giây và lease 330 giây.
+
+**Ngày lịch sử bị thiếu:** nút tạo thông thường chuyển sang ngày mai khi hôm nay đã
+có kết quả, nên không khôi phục được ngày bị bỏ lỡ. Mở **Tự động → Bổ sung ngày thiếu
+bằng hồi kiểm**, chọn ngày và Top N để chạy cả ba mô hình. Mỗi mô hình chỉ nhận dữ liệu
+trước ngày chọn. Các bản này lưu riêng trong `prediction_replays`, hiển thị nhãn
+**HỒI KIỂM** trong lịch sử, có giờ tạo thực tế và không có giờ khóa giả. Chúng không
+tham gia thống kê/so sánh dự đoán trực tiếp; snapshot trực tiếp đã có được giữ nguyên.
+Gọi lại cùng ngày/model/Top N không tạo trùng. Kết quả dùng để đánh giá hồi kiểm được
+đọc lại khi xem, nên dữ liệu nguồn sửa hoặc xung đột không giữ HIT/MISS cũ.
+
 
 Trên gói Hobby, cron chỉ đảm bảo chạy trong giờ đã cấu hình, có thể lệch tối đa 59 phút.
 Lịch trên vẫn dùng các cron hằng ngày tương thích Hobby; không dùng cron mỗi phút

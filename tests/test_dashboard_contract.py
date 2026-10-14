@@ -2,8 +2,6 @@ import json
 import re
 from pathlib import Path
 
-import pytest
-from fastapi import HTTPException
 
 
 STATIC_DIR = Path(__file__).parents[1] / "app" / "static"
@@ -163,71 +161,6 @@ def test_vercel_cron_uses_get_compatible_reconciliation_endpoint() -> None:
     assert len(config["crons"]) == 4
     assert {job["path"] for job in config["crons"]} == {"/api/auto-daily"}
     assert config["crons"][0]["schedule"] == "0 9 * * *"
-
-
-def test_cron_secret_is_checked_when_configured(monkeypatch) -> None:
-    import app.main as app_main
-
-    monkeypatch.setenv("CRON_SECRET", "a-secure-test-secret")
-
-    with pytest.raises(HTTPException) as error:
-        app_main._authorize_cron_request(
-            type("Request", (), {"headers": {}})()
-        )
-
-    assert error.value.status_code == 401
-    app_main._authorize_cron_request(
-        type(
-            "Request",
-            (),
-            {"headers": {"authorization": "Bearer a-secure-test-secret"}},
-        )()
-    )
-
-
-def test_cron_auth_fails_closed_on_vercel_without_secret(monkeypatch) -> None:
-    import app.main as app_main
-
-    monkeypatch.delenv("CRON_SECRET", raising=False)
-    monkeypatch.setattr(
-        app_main,
-        "settings",
-        type("Settings", (), {"is_vercel": True})(),
-    )
-
-    with pytest.raises(HTTPException) as error:
-        app_main._authorize_cron_request(type("Request", (), {"headers": {}})())
-
-    assert error.value.status_code == 503
-
-
-def test_admin_auth_accepts_header_and_bearer_token(monkeypatch) -> None:
-    import app.main as app_main
-
-    monkeypatch.setattr(
-        app_main,
-        "settings",
-        type(
-            "Settings",
-            (),
-            {"require_admin_auth": True, "admin_api_key": "admin-test-key"},
-        )(),
-    )
-
-    with pytest.raises(HTTPException) as error:
-        app_main._authorize_admin_request(type("Request", (), {"headers": {}})())
-    assert error.value.status_code == 401
-
-    app_main._authorize_admin_request(
-        type("Request", (), {"headers": {"x-admin-key": "admin-test-key"}})()
-    )
-    app_main._authorize_admin_request(
-        type(
-            "Request",
-            (),
-            {"headers": {"authorization": "Bearer admin-test-key"}},
-        )()
-    )
 
 
 def test_in_process_scheduler_is_disabled_on_vercel(monkeypatch) -> None:

@@ -28,6 +28,7 @@ const state = {
   catboostFilter: 'all',
   catboostExcludeRecent: false,
   catboostRecentNumbers: [],
+  automation: null,
 };
 
 // ── Helpers ────────────────────────────────────────────────
@@ -128,12 +129,54 @@ function initPageNavigation() {
 
 async function api(path, options = {}) {
   const response = await fetch(path, {
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.detail || `HTTP ${response.status}`);
+  if (!response.ok) {
+    throw new Error(data.detail || data.sync_error || data.catboost_prediction_error
+      || data.logistic_prediction_error || data.prediction_error || `HTTP ${response.status}`);
+  }
   return data;
+}
+
+function openAutomationDialog() {
+  el('automation-message').textContent = '';
+  if (!el('automation-dialog').open) el('automation-dialog').showModal();
+  loadHealth();
+}
+
+function renderAutomationStatus(health) {
+  const automation = health.automation;
+  state.automation = automation;
+  const pill = el('scheduler-pill');
+  if (!automation) {
+    pill.textContent = health.automation_mode === 'vercel_cron' ? 'Vercel Cron' : health.scheduler_enabled ? 'Scheduler bật' : 'Scheduler tắt';
+    pill.className = 'pill neutral';
+    return;
+  }
+  const vercel = automation.mode === 'vercel_cron';
+  const failed = ['failed', 'partial_failure', 'source_failed', 'interrupted'].includes(automation.last_run?.status);
+  pill.textContent = !automation.configured ? 'Scheduler tắt'
+    : !automation.auto_prediction ? 'Tự tạo đang tắt' : failed ? 'Tự động: có lỗi'
+      : vercel ? 'Vercel Cron' : 'Scheduler bật';
+  pill.className = `pill ${!automation.configured || failed ? 'error' : 'neutral'}`;
+  let note = vercel
+    ? 'Vercel Cron chạy theo lịch của bản Production. Kiểm tra Settings → Cron Jobs nếu chưa có lượt chạy.'
+    : automation.configured ? 'Scheduler đang chạy trên máy chủ.' : 'Scheduler chưa bật trên máy chủ.';
+  if (!automation.auto_prediction) note += ' AUTO_PREDICTION đang tắt.';
+  if (automation.last_run) {
+    const labels = { completed: 'hoàn tất', running: 'đang chạy', interrupted: 'bị gián đoạn hoặc quá thời gian',
+      failed: 'thất bại', partial_failure: 'có mô hình lỗi', source_failed: 'lỗi nguồn kết quả',
+      waiting_result: 'đang chờ kết quả', disabled: 'tự tạo đang tắt' };
+    const run = automation.last_run;
+    note += ` Lượt gần nhất (${['manual', 'admin'].includes(run.trigger) ? 'chạy bù thủ công' : 'Cron'}): ${labels[run.status] || run.status}, ${formatDateTime(run.started_at)}.`;
+  } else if (vercel) note += ' Chưa ghi nhận lượt Cron hoặc chạy bù trong phiên bản này.';
+  el('automation-status').textContent = note;
+  pill.title = note;
 }
 
 // ── Toast ─────────────────────────────────────────────────
@@ -164,6 +207,15 @@ function cell(text) {
   const td = document.createElement('td');
   td.textContent = text ?? '—';
   return td;
+}
+
+function predictionDateCell(prediction) {
+  const node = cell(prediction.prediction_date);
+  if (prediction.prediction_kind === 'retrospective') {
+    node.append(badge('HỒI KIỂM', 'pending'));
+    node.title = 'Tạo sau kết quả, chỉ huấn luyện dữ liệu trước ngày này; không tính vào tỷ lệ dự đoán trực tiếp.';
+  }
+  return node;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -420,11 +472,10 @@ function startCountdown() {
 // ═══════════════════════════════════════════════════════════
 async function loadHealth() {
   try {
-    const health = await api('/api/health');
+    const health = await api('/api/health', { cache: 'no-store' });
     el('health-pill').textContent = `MongoDB · ${health.status}`;
     el('health-pill').className = 'pill ok';
-    el('scheduler-pill').textContent = health.scheduler_enabled ? '⏱ Scheduler bật' : 'Scheduler tắt';
-    el('scheduler-pill').className = health.scheduler_enabled ? 'pill ok' : 'pill neutral';
+    renderAutomationStatus(health);
   } catch (error) {
     el('health-pill').textContent = 'Mất kết nối';
     el('health-pill').className = 'pill error';
@@ -1026,7 +1077,7 @@ async function loadLogisticPredictionHistory() {
     const evaluation = prediction.evaluation || { status: 'pending' };
     const row = document.createElement('tr');
     row.append(
-      cell(prediction.prediction_date),
+      predictionDateCell(prediction),
       cell(prediction.selected_count),
       cell(prediction.trained_through),
       cell(evaluation.actual_last_two || '—'),
@@ -1422,7 +1473,7 @@ async function loadCatBoostHistory() {
     const evaluation = prediction.evaluation || { status: 'pending' };
     const row = document.createElement('tr');
     row.append(
-      cell(prediction.prediction_date), cell(prediction.selected_count),
+      predictionDateCell(prediction), cell(prediction.selected_count),
       cell(prediction.trained_through), cell(formatPercent(prediction.coverage_probability)),
       cell(evaluation.actual_last_two || '—'),
     );
@@ -1430,7 +1481,14 @@ async function loadCatBoostHistory() {
     status.append(evaluation.status === 'evaluated'
       ? badge(evaluation.hit ? 'HIT' : 'MISS', evaluation.hit ? 'hit' : 'miss')
       : badge(evaluation.status === 'invalidated' ? 'CẦN ĐỐI CHIẾU LẠI' : 'PENDING', 'pending'));
-    row.append(status, cell(prediction.model_version));
+    const model = cell(prediction.model_version);
+    const detail = document.createElement('button');
+    detail.type = 'button';
+    detail.className = 'detail-button';
+    detail.textContent = 'Xem chi tiết';
+    detail.addEventListener('click', () => openPredictionDetail(prediction._id));
+    model.append(detail);
+    row.append(status, model);
     body.append(row);
   });
 }
@@ -1627,11 +1685,15 @@ function renderPredictionDetail(prediction) {
     detailSummaryItem('Ngưỡng cut-off', formatPercent(prediction.cutoff_probability, 4)),
     detailSummaryItem('Số kỳ huấn luyện', Number(prediction.training_draw_count || 0).toLocaleString('vi-VN')),
     detailSummaryItem('Train đến', prediction.trained_through),
-    detailSummaryItem('Khóa lúc', formatDateTime(prediction.locked_at)),
+    detailSummaryItem(prediction.prediction_kind === 'retrospective' ? 'Hồi kiểm tạo lúc' : 'Khóa lúc',
+      formatDateTime(prediction.prediction_kind === 'retrospective' ? prediction.created_at : prediction.locked_at)),
     detailSummaryItem('Kết quả đặc biệt', evaluation.actual_special_prize || 'Chưa có'),
     detailSummaryItem('Hai số cuối', actual || 'Chưa có'),
     detailSummaryItem('Dataset hash', prediction.dataset_hash || '—'),
   );
+  if (prediction.prediction_kind === 'retrospective') {
+    summary.prepend(detailSummaryItem('HỒI KIỂM · Không tính vào tỷ lệ trực tiếp', prediction.note));
+  }
 
   const grid = el('prediction-detail-grid');
   grid.replaceChildren();
@@ -1746,7 +1808,7 @@ async function loadPredictionHistory() {
   predictions.forEach((pred) => {
     const row = document.createElement('tr');
     row.append(
-      cell(pred.prediction_date),
+      predictionDateCell(pred),
       cell(pred.model_version),
       cell(pred.selected_count),
       cell(pred.trained_through),
@@ -1902,9 +1964,12 @@ async function runAction(button, busyLabel, action, successMessage) {
   el('action-status').textContent = busyLabel;
   try {
     const result = await action();
-    toast(successMessage(result), 'success');
+    const message = successMessage(result);
+    if (el('automation-dialog').open) el('automation-message').textContent = message;
+    toast(message, 'success');
     await refreshDashboard();
   } catch (error) {
+    if (el('automation-dialog').open) el('automation-message').textContent = error.message;
     toast(error.message, 'error');
   } finally {
     setBusy(button, false);
@@ -2065,6 +2130,28 @@ function initSortButtons() {
 // ═══════════════════════════════════════════════════════════
 // EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════
+el('automation-open-btn').addEventListener('click', openAutomationDialog);
+el('scheduler-pill').addEventListener('click', openAutomationDialog);
+el('automation-close-btn').addEventListener('click', () => el('automation-dialog').close());
+el('replay-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const payload = { prediction_date: el('replay-date').value, selected_count: Number(el('replay-count').value) };
+  runAction(el('replay-run-btn'), 'Đang hồi kiểm cả 3 mô hình…',
+    () => api('/api/prediction-replays/generate', { method: 'POST', body: JSON.stringify(payload) }),
+    result => `Đã bổ sung ${result.models.filter(model => model.created).length} bản hồi kiểm ngày ${result.prediction_date}. Xem trong lịch sử từng mô hình.`);
+});
+el('automation-run-btn').addEventListener('click', () => runAction(
+  el('automation-run-btn'), 'Đang đồng bộ và tạo dự đoán…',
+  async () => {
+    try { return await api('/api/auto-daily', { method: 'POST' }); }
+    finally { await loadHealth(); }
+  },
+  result => result.status === 'already_running' ? 'Một lượt tự động đang chạy; đợi hoàn tất rồi kiểm tra lại.'
+    : result.status === 'waiting_result' ? 'Đã đồng bộ. Đang chờ kết quả hợp lệ để tạo dự đoán ngày tiếp theo.'
+      : result.status === 'disabled' ? 'Đã đồng bộ; AUTO_PREDICTION đang tắt trên máy chủ.'
+        : `Đã kiểm tra và bổ sung các dự đoán ngày ${result.target_date}.`,
+));
+
 el('backfill-btn').addEventListener('click', () => runAction(
   el('backfill-btn'), '⬇ Đang kiểm tra và bổ sung dữ liệu…',
   () => api('/api/sync/backfill?start_year=2019', { method: 'POST' }),
