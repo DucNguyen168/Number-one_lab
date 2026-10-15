@@ -1,0 +1,2 @@
+# Keep Python source consistent between Windows development and Linux deployment.
+*.py text eol=lf

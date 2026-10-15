@@ -1,5 +1,6 @@
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -174,6 +175,52 @@ def test_valid_three_way_pair_reports_ci_and_statistics(db, clock, monkeypatch):
     assert result["evidence_status"] == "insufficient_sample"
     assert all(p["mcnemar_holm_p"] == 1 for p in result["comparisons"])
     assert all(p["paired_block_bootstrap_delta_ci95"] is None for p in result["comparisons"])
+
+
+@pytest.mark.parametrize("writer,reader", [
+    ("mixed", "lf"), ("lf", "crlf"), ("crlf", "mixed"), ("mixed", "crlf"),
+])
+def test_live_comparison_is_portable_between_windows_and_linux(db, clock, monkeypatch, writer, reader):
+    read_bytes = Path.read_bytes
+
+    def source_bytes(style):
+        def read(path):
+            raw = read_bytes(path)
+            if path.suffix != ".py":
+                return raw
+            lf = raw.replace(b"\r\n", b"\n")
+            crlf = style == "crlf" or (style == "mixed" and path.name != "prediction_protocol.py")
+            return lf.replace(b"\n", b"\r\n") if crlf else lf
+        return read
+
+    # Real locking metadata, written with the first environment's source bytes.
+    monkeypatch.setattr(Path, "read_bytes", source_bytes(writer))
+    _create_three(db, clock, monkeypatch)
+    saved = deepcopy(db.predictions.rows)
+    expected = model_comparison.three_way_comparison_summary(db, 65)
+    monkeypatch.setattr(Path, "read_bytes", source_bytes(reader))
+    assert any(p["code_hash"] != protocol.code_hash(model_comparison.MODULES[p["model_version"]])
+               for p in saved)  # The old exact-byte check really would exclude a snapshot.
+    assert model_comparison.three_way_comparison_summary(db, 65) == expected
+    assert model_comparison.comparison_summary(db, 65)["paired_predictions"] == 1
+    assert db.predictions.rows == saved  # Never rewrite historical lock provenance.
+
+
+@pytest.mark.parametrize("changed_file,excluded", [("prediction.py", 1), ("prediction_protocol.py", 3)])
+def test_portable_hash_matching_still_rejects_changed_source(db, clock, monkeypatch, changed_file, excluded):
+    _create_three(db, clock, monkeypatch)
+    read_bytes = Path.read_bytes
+
+    def changed_source(path):
+        raw = read_bytes(path).replace(b"\r\n", b"\n")
+        if path.name == changed_file:
+            raw += b"\nNEW_ALGORITHM_PARAMETER = 1\n"
+        return raw
+
+    monkeypatch.setattr(Path, "read_bytes", changed_source)
+    result = model_comparison.three_way_comparison_summary(db, 65)
+    assert result["paired_predictions"] == 0
+    assert result["eligibility"]["excluded_reasons"]["different_model_code"] == excluded
 
 
 @pytest.mark.parametrize("change,reason", [

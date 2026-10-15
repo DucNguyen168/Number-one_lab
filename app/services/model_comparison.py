@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import itertools
+import sys
 from collections import Counter, defaultdict
+from pathlib import Path
 from typing import Any
 
 from pymongo.database import Database
@@ -22,6 +25,27 @@ HIT_KEYS = {FREQUENCY_MODEL_VERSION: "frequency_hit", LOGISTIC_MODEL_VERSION: "l
             CATBOOST_MODEL_VERSION: "catboost_hit"}
 
 
+def _equivalent_code_hashes(module_name: str) -> set[str]:
+    """Recognize existing raw-byte fingerprints across Windows/Linux checkouts.
+
+    prediction_protocol.code_hash includes the protocol source itself. Leave that
+    writer unchanged so this reader fix cannot invalidate immutable snapshots.
+    Only LF/CRLF encoding varies here; every other source byte must still match.
+    Each file may have its own line ending (the Windows repo has mixed files).
+    """
+    paths = [Path(sys.modules[module_name].__file__), Path(protocol.__file__)]
+    if module_name.endswith("digit_prediction"):
+        paths.append(Path(protocol.__file__).with_name("prediction.py"))
+    variants = []
+    for path in paths:
+        raw = path.read_bytes()
+        lf = raw.replace(b"\r\n", b"\n")
+        variants.append({hashlib.sha256(source).hexdigest()
+                         for source in (raw, lf, lf.replace(b"\n", b"\r\n"))})
+    return {protocol.fingerprint(dict(zip((path.name for path in paths), hashes)))
+            for hashes in itertools.product(*variants)}
+
+
 def _matched_rows(db, count, versions):
     documents = list(db.predictions.find({
         "selected_count": count, "model_version": {"$in": versions},
@@ -34,11 +58,11 @@ def _matched_rows(db, count, versions):
     )}
     ids = list({p["training_snapshot_id"] for p in documents if p.get("training_snapshot_id")})
     snapshots = {s["_id"]: s for s in db.training_datasets.find({"_id": {"$in": ids}}, {"records": 0})}
-    expected_code = {v: protocol.code_hash(MODULES[v]) for v in versions}
+    expected_code = {v: _equivalent_code_hashes(MODULES[v]) for v in versions}
     candidates, excluded, reasons = [], 0, Counter()
     for pred in documents:
         issues = protocol.eligibility_reasons(pred, draws.get(pred["prediction_date"]))
-        if pred.get("code_hash") != expected_code[pred["model_version"]]:
+        if pred.get("code_hash") not in expected_code[pred["model_version"]]:
             issues.append("different_model_code")
         snapshot = snapshots.get(pred.get("training_snapshot_id"))
         if (not snapshot or snapshot.get("dataset_hash") != pred.get("dataset_hash")

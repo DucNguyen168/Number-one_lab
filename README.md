@@ -352,3 +352,4 @@ phiên bản hiện tại không gửi dữ liệu tới dịch vụ AI.
 
 Test hiện có kiểm tra parser giữ số `00`, loại dữ liệu sai, phát hiện ngày trùng,
 đảm bảo Top N không trùng và ngăn dữ liệu cùng ngày/tương lai lọt vào prediction.
+## https://sx-random65.vercel.app/ mô hình của HCV
