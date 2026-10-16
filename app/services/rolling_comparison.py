@@ -250,12 +250,17 @@ def run_rolling_comparison(
     return summary, daily
 
 
+class RollingReportNotReady(RuntimeError):
+    """No report matches the current dataset and training protocol."""
+
+
 def load_or_build_rolling_comparison(
     db: Database,
     *,
     outer_periods: int = ROLLING_WINDOW,
+    allow_build: bool = True,
 ) -> tuple[dict[str, Any], bool]:
-    """Return a Mongo-cached rolling report; rebuild only after draw data changes."""
+    """Read a current report; only explicit offline callers may rebuild it."""
     draws = list(
         db.draw_results.find(
             {"status": {"$ne": "conflict"}},
@@ -278,6 +283,9 @@ def load_or_build_rolling_comparison(
     if (cached and cached.get("dataset_hash") == fingerprint
             and cached.get("provenance_hash") == provenance_hash):
         return cached, False
+
+    if not allow_build:
+        raise RollingReportNotReady("A current rolling report has not been generated")
 
     summary, daily = run_rolling_comparison(draws, outer_periods=outer_periods)
     document = {

@@ -29,6 +29,26 @@ def request(method, path, **kwargs):
     return asyncio.run(run())
 
 
+@pytest.mark.parametrize("path", ["rolling", "historical", "historical-daily"])
+def test_public_rolling_routes_never_enable_training(monkeypatch, path):
+    monkeypatch.setattr(main, "_db", lambda request: object())
+    calls = []
+
+    def read(db, *, allow_build):
+        calls.append(allow_build)
+        raise main.RollingReportNotReady()
+
+    monkeypatch.setattr(main, "load_or_build_rolling_comparison", read)
+    result = request("GET", f"/api/model-comparison/{path}?selected_count=65")
+    assert result.status_code == 200
+    assert calls == [False]
+    if path == "historical-daily":
+        assert result.json() == []
+    else:
+        assert result.json()["status"] == "not_ready"
+        assert result.json()["cache_rebuilt"] is False
+
+
 @pytest.mark.parametrize("path,creator", [
     ("/api/predictions/generate", "create_prediction"),
     ("/api/logistic-predictions/generate", "create_logistic_prediction"),
@@ -136,6 +156,24 @@ def test_duplicate_execution_preserves_active_run(monkeypatch):
     _, run_state = execution(monkeypatch, locked=True)
     assert main._execute_auto_daily(None, Response(), trigger="cron")["status"] == "already_running"
     assert run_state.transitions == []
+
+
+def test_completed_auto_daily_is_throttled_across_instances(monkeypatch):
+    _, run_state = execution(monkeypatch)
+    run_state.latest = {"status": "completed", "started_at": datetime.now(timezone.utc).replace(tzinfo=None)}
+    monkeypatch.setattr(main, "_run_auto_daily", lambda db: pytest.fail("must not rerun"))
+    assert main._execute_auto_daily(None, Response(), trigger="manual")["status"] == "throttled"
+    assert run_state.transitions == []
+
+
+@pytest.mark.parametrize("path,cache", [
+    ("/", "public, max-age=0, s-maxage=3600"),
+    ("/static/app.js?v=test", "public, max-age=300, s-maxage=86400"),
+])
+def test_public_shell_and_assets_have_cdn_cache_headers(path, cache):
+    result = request("GET", path)
+    assert result.status_code == 200
+    assert result.headers["cache-control"] == cache
 
 
 def test_automation_status_detects_interrupted_run_without_secret(monkeypatch):

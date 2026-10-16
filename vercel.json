@@ -10,7 +10,7 @@
   "functions": {
     "api/index.py": {
       "maxDuration": 300,
-      "excludeFiles": "{tests/**,docs/**,scripts/**,reports/**,claudekit-engineer/**,**/__pycache__/**,**/.pytest_cache/**}"
+      "excludeFiles": "{tests/**,docs/**,scripts/**,reports/**,deploy/**,.venv/**,.git/**,.env,.env.*,claudekit-engineer/**,**/__pycache__/**,**/.pytest_cache/**}"
     }
   },
   "routes": [

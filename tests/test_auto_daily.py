@@ -13,7 +13,8 @@ class _DrawResults:
 
 
 def _configure_cycle(monkeypatch, *, has_today: bool, hour: int = 19):
-    database = SimpleNamespace(draw_results=_DrawResults(has_today))
+    database = SimpleNamespace(draw_results=_DrawResults(has_today),
+                               collector_runs=SimpleNamespace(find_one=lambda *a: None))
     settings = SimpleNamespace(
         local_today=lambda: date(2026, 9, 10),
         local_now=lambda: datetime(2026, 9, 10, hour, 10),
@@ -108,3 +109,21 @@ def test_auto_daily_reports_disabled_without_training_or_failure(monkeypatch):
     result = app_main._run_auto_daily(database)
     assert result["ok"] is True
     assert result["status"] == "disabled"
+
+
+def test_evening_full_reconciliation_only_once(monkeypatch):
+    database = _configure_cycle(monkeypatch, has_today=True)
+    app_main.settings.auto_prediction = False
+    database.collector_runs.find_one = lambda *a: {"_id": "completed-evening-sync"}
+    result = app_main._run_auto_daily(database)
+    assert result["sync"] == {"draw_date": "2026-09-10", "status": "completed"}
+    database.collector_runs.find_one = lambda *a: None
+    result = app_main._run_auto_daily(database)
+    assert result["sync"] == {"year": 2026, "status": "completed"}
+
+
+def test_before_draw_only_syncs_previous_day(monkeypatch):
+    database = _configure_cycle(monkeypatch, has_today=False, hour=16)
+    app_main.settings.auto_prediction = False
+    result = app_main._run_auto_daily(database)
+    assert result["sync"]["draw_date"] == "2026-09-09"

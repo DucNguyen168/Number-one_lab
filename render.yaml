@@ -1,0 +1,51 @@
+# Free trial deployment. No paid worker, cron service, disk, or database.
+# The free web service sleeps when idle; its scheduler only runs while awake.
+services:
+  - type: web
+    name: xsmb-lab
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: python -m pip install --no-cache-dir -r requirements.txt
+    startCommand: python scripts/run_host.py web
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DATABASE
+        value: xsmb_research
+      - key: APP_TIMEZONE
+        value: Asia/Ho_Chi_Minh
+      - key: ENABLE_SCHEDULER
+        value: "true"
+      - key: SYNC_ON_STARTUP
+        value: "false"
+      - key: AUTO_PREDICTION
+        value: "true"
+      - key: AUTO_PREDICTION_COUNT
+        value: "65"
+      - key: PREDICTION_TIME
+        value: "17:00"
+      - key: RESULT_POLL_START_TIME
+        value: "18:30"
+      - key: RESULT_POLL_INTERVAL_SECONDS
+        value: "10"
+      - key: RESULT_SYNC_TIMES
+        value: "18:30,18:50,19:10"
+      - key: BACKFILL_WORKERS
+        value: "1"
+      - key: SKIP_COMPLETED_HISTORY
+        value: "true"
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
+      - key: MKL_NUM_THREADS
+        value: "1"
+      - key: NUMEXPR_NUM_THREADS
+        value: "1"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PIP_NO_CACHE_DIR
+        value: "1"

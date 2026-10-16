@@ -312,3 +312,18 @@ def test_rolling_cache_invalidates_for_config_libraries_and_dataset(db, monkeypa
     db.draw_results.rows[0].update(last_two="99", special_prize="00099")
     assert rolling_comparison.load_or_build_rolling_comparison(db)[1]
     assert len(calls) == 4
+
+
+def test_read_only_rolling_never_trains_on_missing_or_stale_cache(db, monkeypatch):
+    calls = []
+    monkeypatch.setattr(rolling_comparison, "run_rolling_comparison",
+                        lambda draws, **kw: (calls.append(len(draws)) or {"counts": {}}, []))
+    with pytest.raises(rolling_comparison.RollingReportNotReady):
+        rolling_comparison.load_or_build_rolling_comparison(db, allow_build=False)
+    assert calls == []
+    report, _ = rolling_comparison.load_or_build_rolling_comparison(db)
+    assert rolling_comparison.load_or_build_rolling_comparison(db, allow_build=False) == (report, False)
+    db.draw_results.rows[0].update(last_two="99")
+    with pytest.raises(rolling_comparison.RollingReportNotReady):
+        rolling_comparison.load_or_build_rolling_comparison(db, allow_build=False)
+    assert len(calls) == 1

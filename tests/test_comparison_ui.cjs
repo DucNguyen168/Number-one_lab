@@ -28,6 +28,52 @@ function harness(data) {
   return { context, elements };
 }
 
+test('missing rolling cache clears previous metrics without displaying an error or training claim', async () => {
+  const { context, elements } = harness({ status: 'not_ready', message: 'Báo cáo được tính riêng trên máy chủ.' });
+  for (const id of ['fortune-historical-summary', 'fortune-historical-daily-body', 'fortune-historical-daily-stats']) {
+    vm.runInContext(`el('${id}').append(cell('old report'));`, context);
+  }
+  await context.loadRollingModelComparison();
+  for (const id of ['fortune-historical-summary', 'fortune-historical-daily-body', 'fortune-historical-daily-stats']) {
+    assert.equal(elements.get(id).children.length, 0);
+  }
+  assert.equal(elements.get('fortune-rolling-window-badge').text, 'Chờ báo cáo');
+  assert.match(elements.get('fortune-historical-note').text, /tính riêng/);
+});
+
+test('dashboard loads only the selected page, including after navigation', async () => {
+  const { context } = harness({});
+  const names = ['loadMetrics', 'loadLatestResult', 'loadLatestPrediction', 'loadLatestLogisticPrediction',
+    'loadLatestCatBoostPrediction', 'loadPredictionHistory', 'loadLogisticPredictionHistory',
+    'loadModelComparison', 'loadRollingModelComparison', 'loadCatBoostHistory',
+    'loadCatBoostComparison', 'loadCatBoostRecentNumbers', 'loadResults', 'loadBacktests', 'loadDigitBacktests'];
+  context.loaded = [];
+  for (const name of names) vm.runInContext(`${name} = async () => loaded.push('${name}');`, context);
+  vm.runInContext('renderCatBoostPrediction = () => {};', context);
+  await context.refreshDashboard();
+  assert.deepEqual(context.loaded, ['loadMetrics', 'loadLatestResult']);
+  context.loaded.length = 0;
+  vm.runInContext("state.currentPage = 'one-digit';", context);
+  await context.refreshDashboard();
+  assert.deepEqual(context.loaded, ['loadLatestCatBoostPrediction', 'loadCatBoostHistory',
+    'loadCatBoostComparison', 'loadCatBoostRecentNumbers']);
+});
+
+test('unchanged result avoids dashboard reload; corrections and five-minute refresh still load', async () => {
+  const { context } = harness({});
+  context.reloads = 0;
+  vm.runInContext('renderLatestResult = () => {}; toast = () => {}; refreshDashboard = async () => { reloads++; };', context);
+  const result = { draw_date: '2026-10-16', special_prize: '00059', last_two: '59', status: 'observed' };
+  await context.handlePolledResult(result, result.draw_date);
+  await context.handlePolledResult(result, result.draw_date);
+  assert.equal(context.reloads, 1);
+  await context.handlePolledResult({ ...result, status: 'conflict' }, result.draw_date);
+  assert.equal(context.reloads, 2);
+  vm.runInContext('state.smartRefreshAt -= 300001;', context);
+  await context.handlePolledResult({ ...result, status: 'conflict' }, result.draw_date);
+  assert.equal(context.reloads, 3);
+});
+
 test('live A/B displays uncertainty and exclusion reasons, including an empty sample', async () => {
   const model = { hit_rate: null, hits: 0, confidence_interval_95: null };
   const { context, elements } = harness({ paired_predictions: 0, frequency_model: model, logistic_model: model,

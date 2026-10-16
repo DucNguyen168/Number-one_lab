@@ -15,6 +15,12 @@ Công cụ nghiên cứu cá nhân để:
 
 Đây là công cụ kiểm định khả năng dự đoán, không phải hệ thống đảm bảo dự đoán đúng.
 
+Render Free chạy thử: dùng [render.yaml](render.yaml) và [hướng dẫn Blueprint](docs/DEPLOY_RENDER.md). Service miễn phí ngủ khi không có truy cập; scheduler chỉ hoạt động khi service đang thức.
+
+Deploy Vercel Hobby: xem [hướng dẫn và tối ưu CPU](docs/DEPLOY_VERCEL.md), [Environment mẫu](deploy/vercel.env.example). Dashboard chỉ tải dữ liệu trang đang xem; báo cáo rolling không huấn luyện trong request web.
+
+Triển khai máy chạy liên tục, giảm CPU Vercel: xem [hướng dẫn Botkeep](docs/DEPLOY_BOTKEEP.md) và [mẫu Environment](deploy/botkeep.env.example). Lệnh chạy: `python scripts/run_host.py web`. Báo cáo rolling được tính riêng bằng `python scripts/run_host.py rolling-report`; mở dashboard chỉ đọc báo cáo đã lưu.
+
 ## Luồng dữ liệu
 
 ```text
@@ -219,6 +225,10 @@ Endpoint cron và thao tác thủ công không yêu cầu đăng nhập hoặc k
 hiện tại. `ADMIN_API_KEY`, `CRON_SECRET` và `REQUIRE_ADMIN_AUTH` không còn được đọc,
 kể cả khi biến cũ vẫn tồn tại trên Vercel. Các endpoint thao tác có thể được gọi bởi
 người truy cập website. MongoDB lease vẫn chống các lượt Cron chạy chồng nhau.
+
+Để giảm CPU, lượt tự động chỉ đồng bộ ngày gần nhất và đối chiếu toàn năm một lần
+từ 19:00 mỗi ngày. Gọi lại trong 30 giây sau lượt hoàn tất/chờ kết quả sẽ được giới hạn.
+Nút đồng bộ năm thủ công vẫn đối chiếu toàn bộ năm khi cần.
 
 Deploy mã nguồn mới lên Production, giữ `AUTO_PREDICTION=true`, rồi mở **Tự động →
 Chạy tự động ngay** để đồng bộ và bổ sung dự đoán ngày hợp lệ. `ENABLE_SCHEDULER`

@@ -16,6 +16,8 @@ const state = {
   autoRefreshTimer: null,
   resultPoller: null,
   smartRefreshSeenDate: null, // Ngày kết quả đã phát hiện
+  smartRefreshSignature: null,
+  smartRefreshAt: 0,
   detailCache: new Map(),
   // Exclude recent numbers feature
   excludeRecentEnabled: false,
@@ -119,11 +121,13 @@ function initPageNavigation() {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       showPage(link.dataset.pageLink, { updateHistory: true });
+      refreshDashboard();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
   window.addEventListener('popstate', () => {
     showPage(pageFromPath(window.location.pathname));
+    refreshDashboard();
   });
 }
 
@@ -1163,24 +1167,36 @@ async function loadRollingModelComparison() {
   const selectedCount = Number(el('fortune-selected-count').value);
   try {
     const report = await api(`/api/model-comparison/rolling?selected_count=${selectedCount}`);
+    if (report.status === 'not_ready') {
+      el('fortune-historical-title').textContent = 'Chưa có báo cáo rolling cập nhật';
+      el('fortune-historical-note').textContent = report.message;
+      el('fortune-historical-summary').replaceChildren();
+      el('fortune-historical-daily-body').replaceChildren();
+      el('fortune-historical-daily-stats').replaceChildren();
+      el('fortune-rolling-window-badge').textContent = 'Chờ báo cáo';
+      return;
+    }
     const metrics = report.metrics;
     el('fortune-historical-title').textContent =
       `${report.paired_predictions} kỳ gần nhất · ${report.start_date} đến ${report.end_date}`;
     el('fortune-historical-note').textContent =
       `Đối chiếu walk-forward song song theo dữ liệu đến ${report.dataset.last_date}. `
-      + 'Báo cáo tự làm mới khi kết quả mới được đồng bộ.';
+      + 'Báo cáo đã lưu; việc mở trang không chạy lại huấn luyện.';
     el('fortune-historical-summary').replaceChildren(
       comparisonCard('Tần suất A', formatPercent(metrics.frequency.hit_rate), comparisonModelDetail(metrics.frequency, report.paired_predictions)),
       comparisonCard('Logistic B', formatPercent(metrics.logistic.hit_rate), comparisonModelDetail(metrics.logistic, report.paired_predictions)),
       comparisonCard('Baseline', formatPercent(metrics.baseline, 0), `Top ${selectedCount}`),
       comparisonCard('B − A', formatPercent(metrics.delta_logistic_vs_frequency), `McNemar p=${metrics.mcnemar_exact_p}`),
     );
-    el('fortune-rolling-window-badge').textContent = `${report.paired_predictions} kỳ · live`;
+    el('fortune-rolling-window-badge').textContent = `${report.paired_predictions} kỳ · hồi kiểm`;
     renderHistoricalDailyTable(report.daily);
     renderHistoricalDailyStats(report.daily);
   } catch (err) {
     console.warn('Rolling model comparison load failed:', err);
-    el('fortune-historical-title').textContent = 'Chưa thể tạo đối chiếu rolling';
+    el('fortune-historical-title').textContent = 'Chưa tải được đối chiếu rolling';
+    el('fortune-historical-summary').replaceChildren();
+    el('fortune-historical-daily-stats').replaceChildren();
+    el('fortune-rolling-window-badge').textContent = 'Chưa tải được';
     el('fortune-historical-note').textContent = 'Hệ thống sẽ thử lại khi dữ liệu hợp lệ sẵn sàng.';
     const body = el('fortune-historical-daily-body');
     if (body) {
@@ -1921,38 +1937,50 @@ async function loadBacktests() {
 // ═══════════════════════════════════════════════════════════
 // DASHBOARD REFRESH
 // ═══════════════════════════════════════════════════════════
+async function handlePolledResult(result, today) {
+  renderLatestResult(result);
+  if (result.draw_date !== today) return;
+  if (result.status !== 'conflict' && state.smartRefreshSeenDate !== today) {
+    state.smartRefreshSeenDate = today;
+    toast(`✅ Kết quả ngày ${today} vừa cập nhật! Giải đặc biệt: ${result.special_prize}`, 'success');
+  }
+  const signature = JSON.stringify([result.draw_date, result.special_prize,
+    result.last_two, result.status, result.updated_at]);
+  const now = Date.now();
+  // Check results each minute, but refresh other data only on a revision or every 5 minutes.
+  if (signature === state.smartRefreshSignature && now - state.smartRefreshAt < 300000) return;
+  state.smartRefreshSignature = signature;
+  state.smartRefreshAt = now;
+  await refreshDashboard();
+}
+
 async function refreshDashboard() {
-  await Promise.allSettled([
-    loadMetrics(),
-    loadLatestResult(),
-    loadLatestPrediction(),
-    loadLatestLogisticPrediction(),
-    loadLatestCatBoostPrediction(),
-    loadPredictionHistory(),
-    loadLogisticPredictionHistory(),
-    loadModelComparison(),
-    loadRollingModelComparison(),
-    loadCatBoostHistory(),
-    loadCatBoostComparison(),
-    loadCatBoostRecentNumbers(),
-    loadResults(),
-    loadBacktests(),
-    loadDigitBacktests(),
-  ]);
+  const page = state.currentPage;
+  const loaders = {
+    overview: [loadMetrics, loadLatestResult],
+    results: [loadResults],
+    'two-digit': [loadLatestPrediction, loadPredictionHistory],
+    'fortune-two-digit': [loadLatestLogisticPrediction, loadLogisticPredictionHistory,
+      loadModelComparison, loadRollingModelComparison],
+    'one-digit': [loadLatestCatBoostPrediction, loadCatBoostHistory,
+      loadCatBoostComparison, loadCatBoostRecentNumbers],
+    backtest: [loadBacktests, loadDigitBacktests],
+  };
+  await Promise.allSettled((loaders[page] || loaders.overview).map(load => load()));
 
   // Luôn tô màu các số vừa ra; công tắc chỉ quyết định có loại chúng khỏi dãy
   // được chọn hay không. Số ở kỳ mới nhất nhận ngôi sao duy nhất trên bảng.
-  renderCatBoostPrediction(state.latestCatBoostPrediction);
+  if (page === 'one-digit') renderCatBoostPrediction(state.latestCatBoostPrediction);
 
   // Khi dữ liệu kết quả vừa được đồng bộ, cập nhật lại ngay tập loại trừ
   // đang bật để bảng hiển thị và chuỗi sao chép không dùng danh sách cũ.
-  if (state.excludeRecentEnabled) {
+  if (page === 'two-digit' && state.excludeRecentEnabled) {
     await loadRecentNumbers(state.excludeRecentDays);
     updateExcludeRecentChips();
     renderNumberGrid(state.latestPrediction);
     updateSelectedExport(state.latestPrediction);
   }
-  if (state.fortuneExcludeRecentEnabled) {
+  if (page === 'fortune-two-digit' && state.fortuneExcludeRecentEnabled) {
     await loadFortuneRecentNumbers(state.fortuneExcludeRecentDays);
     updateFortuneExcludeRecentChips();
     renderFortunePrediction(state.latestLogisticPrediction);
@@ -2147,6 +2175,7 @@ el('automation-run-btn').addEventListener('click', () => runAction(
     finally { await loadHealth(); }
   },
   result => result.status === 'already_running' ? 'Một lượt tự động đang chạy; đợi hoàn tất rồi kiểm tra lại.'
+    : result.status === 'throttled' ? 'Vừa chạy tự động xong. Đợi 30 giây rồi thử lại nếu cần.'
     : result.status === 'waiting_result' ? 'Đã đồng bộ. Đang chờ kết quả hợp lệ để tạo dự đoán ngày tiếp theo.'
       : result.status === 'disabled' ? 'Đã đồng bộ; AUTO_PREDICTION đang tắt trên máy chủ.'
         : `Đã kiểm tra và bổ sung các dự đoán ngày ${result.target_date}.`,
@@ -2292,34 +2321,7 @@ async function startSmartAutoRefresh() {
     timezone: settings.timezone,
     startTime: settings.result_poll_start_time,
     intervalSeconds: settings.result_poll_interval_seconds,
-    async onResult(result, today) {
-      renderLatestResult(result);
-      if (result.draw_date !== today) return;
-      if (result.status !== 'conflict' && state.smartRefreshSeenDate !== today) {
-        state.smartRefreshSeenDate = today;
-        toast(`✅ Kết quả ngày ${today} vừa cập nhật! Giải đặc biệt: ${result.special_prize}`, 'success');
-      }
-      // Live comparisons read saved metadata; rolling reports still run separately.
-      await Promise.allSettled([
-        loadMetrics(), loadResults(), loadLatestPrediction(),
-        loadLatestLogisticPrediction(), loadLatestCatBoostPrediction(),
-        loadPredictionHistory(), loadLogisticPredictionHistory(), loadCatBoostHistory(),
-        loadModelComparison(), loadCatBoostComparison(),
-        loadCatBoostRecentNumbers(),
-      ]);
-      renderCatBoostPrediction(state.latestCatBoostPrediction);
-      if (state.excludeRecentEnabled) {
-        await loadRecentNumbers(state.excludeRecentDays);
-        updateExcludeRecentChips();
-        renderNumberGrid(state.latestPrediction);
-        updateSelectedExport(state.latestPrediction);
-      }
-      if (state.fortuneExcludeRecentEnabled) {
-        await loadFortuneRecentNumbers(state.fortuneExcludeRecentDays);
-        updateFortuneExcludeRecentChips();
-        renderFortunePrediction(state.latestLogisticPrediction);
-      }
-    },
+    onResult: handlePolledResult,
   });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) state.resultPoller.wake();

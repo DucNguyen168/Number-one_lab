@@ -4,6 +4,7 @@ import hashlib
 import itertools
 import sys
 from collections import Counter, defaultdict
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -124,17 +125,24 @@ def _metrics(rows, version, count):
     }
 
 
+@lru_cache(maxsize=128)
+def _cached_bootstrap(outcomes, count):
+    # Ordered paired outcomes are the complete input to this deterministic statistic.
+    rows = [{f"frequency_hit_{count}": a, f"logistic_hit_{count}": b}
+            for a, b in outcomes]
+    return _paired_block_bootstrap(rows, count)
+
+
 def _pair(rows, a, b, count):
     a_only = sum(r[HIT_KEYS[a]] and not r[HIT_KEYS[b]] for r in rows)
     b_only = sum(r[HIT_KEYS[b]] and not r[HIT_KEYS[a]] for r in rows)
-    bootstrap_rows = [{f"frequency_hit_{count}": r[HIT_KEYS[a]],
-                       f"logistic_hit_{count}": r[HIT_KEYS[b]]} for r in rows]
+    outcomes = tuple((bool(r[HIT_KEYS[a]]), bool(r[HIT_KEYS[b]])) for r in rows)
     return {
         "model_a": a, "model_b": b, "sample_size": len(rows),
         "a_only_hit": a_only, "b_only_hit": b_only,
         "delta_b_minus_a": round((b_only-a_only)/len(rows), 8) if rows else None,
         "mcnemar_exact_p": _exact_mcnemar_p(a_only, b_only) if rows else None,
-        "paired_block_bootstrap_delta_ci95": _paired_block_bootstrap(bootstrap_rows, count) if len(rows) >= 14 else None,
+        "paired_block_bootstrap_delta_ci95": _cached_bootstrap(outcomes, count) if len(rows) >= 14 else None,
     }
 
 

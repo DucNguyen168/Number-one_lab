@@ -9,7 +9,7 @@ import httpx
 from bson import ObjectId
 from fastapi import Body, FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
+from app.static_cache import CachedStaticFiles
 
 from app import __version__
 from app.config import settings
@@ -47,6 +47,7 @@ from app.services.prediction import MODEL_VERSION, create_prediction
 from app.services.prediction_protocol import DEADLINE_TIME
 from app.services.prediction_replay import create_missing_replays, history_with_replays, replay_evaluation
 from app.services.rolling_comparison import (
+    RollingReportNotReady,
     load_or_build_rolling_comparison,
     report_for_selected_count,
 )
@@ -109,8 +110,8 @@ app = FastAPI(
     description="Personal draw-data collection, immutable predictions, and evaluation.",
     lifespan=lifespan,
 )
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-app.mount("/img", StaticFiles(directory=IMG_DIR), name="fortune-images")
+app.mount("/static", CachedStaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/img", CachedStaticFiles(directory=IMG_DIR), name="fortune-images")
 
 
 def _db(request: Request):
@@ -124,7 +125,9 @@ def _db(request: Request):
 @app.get("/ket-qua", include_in_schema=False)
 @app.get("/", include_in_schema=False)
 def dashboard() -> FileResponse:
-    return FileResponse(STATIC_DIR / "index.html")
+    return FileResponse(STATIC_DIR / "index.html", headers={
+        "Cache-Control": "public, max-age=0, s-maxage=3600",
+    })
 
 
 @app.get("/api/health")
@@ -343,6 +346,15 @@ def _execute_auto_daily(request: Request, response: Response, *, trigger: str) -
     db = _db(request)
     try:
         with mongo_cron_lease(db, "auto-daily", lease_seconds=AUTO_DAILY_LEASE_SECONDS):
+            previous = db.automation_state.find_one({"_id": "auto-daily"})
+            if previous and previous.get("status") in {"completed", "waiting_result"}:
+                started = previous.get("started_at")
+                if isinstance(started, datetime):
+                    if started.tzinfo is None:
+                        started = started.replace(tzinfo=timezone.utc)
+                    if datetime.now(timezone.utc) - started < timedelta(seconds=30):
+                        return {"ok": True, "status": "throttled",
+                                "message": "Automatic reconciliation just ran; retry after 30 seconds."}
             db.automation_state.update_one({"_id": "auto-daily"}, {"$set": {
                 "status": "running", "trigger": trigger,
                 "started_at": datetime.now(timezone.utc),
@@ -373,12 +385,7 @@ def _execute_auto_daily(request: Request, response: Response, *, trigger: str) -
 
 
 def _run_auto_daily(db: Any) -> dict[str, Any]:
-    """Endpoint tổng hợp dùng cho Vercel Cron Jobs:
-    1. Đồng bộ kết quả năm hiện tại
-    2. Đánh giá tất cả prediction pending
-    3. Tạo dự đoán 2 số cho ngày tiếp theo (nếu chưa có)
-    4. Tạo dự đoán 1 số cho ngày tiếp theo (nếu chưa có)
-    """
+    """Sync the latest draw, reconcile the year once after 19:00, then fill A/B/C."""
     now = settings.local_now()
     today = now.date()
 
@@ -387,16 +394,17 @@ def _run_auto_daily(db: Any) -> dict[str, Any]:
     sync_result: dict[str, Any] = {}
     sync_error: str | None = None
     try:
-        if (
-            now.strftime("%H:%M") >= settings.result_poll_start_time
-            and db.draw_results.find_one(
-                {"draw_date": today.isoformat(), "status": {"$ne": "conflict"}},
-                {"_id": 1},
-            ) is None
-        ):
-            sync_result = collector.sync_latest(today)
-        else:
+        # Reconcile historical corrections once per evening, not on every retry.
+        reconciliation_due = now.hour >= 19 and db.collector_runs.find_one({
+            "type": "year_sync", "year": today.year,
+            "status": {"$in": ["completed", "partial"]},
+            "started_at": {"$gte": now.replace(hour=19, minute=0, second=0, microsecond=0)},
+        }, {"_id": 1}) is None
+        if reconciliation_due:
             sync_result = collector.sync_year(today.year)
+        else:
+            sync_target = today if now.strftime("%H:%M") >= settings.result_poll_start_time else today - timedelta(days=1)
+            sync_result = collector.sync_latest(sync_target)
     except CollectorSourcesUnavailable as exc:
         sync_error = str(exc)
     except httpx.HTTPError as exc:
@@ -675,11 +683,16 @@ def _rolling_comparison_payload(
     request: Request, selected_count: int
 ) -> dict[str, Any]:
     try:
-        report, rebuilt = load_or_build_rolling_comparison(_db(request))
+        report, rebuilt = load_or_build_rolling_comparison(_db(request), allow_build=False)
         payload = report_for_selected_count(report, selected_count)
+    except RollingReportNotReady:
+        return {
+            "status": "not_ready", "cache_rebuilt": False, "daily": [],
+            "message": "Chưa có báo cáo rolling khớp dữ liệu hiện tại. Báo cáo được tính riêng trên máy chủ; dự đoán hằng ngày và đối chiếu LIVE vẫn hoạt động độc lập.",
+        }
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    return {**payload, "cache_rebuilt": rebuilt}
+    return {**payload, "status": "ready", "cache_rebuilt": rebuilt}
 
 
 @app.get("/api/model-comparison/rolling")
