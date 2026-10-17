@@ -15,7 +15,7 @@ function harness(handler = () => ({ ok: true, data: {} })) {
       return elements.get(id);
     },
   };
-  const context = vm.createContext({ document, console, fetch: async (path, options) => {
+  const context = vm.createContext({ document, console, AbortController, setTimeout, clearTimeout, fetch: async (path, options) => {
     calls.push({ path, options });
     const reply = handler(path, options);
     return { ok: reply.ok, status: reply.status || 200, json: async () => reply.data };

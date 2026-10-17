@@ -112,7 +112,7 @@ def execution(monkeypatch, *, locked=False):
     @contextmanager
     def lease(db, name, *, lease_seconds):
         config = json.loads((Path(__file__).parents[1] / "vercel.json").read_text())
-        assert lease_seconds > config["functions"]["api/index.py"]["maxDuration"]
+        assert lease_seconds > config["functions"]["index.py"]["maxDuration"]
         assert name == "auto-daily"
         if locked:
             raise CronAlreadyRunning()

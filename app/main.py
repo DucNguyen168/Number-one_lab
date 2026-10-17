@@ -52,6 +52,7 @@ from app.services.rolling_comparison import (
     report_for_selected_count,
 )
 from app.services.scheduler import DailyScheduler
+from app.services.result_model_outcomes import attach_result_model_outcomes
 
 
 STATIC_DIR = Path(__file__).parent / "static"
@@ -122,6 +123,7 @@ def _db(request: Request):
 @app.get("/du-doan-catboost-2-so", include_in_schema=False)
 @app.get("/du-doan-than-tai", include_in_schema=False)
 @app.get("/du-doan-2-so", include_in_schema=False)
+@app.get("/du-doan-n-1", include_in_schema=False)
 @app.get("/ket-qua", include_in_schema=False)
 @app.get("/", include_in_schema=False)
 def dashboard() -> FileResponse:
@@ -257,9 +259,15 @@ def sync_backfill(
 def list_results(
     request: Request,
     limit: Annotated[int, Query(ge=1, le=1_000)] = 30,
+    before: Annotated[date | None, Query(description="Return draws strictly before this date")] = None,
+    include_models: bool = False,
 ) -> list[dict[str, Any]]:
-    documents = _db(request).draw_results.find({}).sort("draw_date", -1).limit(limit)
-    return serialize_document(list(documents))
+    db = _db(request)
+    query = {"draw_date": {"$lt": before.isoformat()}} if before else {}
+    documents = list(db.draw_results.find(query).sort("draw_date", -1).limit(limit))
+    if include_models:
+        documents = attach_result_model_outcomes(db, documents, settings.auto_prediction_count)
+    return serialize_document(documents)
 
 
 @app.get("/api/results/latest")

@@ -9,6 +9,7 @@ APP_ROUTES = {
     "/",
     "/ket-qua",
     "/du-doan-2-so",
+    "/du-doan-n-1",
     "/du-doan-than-tai",
     "/du-doan-catboost-2-so",
     "/backtest",

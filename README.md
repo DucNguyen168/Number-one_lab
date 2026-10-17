@@ -15,11 +15,9 @@ Công cụ nghiên cứu cá nhân để:
 
 Đây là công cụ kiểm định khả năng dự đoán, không phải hệ thống đảm bảo dự đoán đúng.
 
-Render Free chạy thử: dùng [render.yaml](render.yaml) và [hướng dẫn Blueprint](docs/DEPLOY_RENDER.md). Service miễn phí ngủ khi không có truy cập; scheduler chỉ hoạt động khi service đang thức.
-
 Deploy Vercel Hobby: xem [hướng dẫn và tối ưu CPU](docs/DEPLOY_VERCEL.md), [Environment mẫu](deploy/vercel.env.example). Dashboard chỉ tải dữ liệu trang đang xem; báo cáo rolling không huấn luyện trong request web.
 
-Triển khai máy chạy liên tục, giảm CPU Vercel: xem [hướng dẫn Botkeep](docs/DEPLOY_BOTKEEP.md) và [mẫu Environment](deploy/botkeep.env.example). Lệnh chạy: `python scripts/run_host.py web`. Báo cáo rolling được tính riêng bằng `python scripts/run_host.py rolling-report`; mở dashboard chỉ đọc báo cáo đã lưu.
+Báo cáo rolling được tính riêng trên máy local bằng `python scripts/run_host.py rolling-report`; mở dashboard chỉ đọc báo cáo đã lưu.
 
 ## Luồng dữ liệu
 

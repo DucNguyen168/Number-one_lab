@@ -8,6 +8,7 @@ class Element {
   append(...nodes) { this.children.push(...nodes); }
   prepend(...nodes) { this.children.unshift(...nodes); }
   addEventListener() {}
+  setAttribute(name, value) { this[name] = value; }
   replaceChildren(...nodes) { this.children = nodes; }
   get text() { return this.textContent + this.children.map(node => node.text).join(' '); }
 }
@@ -21,7 +22,8 @@ function harness(data) {
     },
     createElement() { return new Element(); },
   };
-  const context = vm.createContext({ document, console, fetch: async () => ({ ok: true, json: async () => data }) });
+  const context = vm.createContext({ document, console, AbortController, setTimeout, clearTimeout,
+    fetch: async () => ({ ok: true, json: async () => data }) });
   // Load the application's functions without registering page events or starting timers.
   const code = fs.readFileSync(require.resolve('../app/static/app.js'), 'utf8');
   vm.runInContext(code.slice(0, code.indexOf('// EVENT LISTENERS')), context);

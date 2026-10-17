@@ -31,6 +31,14 @@ const state = {
   catboostExcludeRecent: false,
   catboostRecentNumbers: [],
   automation: null,
+  refreshVersion: 0,
+  pendingReads: new Map(),
+  pageUpdatedAt: new Map(),
+  detailRequest: 0,
+  detailId: null,
+  resultsRows: [],
+  resultsHasMore: false,
+  resultsTask: null,
 };
 
 // ── Helpers ────────────────────────────────────────────────
@@ -54,15 +62,15 @@ const PAGE_CONFIG = {
   },
   results: {
     path: '/ket-qua',
-    eyebrow: 'DATA PIPELINE',
-    title: 'Kết quả và đồng bộ dữ liệu',
-    description: 'Thu thập kết quả, đối chiếu dự đoán pending và xem dữ liệu đã lưu trong MongoDB.',
+    eyebrow: 'BỘ SƯU TẬP DỮ LIỆU',
+    title: 'Phòng lưu trữ kết quả',
+    description: 'Tra cứu kết quả XSMB, kiểm chứng nguồn và cập nhật lịch sử kỳ quay.',
   },
   'two-digit': {
-    path: '/du-doan-2-so',
-    eyebrow: 'TWO DIGITS · 00–99',
-    title: 'Dự đoán hai số cuối',
-    description: 'Tạo snapshot Top 60–80, xem bảng điểm và lịch sử đánh giá từng ngày.',
+    path: '/du-doan-n-1',
+    eyebrow: 'N-1 TERMINAL · MÔ HÌNH A',
+    title: 'Dự đoán N-1',
+    description: 'Phân tích tần suất, theo dõi thứ hạng và đối chiếu kết quả trên cùng một bảng điện.',
   },
   'fortune-two-digit': {
     path: '/du-doan-than-tai',
@@ -86,6 +94,7 @@ const PAGE_CONFIG = {
 
 function pageFromPath(pathname) {
   const normalized = pathname !== '/' ? pathname.replace(/\/+$/, '') : '/';
+  if (normalized === '/du-doan-2-so') return 'two-digit';
   return Object.entries(PAGE_CONFIG).find(([, config]) => config.path === normalized)?.[0] || 'overview';
 }
 
@@ -95,6 +104,7 @@ function showPage(pageName, { updateHistory = false } = {}) {
   state.currentPage = page;
   document.body.dataset.currentPage = page;
   if (updateHistory && window.location.pathname !== config.path) {
+    window.history.replaceState({ ...window.history.state, scrollY: window.scrollY }, '', window.location.href);
     window.history.pushState({ page }, '', config.path);
   }
 
@@ -112,45 +122,83 @@ function showPage(pageName, { updateHistory = false } = {}) {
   el('page-title').textContent = config.title;
   el('page-description').textContent = config.description;
   document.title = `${config.title} · XSMB Research Lab`;
+  el('page-feedback').hidden = true;
+  el('page-announcement').textContent = config.title;
+  updatePageStatus(page);
 }
 
 function initPageNavigation() {
   showPage(pageFromPath(window.location.pathname));
-  document.querySelectorAll('[data-page-link]').forEach(link => {
+  window.history.scrollRestoration = 'manual';
+  let scrollFrame;
+  window.addEventListener('scroll', () => {
+    if (scrollFrame) return;
+    scrollFrame = requestAnimationFrame(() => {
+      window.history.replaceState({ ...window.history.state, scrollY: window.scrollY }, '', window.location.href);
+      scrollFrame = null;
+    });
+  }, { passive: true });
+  document.querySelectorAll('[data-page-link], [data-route]').forEach(link => {
     link.addEventListener('click', event => {
-      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
-      showPage(link.dataset.pageLink, { updateHistory: true });
+      const page = link.dataset.pageLink || link.dataset.route;
+      if (page === state.currentPage) return;
+      showPage(page, { updateHistory: true });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      window.DashboardUI.transitionPage();
+      el('page-title').focus({ preventScroll: true });
       refreshDashboard();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
-  window.addEventListener('popstate', () => {
+  window.addEventListener('popstate', event => {
     showPage(pageFromPath(window.location.pathname));
+    window.DashboardUI.transitionPage();
+    window.scrollTo({ top: event.state?.scrollY || 0, behavior: 'instant' });
+    el('page-title').focus({ preventScroll: true });
     refreshDashboard();
   });
 }
 
 async function api(path, options = {}) {
-  const response = await fetch(path, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data.detail || data.sync_error || data.catboost_prediction_error
-      || data.logistic_prediction_error || data.prediction_error || `HTTP ${response.status}`);
-  }
-  return data;
+  const isRead = !options.method || options.method.toUpperCase() === 'GET';
+  const key = `${path}:${JSON.stringify(options)}`;
+  if (isRead && state.pendingReads.has(key)) return state.pendingReads.get(key);
+  const request = (async () => {
+    const controller = isRead ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), 25000) : null;
+    try {
+      const response = await fetch(path, {
+        ...options,
+        ...(controller ? { signal: controller.signal } : {}),
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      });
+      const data = await response.json().catch(error => {
+        if (error.name === 'AbortError') throw error;
+        if (response.ok) throw new Error('Phản hồi dữ liệu không hợp lệ. Vui lòng thử lại.');
+        return {};
+      });
+      if (!response.ok) {
+        throw new Error(data.detail || data.sync_error || data.catboost_prediction_error
+          || data.logistic_prediction_error || data.prediction_error || `HTTP ${response.status}`);
+      }
+      return data;
+    } catch (error) {
+      if (error.name === 'AbortError') throw new Error('Kết nối quá thời gian. Vui lòng thử lại.');
+      throw error;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  })();
+  if (isRead) state.pendingReads.set(key, request);
+  try { return await request; }
+  finally { if (isRead) state.pendingReads.delete(key); }
 }
 
 function openAutomationDialog() {
   el('automation-message').textContent = '';
-  if (!el('automation-dialog').open) el('automation-dialog').showModal();
-  loadHealth();
+  window.DashboardUI.openDialog(el('automation-dialog'));
+  loadHealth().catch(error => { el('automation-message').textContent = error.message; });
 }
 
 function renderAutomationStatus(health) {
@@ -194,9 +242,10 @@ function toast(message, type = 'default') {
 
 // ── Button busy state ──────────────────────────────────────
 function setBusy(button, busy, label) {
-  if (!button.dataset.label) button.dataset.label = button.textContent;
+  if (!button.dataset.label) button.dataset.label = button.innerHTML;
   button.disabled = busy;
-  button.textContent = busy ? label : button.dataset.label;
+  if (busy) button.textContent = label;
+  else button.innerHTML = button.dataset.label;
 }
 
 // ── Badge & Cell helpers ───────────────────────────────────
@@ -222,223 +271,27 @@ function predictionDateCell(prediction) {
   return node;
 }
 
-// ═══════════════════════════════════════════════════════════
-// SKY DRAG TOGGLE — Sun/Moon/Cloud interactive drag widget
-// Kéo mây che Sun = Dark mode | che Moon = Light mode
-// Thả giữa = Limbo 5s → auto-snap về gần nhất
-// ═══════════════════════════════════════════════════════════
-const SKY = {
-  toggle: null,        // #sky-toggle
-  cloud: null,         // #sky-cloud
-  arrow: null,         // #sky-arrow
-  countdown: null,     // .sky-countdown-bar
-  dragging: false,
-  didDrag: false,
-  startX: 0,
-  startCloudLeft: 0,
-  cloudLeft: 0,        // current px from left edge of toggle
-  limboTimer: null,
-  limboRatio: 0.5,     // store ratio when entering limbo
-};
-
-// Ngưỡng snap: phần trăm width của toggle
-const SKY_SNAP = 0.40;   // < 40% → snap moon (light), > 60% → snap sun (dark)
-
+// Theme preference is applied before paint. Storage failures never stop boot.
 function initThemeToggle() {
-  SKY.toggle  = el('sky-toggle');
-  SKY.cloud   = el('sky-cloud');
-  SKY.arrow   = el('sky-arrow');
-  if (!SKY.toggle || !SKY.cloud) return;
-
-  // Tạo countdown bar bên trong toggle
-  SKY.countdown = document.createElement('div');
-  SKY.countdown.className = 'sky-countdown-bar';
-  SKY.toggle.appendChild(SKY.countdown);
-
-  // Áp theme đã lưu (không animate)
-  const saved = localStorage.getItem('xsmb-theme') || 'light';
-  _skyApply(saved, false);
-
-  // Keyboard toggle
-  SKY.toggle.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (!SKY.dragging) {
-        const cur = document.documentElement.getAttribute('data-theme');
-        applyTheme(cur === 'dark' ? 'light' : 'dark');
-      }
-    }
+  const toggle = el('sky-toggle');
+  applyTheme(document.documentElement.dataset.theme || 'light', false);
+  toggle.addEventListener('click', () => {
+    applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
   });
-
-  // Click toggle (không phải drag)
-  SKY.toggle.addEventListener('click', (e) => {
-    if (!SKY.didDrag) {
-      const cur = document.documentElement.getAttribute('data-theme');
-      applyTheme(cur === 'dark' ? 'light' : 'dark');
-    }
-    SKY.didDrag = false;
-  });
-
-  // Mouse drag
-  SKY.cloud.addEventListener('mousedown', _skyDragStart);
-  window.addEventListener('mousemove', _skyDragMove);
-  window.addEventListener('mouseup', _skyDragEnd);
-
-  // Touch drag
-  SKY.cloud.addEventListener('touchstart', _skyDragStart, { passive: false });
-  window.addEventListener('touchmove', _skyDragMove, { passive: false });
-  window.addEventListener('touchend', _skyDragEnd);
 }
 
-function _skyX(e) {
-  return e.touches ? e.touches[0].clientX : e.clientX;
-}
-
-function _skyDragStart(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  SKY.dragging = true;
-  SKY.didDrag  = false;
-
-  // Lấy vị trí hiện tại của cloud
-  const tRect = SKY.toggle.getBoundingClientRect();
-  const cRect = SKY.cloud.getBoundingClientRect();
-  SKY.cloudLeft      = cRect.left - tRect.left;
-  SKY.startX         = _skyX(e);
-  SKY.startCloudLeft = SKY.cloudLeft;
-
-  SKY.cloud.classList.add('sky-no-transition');
-  SKY.cloud.style.left  = SKY.cloudLeft + 'px';
-  SKY.cloud.style.right = 'auto';
-  SKY.toggle.classList.add('sky-dragging');
-
-  // Hủy limbo nếu đang drag lại trong 5s
-  _skyClrLimbo(false);  // false = giữ backdrop cho đến khi snap
-}
-
-function _skyDragMove(e) {
-  if (!SKY.dragging) return;
-  e.preventDefault();
-
-  const dx = _skyX(e) - SKY.startX;
-  if (Math.abs(dx) > 3) SKY.didDrag = true;
-
-  const toggleW = SKY.toggle.offsetWidth;
-  const cloudW  = SKY.cloud.offsetWidth;
-  const minL    = 2;
-  const maxL    = toggleW - cloudW - 2;
-  SKY.cloudLeft = Math.max(minL, Math.min(SKY.startCloudLeft + dx, maxL));
-  SKY.cloud.style.left = SKY.cloudLeft + 'px';
-}
-
-function _skyDragEnd(e) {
-  if (!SKY.dragging) return;
-  SKY.dragging = false;
-  SKY.toggle.classList.remove('sky-dragging');
-  SKY.cloud.classList.remove('sky-no-transition');
-
-  if (!SKY.didDrag) return;
-
-  const toggleW   = SKY.toggle.offsetWidth;
-  const cloudW    = SKY.cloud.offsetWidth;
-  const cloudCtr  = SKY.cloudLeft + cloudW / 2;
-  const ratio     = cloudCtr / toggleW;
-
-  if (ratio <= SKY_SNAP) {
-    // Snap về moon (trái) = Light mode
-    applyTheme('light');
-  } else if (ratio >= (1 - SKY_SNAP)) {
-    // Snap về sun (phải) = Dark mode
-    applyTheme('dark');
-  } else {
-    // Limbo — không che cái nào
-    _skyEnterLimbo(ratio);
+function applyTheme(theme, persist = true) {
+  document.documentElement.dataset.theme = theme;
+  document.body.dataset.theme = theme;
+  if (persist) {
+    try { localStorage.setItem('xsmb-theme', theme); } catch { /* Storage is optional. */ }
   }
+  const dark = theme === 'dark';
+  el('sky-toggle').setAttribute('aria-pressed', String(dark));
+  el('sky-toggle').setAttribute('aria-label', dark ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối');
+  document.querySelector('meta[name="theme-color"]').content = dark ? '#101722' : '#f5f7fb';
 }
 
-function _skyEnterLimbo(ratio) {
-  SKY.limboRatio = ratio;
-  SKY.toggle.classList.add('sky-limbo-active');
-  document.body.classList.add('sky-limbo');
-
-  // Hiển thị mũi tên chỉ hướng gần nhất
-  if (SKY.arrow) {
-    const nearLeft = ratio < 0.5;
-    SKY.arrow.innerHTML = nearLeft
-      ? '<span style="animation:none;display:inline-block;transform:scaleX(-1)">➜</span>&nbsp;Kéo về'
-      : 'Kéo về&nbsp;<span style="display:inline-block">➜</span>';
-    SKY.arrow.classList.add('active');
-  }
-
-  // Countdown bar
-  if (SKY.countdown) {
-    // Khởi động lại animation bằng cách clone node
-    const newBar = SKY.countdown.cloneNode(false);
-    SKY.countdown.replaceWith(newBar);
-    SKY.countdown = newBar;
-    SKY.countdown.classList.add('active');
-  }
-
-  // Auto-snap sau 5s
-  SKY.limboTimer = setTimeout(() => {
-    _skyClrLimbo(true);
-    _skyApply(SKY.limboRatio < 0.5 ? 'light' : 'dark', true);
-  }, 5000);
-}
-
-function _skyClrLimbo(clearBodyClass = true) {
-  if (SKY.limboTimer) { clearTimeout(SKY.limboTimer); SKY.limboTimer = null; }
-  if (clearBodyClass) document.body.classList.remove('sky-limbo');
-  if (SKY.toggle)    SKY.toggle.classList.remove('sky-limbo-active');
-  if (SKY.arrow)     { SKY.arrow.classList.remove('active'); SKY.arrow.innerHTML = ''; }
-  if (SKY.countdown) { SKY.countdown.classList.remove('active'); }
-}
-
-// Hàm apply chính — đặt theme và di cloud đến đúng vị trí
-function _skyApply(theme, animate = true) {
-  document.documentElement.setAttribute('data-theme', theme);
-  document.body.setAttribute('data-theme', theme);
-  localStorage.setItem('xsmb-theme', theme);
-
-  if (!SKY.cloud || !SKY.toggle) return;
-
-  if (!animate) SKY.cloud.classList.add('sky-no-transition');
-
-  const toggleW = SKY.toggle.offsetWidth || 112;
-  const cloudW  = SKY.cloud.offsetWidth  || 46;
-
-  if (theme === 'light') {
-    // Cloud bên TRÁI che Moon → Light (ban ngày)
-    SKY.cloud.style.right = 'auto';
-    SKY.cloud.style.left  = '4px';
-  } else {
-    // Cloud bên PHẢI che Sun → Dark (ban đêm)
-    SKY.cloud.style.right = 'auto';
-    SKY.cloud.style.left  = (toggleW - cloudW - 4) + 'px';
-  }
-
-  if (!animate) {
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (SKY.cloud) SKY.cloud.classList.remove('sky-no-transition');
-    }));
-  }
-
-  if (SKY.toggle) {
-    SKY.toggle.setAttribute('aria-label',
-      theme === 'dark' ? 'Chuyển sang chế độ Sáng' : 'Chuyển sang chế độ Tối');
-  }
-}
-
-// API công khai — dùng trong toàn app
-function applyTheme(theme) {
-  _skyClrLimbo(true);
-  _skyApply(theme, true);
-}
-
-
-// ═══════════════════════════════════════════════════════════
-// COUNTDOWN TIMER đến 18:15 hàng ngày
-// ═══════════════════════════════════════════════════════════
 function startCountdown() {
   function tick() {
     const now = new Date();
@@ -565,7 +418,7 @@ function getExcludeReason(score, cutoffProbability, recentWindowDays) {
   if (score.days_since_last_hit === null) {
     reasons.push('📉 Chưa bao giờ xuất hiện trong lịch sử');
   } else if (score.days_since_last_hit > 180) {
-    reasons.push(`📅 Gan ${score.days_since_last_hit} ngày (lâu bất thường)`);
+    reasons.push(`📅 Lần xuất hiện gần nhất cách ngày dự đoán ${score.days_since_last_hit} ngày`);
   }
   if (cutoffProbability && prob < cutoffProbability) {
     const pct = (prob * 100).toFixed(4);
@@ -637,7 +490,7 @@ function renderNumberGrid(prediction) {
   excludedPanel.replaceChildren();
 
   if (!prediction) {
-    root.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Chưa có prediction. Hãy tạo dự đoán.</div>';
+    root.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Chưa có dự đoán N-1. Chọn số lượng ở phía trên để bắt đầu.</div>';
     return;
   }
 
@@ -775,7 +628,7 @@ function renderNumberGrid(prediction) {
       const detailEl = document.createElement('div');
       detailEl.className = 'excluded-detail';
       const daysText = score.days_since_last_hit !== null
-        ? `Gan ${score.days_since_last_hit} ngày` : 'Chưa từng ra';
+        ? `Lần cuối: ${score.days_since_last_hit} ngày trước` : 'Chưa xuất hiện trong lịch sử';
       detailEl.textContent = `${(score.probability * 100).toFixed(4)}% · ${daysText}`;
 
       const rankEl = document.createElement('span');
@@ -1037,24 +890,7 @@ function updateFortuneRippleDelays() {
 }
 
 function initFortuneGlitter() {
-  const rain = el('fortune-glitter-rain');
-  if (!rain || rain.children.length) return;
-
-  const particleCount = 34;
-  for (let index = 0; index < particleCount; index += 1) {
-    const particle = document.createElement('i');
-    const lane = ((index * 37) % 101) + ((index % 3) * 0.17);
-    const duration = 5.8 + ((index * 13) % 37) / 10;
-    const delay = -((index * 29) % 91) / 10;
-    const drift = ((index * 17) % 90) - 45;
-    const size = 3 + ((index * 7) % 6);
-    particle.style.setProperty('--glitter-x', `${lane}%`);
-    particle.style.setProperty('--glitter-duration', `${duration.toFixed(1)}s`);
-    particle.style.setProperty('--glitter-delay', `${delay.toFixed(1)}s`);
-    particle.style.setProperty('--glitter-drift', `${drift}px`);
-    particle.style.setProperty('--glitter-size', `${size}px`);
-    rain.append(particle);
-  }
+  // Model skins may opt in; the workspace keeps data unobstructed.
 }
 
 async function loadLatestLogisticPrediction() {
@@ -1672,8 +1508,8 @@ async function loadDigitBacktests() {
 // PREDICTION HISTORY TABLE
 // ═══════════════════════════════════════════════════════════
 function closePredictionDetail() {
-  el('prediction-detail-modal').hidden = true;
-  document.body.classList.remove('modal-open');
+  state.detailRequest += 1;
+  window.DashboardUI.closeDialog(el('prediction-detail-modal'));
 }
 
 function detailSummaryItem(label, value) {
@@ -1782,27 +1618,30 @@ function renderPredictionDetail(prediction) {
 }
 
 async function openPredictionDetail(predictionId) {
+  const requestId = ++state.detailRequest;
+  state.detailId = predictionId;
   const modal = el('prediction-detail-modal');
   const loading = el('prediction-detail-loading');
   const content = el('prediction-detail-content');
-  modal.hidden = false;
   loading.hidden = false;
-  loading.textContent = 'Đang tải prediction…';
+  loading.textContent = 'Đang tải chi tiết dự đoán…';
   content.hidden = true;
-  document.body.classList.add('modal-open');
-  el('detail-modal-close').focus();
+  el('detail-retry-btn').hidden = true;
+  window.DashboardUI.openDialog(modal);
   try {
     let prediction = state.detailCache.get(predictionId);
     if (!prediction) {
       prediction = await api(`/api/predictions/${encodeURIComponent(predictionId)}`);
       state.detailCache.set(predictionId, prediction);
     }
+    if (requestId !== state.detailRequest || !modal.open) return;
     renderPredictionDetail(prediction);
     loading.hidden = true;
     content.hidden = false;
   } catch (error) {
+    if (requestId !== state.detailRequest || !modal.open) return;
     loading.textContent = `Không tải được chi tiết: ${error.message}`;
-    toast(error.message, 'error');
+    el('detail-retry-btn').hidden = false;
   }
 }
 
@@ -1853,20 +1692,137 @@ async function loadPredictionHistory() {
 // ═══════════════════════════════════════════════════════════
 // DRAW RESULTS TABLE
 // ═══════════════════════════════════════════════════════════
-async function loadResults() {
-  const results = await api('/api/results?limit=50');
+const RESULTS_PAGE_SIZE = 6;
+const resultDate = value => /^\d{4}-\d{2}-\d{2}$/.test(value || '') ? value.split('-').reverse().join('/') : (value || '—');
+
+function resultModelCell(result) {
+  const cell = document.createElement('td');
+  cell.className = 'results-models-cell';
+  const group = document.createElement('div');
+  group.className = 'results-models';
+  const names = { A: 'Dự đoán N-1', B: 'Thần Tài', C: 'CatBoost' };
+  const labels = { hit: 'Đúng', miss: 'Sai', pending: 'Chưa đánh giá', missing: 'Chưa có dự đoán', invalidated: 'Cần đối chiếu lại' };
+  for (const [letter, name] of Object.entries(names)) {
+    const outcome = result.model_outcomes?.[letter];
+    const status = Object.hasOwn(labels, outcome?.status) ? outcome.status : 'missing';
+    const marker = document.createElement('span');
+    marker.className = `result-model result-model-${status === 'hit' || status === 'miss' ? status : 'neutral'}`;
+    const replay = outcome?.prediction_kind === 'retrospective';
+    const count = outcome?.selected_count || result.model_selected_count;
+    const label = `${letter} · ${name}: ${labels[status]}${count ? ` · Top ${count}` : ''}${replay ? ' · Hồi kiểm sau kết quả' : ''}`;
+    marker.title = label;
+    marker.setAttribute('role', 'img');
+    marker.setAttribute('aria-label', label);
+    const text = document.createElement('strong');
+    text.textContent = letter;
+    text.setAttribute('aria-hidden', 'true');
+    const symbol = document.createElement('small');
+    symbol.textContent = status === 'hit' ? '✓' : status === 'miss' ? '×' : '—';
+    symbol.setAttribute('aria-hidden', 'true');
+    marker.append(text, symbol);
+    if (replay) {
+      const note = document.createElement('sup');
+      note.className = 'result-model-replay';
+      note.textContent = 'HK';
+      note.setAttribute('aria-hidden', 'true');
+      marker.append(note);
+    }
+    group.append(marker);
+  }
+  cell.append(group);
+  return cell;
+}
+
+function renderResults() {
   const body = el('result-history');
   body.replaceChildren();
-
-  results.forEach((result) => {
+  if (!state.resultsRows.length) {
     const row = document.createElement('tr');
-    row.append(cell(result.draw_date), cell(result.special_prize), cell(result.last_two));
+    const message = cell('Chưa có kết quả. Bạn có thể bổ sung dữ liệu ở khu vực bên dưới.');
+    message.colSpan = 5;
+    message.className = 'results-empty';
+    row.append(message);
+    body.append(row);
+  }
+  state.resultsRows.forEach(result => {
+    const row = document.createElement('tr');
+    const dateCell = cell(resultDate(result.draw_date));
+    dateCell.className = 'results-date-cell';
+    const prizeCell = cell(result.special_prize);
+    prizeCell.className = 'results-prize-cell';
+    const numberCell = document.createElement('td');
+    const number = document.createElement('span');
+    number.className = 'results-number';
+    number.textContent = result.last_two ?? '—';
+    numberCell.append(number);
     const statusCell = document.createElement('td');
-    statusCell.append(badge(result.status, result.status === 'conflict' ? 'conflict' : 'observed'));
-    row.append(statusCell);
-    row.append(cell(Object.values(result.sources || {}).map(s => s.name).join(', ') || '—'));
+    const labels = { observed: 'Đã ghi nhận', verified: 'Đã xác minh', conflict: 'Chờ đối chiếu' };
+    const kind = ['verified', 'conflict'].includes(result.status) ? result.status : 'observed';
+    statusCell.append(badge(labels[result.status] || result.status || 'Chưa xác định', kind));
+    row.append(dateCell, prizeCell, numberCell, statusCell, resultModelCell(result));
     body.append(row);
   });
+  const count = state.resultsRows.length;
+  el('results-range').textContent = count
+    ? `Đang hiển thị ${count} ngày · ${resultDate(state.resultsRows[count - 1].draw_date)} – ${resultDate(state.resultsRows[0].draw_date)}${state.resultsHasMore ? '' : ' · Đã hết dữ liệu'}`
+    : 'Chưa có ngày nào được lưu';
+  el('results-more-btn').hidden = !state.resultsHasMore;
+  const selectedCount = state.resultsRows[0]?.model_selected_count;
+  el('results-model-count').textContent = selectedCount ? `Đối chiếu Top ${selectedCount}` : 'Bộ dự đoán tự động';
+}
+
+// One extra row tells us whether another page exists, without a count query.
+async function fetchResultWindow(count, before = null) {
+  const rows = [];
+  let hasMore = false;
+  while (rows.length < count) {
+    const limit = Math.min(count - rows.length + 1, 1000);
+    const batch = await api(`/api/results?limit=${limit}&include_models=true${before ? `&before=${encodeURIComponent(before)}` : ''}`);
+    if (!Array.isArray(batch)) throw new Error('Dữ liệu kết quả không hợp lệ.');
+    const take = Math.min(count - rows.length, limit - 1, batch.length);
+    rows.push(...batch.slice(0, take));
+    hasMore = batch.length > take;
+    if (!hasMore || rows.length >= count) break;
+    before = rows[rows.length - 1].draw_date;
+  }
+  return { rows, hasMore };
+}
+
+async function loadResults({ append = false } = {}) {
+  // Polling, refresh and repeated clicks share the current request.
+  if (state.resultsTask) return state.resultsTask;
+  if (append && !state.resultsHasMore) return;
+  const button = el('results-more-btn');
+  state.resultsTask = (async () => {
+    setBusy(button, true, 'Đang tải…');
+    el('result-history').setAttribute('aria-busy', 'true');
+    try {
+      const count = append ? RESULTS_PAGE_SIZE : Math.max(RESULTS_PAGE_SIZE, state.resultsRows.length);
+      const before = append ? state.resultsRows[state.resultsRows.length - 1]?.draw_date : null;
+      const page = await fetchResultWindow(count, before);
+      state.resultsRows = append ? [...state.resultsRows, ...page.rows] : page.rows;
+      state.resultsHasMore = page.hasMore;
+      renderResults();
+    } catch (error) {
+      el('results-range').textContent = append
+        ? 'Chưa tải được các ngày trước. Bấm Xem thêm để thử lại.'
+        : 'Chưa cập nhật được kết quả. Bấm Làm mới để thử lại.';
+      if (!state.resultsRows.length) {
+        const row = document.createElement('tr');
+        const message = cell('Không tải được kết quả. Vui lòng kiểm tra kết nối và thử lại.');
+        message.colSpan = 5;
+        message.className = 'results-empty';
+        row.append(message);
+        el('result-history').replaceChildren(row);
+      }
+      throw error;
+    } finally {
+      state.resultsTask = null;
+      setBusy(button, false);
+      el('result-history').setAttribute('aria-busy', 'false');
+    }
+  })();
+  return state.resultsTask;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1954,8 +1910,22 @@ async function handlePolledResult(result, today) {
   await refreshDashboard();
 }
 
+function updatePageStatus(page = state.currentPage) {
+  const updated = state.pageUpdatedAt.get(page);
+  el('page-update-status').textContent = updated
+    ? `Cập nhật lúc ${updated.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
+    : 'Chưa tải dữ liệu';
+}
+
 async function refreshDashboard() {
   const page = state.currentPage;
+  const version = ++state.refreshVersion;
+  el('page-progress').hidden = false;
+  el('page-update-status').textContent = 'Đang cập nhật dữ liệu…';
+  el('page-feedback').hidden = true;
+  el('main-content').setAttribute('aria-busy', 'true');
+  setBusy(el('refresh-page-btn'), true, 'Đang tải…');
+  setBusy(el('retry-page-btn'), true, 'Đang tải…');
   const loaders = {
     overview: [loadMetrics, loadLatestResult],
     results: [loadResults],
@@ -1966,24 +1936,50 @@ async function refreshDashboard() {
       loadCatBoostComparison, loadCatBoostRecentNumbers],
     backtest: [loadBacktests, loadDigitBacktests],
   };
-  await Promise.allSettled((loaders[page] || loaders.overview).map(load => load()));
+  try {
+    const results = await Promise.allSettled((loaders[page] || loaders.overview).map(load => load()));
+    if (version !== state.refreshVersion || page !== state.currentPage) return;
+    const failed = results.filter(result => result.status === 'rejected');
+    if (failed.length) {
+      el('page-feedback-message').textContent = failed.length === results.length
+        ? 'Chưa tải được dữ liệu. Kiểm tra kết nối rồi thử lại; dữ liệu đã hiển thị được giữ nguyên.'
+        : 'Một phần dữ liệu chưa cập nhật được. Bạn có thể tiếp tục xem hoặc thử tải lại.';
+      el('page-feedback').hidden = false;
+      el('page-update-status').textContent = 'Cập nhật chưa hoàn tất';
+    } else {
+      state.pageUpdatedAt.set(page, new Date());
+      updatePageStatus(page);
+    }
 
-  // Luôn tô màu các số vừa ra; công tắc chỉ quyết định có loại chúng khỏi dãy
-  // được chọn hay không. Số ở kỳ mới nhất nhận ngôi sao duy nhất trên bảng.
-  if (page === 'one-digit') renderCatBoostPrediction(state.latestCatBoostPrediction);
+    // Luôn tô màu các số vừa ra; công tắc chỉ quyết định có loại chúng khỏi dãy
+    // được chọn hay không. Số ở kỳ mới nhất nhận ngôi sao duy nhất trên bảng.
+    if (page === 'one-digit') renderCatBoostPrediction(state.latestCatBoostPrediction);
 
-  // Khi dữ liệu kết quả vừa được đồng bộ, cập nhật lại ngay tập loại trừ
-  // đang bật để bảng hiển thị và chuỗi sao chép không dùng danh sách cũ.
-  if (page === 'two-digit' && state.excludeRecentEnabled) {
-    await loadRecentNumbers(state.excludeRecentDays);
-    updateExcludeRecentChips();
-    renderNumberGrid(state.latestPrediction);
-    updateSelectedExport(state.latestPrediction);
-  }
-  if (page === 'fortune-two-digit' && state.fortuneExcludeRecentEnabled) {
-    await loadFortuneRecentNumbers(state.fortuneExcludeRecentDays);
-    updateFortuneExcludeRecentChips();
-    renderFortunePrediction(state.latestLogisticPrediction);
+    // Khi dữ liệu kết quả vừa được đồng bộ, cập nhật lại ngay tập loại trừ
+    // đang bật để bảng hiển thị và chuỗi sao chép không dùng danh sách cũ.
+    if (page === 'two-digit' && state.excludeRecentEnabled) {
+      await loadRecentNumbers(state.excludeRecentDays);
+      updateExcludeRecentChips();
+      renderNumberGrid(state.latestPrediction);
+      updateSelectedExport(state.latestPrediction);
+    }
+    if (page === 'fortune-two-digit' && state.fortuneExcludeRecentEnabled) {
+      await loadFortuneRecentNumbers(state.fortuneExcludeRecentDays);
+      updateFortuneExcludeRecentChips();
+      renderFortunePrediction(state.latestLogisticPrediction);
+    }
+  } catch (error) {
+    if (version !== state.refreshVersion || page !== state.currentPage) return;
+    el('page-feedback-message').textContent = `Chưa cập nhật được bộ lọc: ${error.message}`;
+    el('page-feedback').hidden = false;
+    el('page-update-status').textContent = 'Cập nhật chưa hoàn tất';
+  } finally {
+    if (version === state.refreshVersion && page === state.currentPage) {
+      el('page-progress').hidden = true;
+      el('main-content').setAttribute('aria-busy', 'false');
+      setBusy(el('refresh-page-btn'), false);
+      setBusy(el('retry-page-btn'), false);
+    }
   }
 }
 
@@ -2127,10 +2123,26 @@ async function loadFortuneRecentNumbers(days) {
 // TAB SYSTEM
 // ═══════════════════════════════════════════════════════════
 function initTabs() {
-  document.querySelectorAll('.tab-btn').forEach((btn) => {
+  const tabs = [...document.querySelectorAll('.tab-btn')];
+  tabs.forEach((btn, index) => {
+    btn.setAttribute('aria-selected', String(btn.classList.contains('active')));
+    btn.tabIndex = btn.classList.contains('active') ? 0 : -1;
+    btn.setAttribute('aria-controls', btn.dataset.tab === 'excluded' ? 'excluded-panel' : 'number-grid');
+    btn.addEventListener('keydown', event => {
+      const next = { ArrowRight: (index + 1) % tabs.length, ArrowLeft: (index + tabs.length - 1) % tabs.length,
+        Home: 0, End: tabs.length - 1 }[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      tabs[next].focus();
+      tabs[next].click();
+    });
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      tabs.forEach(tab => {
+        const active = tab === btn;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
       state.currentTab = btn.dataset.tab;
       // Toolbar only useful for all/selected
       el('grid-toolbar').style.display = state.currentTab === 'excluded' ? 'none' : '';
@@ -2160,7 +2172,13 @@ function initSortButtons() {
 // ═══════════════════════════════════════════════════════════
 el('automation-open-btn').addEventListener('click', openAutomationDialog);
 el('scheduler-pill').addEventListener('click', openAutomationDialog);
-el('automation-close-btn').addEventListener('click', () => el('automation-dialog').close());
+el('automation-close-btn').addEventListener('click', () => window.DashboardUI.closeDialog(el('automation-dialog')));
+el('refresh-page-btn').addEventListener('click', () => refreshDashboard());
+el('retry-page-btn').addEventListener('click', () => refreshDashboard());
+el('results-more-btn').addEventListener('click', () => {
+  // The inline status contains the error and the same button can retry.
+  loadResults({ append: true }).catch(() => {});
+});
 el('replay-form').addEventListener('submit', event => {
   event.preventDefault();
   const payload = { prediction_date: el('replay-date').value, selected_count: Number(el('replay-count').value) };
@@ -2295,14 +2313,8 @@ el('digit-backtest-form').addEventListener('submit', (event) => {
 });
 
 el('detail-modal-close').addEventListener('click', closePredictionDetail);
-el('prediction-detail-modal').addEventListener('click', (event) => {
-  if (event.target === event.currentTarget) closePredictionDetail();
-});
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && !el('prediction-detail-modal').hidden) {
-    closePredictionDetail();
-  }
-});
+el('prediction-detail-modal').addEventListener('close', () => { state.detailRequest += 1; });
+el('detail-retry-btn').addEventListener('click', () => openPredictionDetail(state.detailId));
 
 // ═══════════════════════════════════════════════════════════
 // SMART AUTO-REFRESH — Tự động cập nhật sau khi có kết quả XSMB
@@ -2342,10 +2354,5 @@ async function startSmartAutoRefresh() {
   startCountdown();
   startSmartAutoRefresh(); // Kiểm tra kết quả mỗi 10 giây từ 18:30
 
-  try {
-    await loadHealth();
-    await refreshDashboard();
-  } catch (error) {
-    toast(error.message, 'error');
-  }
+  await Promise.allSettled([loadHealth(), refreshDashboard()]);
 })();

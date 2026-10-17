@@ -29,6 +29,9 @@ dev = [
 # CatBoost imports these only for plots/widgets; prediction uses numeric arrays.
 exclude-dependencies = ["matplotlib", "plotly"]
 
+[tool.vercel]
+entrypoint = "index:app"
+
 [project.scripts]
 xsmb-lab = "app.cli:main"
 

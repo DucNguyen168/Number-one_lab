@@ -8,12 +8,12 @@
     agree.checked = false;
     continueButton.disabled = true;
     document.body.classList.add('usage-rules-open');
-    if (!dialog.open) dialog.showModal();
+    window.DashboardUI.openDialog(dialog);
     // Start at the heading so long notices can be read from the beginning.
     const heading = document.getElementById('usage-rules-title');
     heading.tabIndex = -1;
     heading.focus({ preventScroll: true });
-    dialog.scrollTop = 0;
+    dialog.querySelector('.usage-rules-content').scrollTop = 0;
   }
 
   agree.addEventListener('change', () => {
@@ -23,9 +23,11 @@
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!agree.checked) return;
-    dialog.close();
+    window.DashboardUI.closeDialog(dialog);
+  });
+  dialog.addEventListener('close', () => {
     document.body.classList.remove('usage-rules-open');
-    document.querySelector('.app-brand')?.focus({ preventScroll: true });
+    document.getElementById('page-title')?.focus({ preventScroll: true });
   });
   // A restored page is also a new visit; never persist acceptance in storage.
   window.addEventListener('pageshow', (event) => {

@@ -1,10 +1,26 @@
 import json
 import re
+import tomllib
 from pathlib import Path
 
 
 
 STATIC_DIR = Path(__file__).parents[1] / "app" / "static"
+
+
+def test_vercel_framework_entrypoint_and_function_config_agree():
+    root = STATIC_DIR.parents[1]
+    config = json.loads((root / "vercel.json").read_text(encoding="utf-8"))
+    project = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
+    module, variable = project["tool"]["vercel"]["entrypoint"].split(":")
+    filename = module.replace(".", "/") + ".py"
+    assert config["framework"] == "fastapi"
+    assert set(config["functions"]) == {filename}
+    assert (root / filename).is_file()
+    assert "routes" not in config
+    import importlib
+    from app.main import app
+    assert getattr(importlib.import_module(module), variable) is app
 
 
 def _visible_html(html: str) -> str:
@@ -44,6 +60,7 @@ def test_feature_pages_have_matching_links_views_and_server_routes() -> None:
         "/",
         "/ket-qua",
         "/du-doan-2-so",
+        "/du-doan-n-1",
         "/du-doan-than-tai",
         "/du-doan-catboost-2-so",
         "/backtest",
@@ -56,11 +73,12 @@ def test_app_shell_has_button_navigation_and_versioned_assets() -> None:
     visible_html = _visible_html(html)
 
     assert 'class="app-brand"' in html
-    assert visible_html.count('class="nav-icon"') == 5
+    assert len(re.findall(r'class="nav-icon(?:\s[^\"]*)?"', visible_html)) == 5
     assert visible_html.count('class="nav-label"') == 5
     assert '/static/styles.css?v=' in html
     assert '/static/app.js?v=' in html
-    assert visible_html.count('class="nav-logo') == 5
+    assert visible_html.count('class="nav-logo') == 4
+    assert 'class="nav-icon n1-nav-icon"' in visible_html
 
 
 def test_two_digit_form_always_uses_automatic_prediction_date() -> None:

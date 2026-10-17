@@ -3,8 +3,6 @@
    Dark / Light mode với CSS custom properties
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
 /* Automation diagnostics */
 .automation-dialog {
   width: min(560px, calc(100% - 32px));

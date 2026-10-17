@@ -17,7 +17,7 @@ Bản cấu hình ngày 16/10/2026. Các sửa đổi nằm trong workspace; c�
 
 1. Commit/push bản sửa lên nhánh `main` của `DucNguyen5668/number_two`.
 2. Vercel → Add New → Project → Import repo đó.
-3. Với cấu trúc `/api/index.py` và `vercel.json` hiện tại, dùng **Framework Preset: Other**, Root Directory là gốc repo. Không dùng lệnh khởi động Botkeep `run_host.py`, không khai báo Output Directory thành `app/static`.
+3. Dùng **Framework Preset: FastAPI**, Root Directory là gốc repo (`./`). `vercel.json` đặt `framework: fastapi`, `pyproject.toml` đặt entrypoint `index:app`, và cấu hình Function trỏ tới `index.py`. Không nhập lệnh chạy server local hoặc khai báo Output Directory thành `app/static`. Tắt Override ở Build Command, Output Directory và Install Command.
 4. Không nhập một Build Command tùy ý; để runtime Python cài dependency theo cấu hình repo. Giữ các thiết lập Fluid Compute/Large Functions trong `vercel.json`.
 5. Nhập Environment từ [`deploy/vercel.env.example`](../deploy/vercel.env.example). URI lấy từ project đang dùng; database giữ nguyên để có lịch sử và snapshot cũ. Không đưa URI vào GitHub. Không cần PORT; Vercel quản lý cổng.
 6. Deploy Production. Nếu lỗi bundle lớn, xem log và kiểm tra dự án được bật Large Functions theo [tài liệu Python](https://vercel.com/docs/functions/runtimes/python); cấu hình beta không đảm bảo mọi tài khoản được cấp tính năng. Không bỏ CatBoost chỉ để build qua mà không đánh giá ảnh hưởng.
@@ -26,6 +26,8 @@ Bản cấu hình ngày 16/10/2026. Các sửa đổi nằm trong workspace; c�
 9. Trong ngày đầu, kiểm tra Logs cho `/api/auto-daily`, thời gian chạy và trạng thái hoàn tất; Usage → Active CPU để theo dõi. HTTP 500/502 cần xem lỗi; không mở vòng retry liên tục. CPU vẫn có thể vượt hạn mức nếu chạy nhiều backtest, hồi kiểm hoặc traffic lớn.
 
 ## Lịch và tốc độ cập nhật
+
+Nếu gặp `[unused_function] The pattern "api/index.py" ... doesn't match any Serverless Functions`, deployment đang dùng cấu hình cũ không khớp framework entrypoint. Push bản sửa gồm `index.py`, `api/index.py`, `vercel.json`, `pyproject.toml`; đổi preset trong Project Settings sang FastAPI và deploy commit mới. Không chỉ redeploy commit cũ. Bản sửa bỏ catch-all route tới `api/index.py` vì FastAPI preset tự định tuyến ứng dụng. [Entrypoint chính thức](https://vercel.com/docs/frameworks/backend/fastapi#exporting-the-fastapi-application).
 
 | Cron UTC | Giờ Việt Nam cấu hình | Mục đích |
 |---|---|---|

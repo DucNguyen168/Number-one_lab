@@ -2,15 +2,23 @@
 <html lang="vi" data-theme="light">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f5f7fb" />
     <meta name="description" content="Công cụ phân tích dữ liệu lịch sử và tạo dự đoán XSMB — backtest nghiêm ngặt, không rò rỉ tương lai." />
     <title>XSMB Research Lab</title>
-    <link rel="stylesheet" href="/static/styles.css?v=20261014-2" />
+    <link rel="stylesheet" href="/static/styles.css?v=20261016-2" />
+    <link rel="stylesheet" href="/static/workspace.css?v=20261016-4" />
+    <link rel="stylesheet" href="/static/results.css?v=20261017-1" />
+    <link rel="stylesheet" href="/static/n1.css?v=20261017-5" />
+    <script src="/static/theme.js?v=20261016-2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400&amp;display=swap" />
   </head>
   <body data-current-page="overview">
+    <a class="skip-link" href="#main-content">Đến nội dung chính</a>
+    <div id="page-progress" class="page-progress" hidden aria-hidden="true"></div>
+    <div id="page-announcement" class="sr-only" role="status" aria-live="polite"></div>
     <dialog id="usage-rules" class="usage-rules" aria-labelledby="usage-rules-title" aria-describedby="usage-rules-description">
       <div class="usage-rules-topline"><span>XSMB RESEARCH LAB</span><span>THÔNG BÁO QUAN TRỌNG</span></div>
       <div class="usage-rules-content">
@@ -19,7 +27,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 4 6v6c0 4 8 9 8 9s8-5 8-9V6l-8-3Z"/><path d="M12 8v5m0 3v1"/></svg>
           </span>
           <p class="usage-rules-eyebrow">VUI LÒNG ĐỌC TRƯỚC KHI TIẾP TỤC</p>
-          <h1 id="usage-rules-title">Luật cứng cần tuân thủ</h1>
+          <h2 id="usage-rules-title">Luật cứng cần tuân thủ</h2>
           <p id="usage-rules-description">Kỷ luật trước quyết định. Bảo vệ vốn trước lợi nhuận. Đọc kỹ và cam kết thực hiện các nguyên tắc dưới đây.</p>
         </header>
         <section id="usage-rules-list" class="usage-rules-list" aria-label="Nội dung quy định">
@@ -74,10 +82,10 @@
         <p class="usage-rules-note">Thông báo hiển thị mỗi lần truy cập website.</p>
       </form>
     </dialog>
-    <dialog id="automation-dialog" class="automation-dialog" aria-labelledby="automation-title">
+    <dialog id="automation-dialog" class="automation-dialog" aria-labelledby="automation-title" data-dismissible="true">
       <div class="automation-dialog-heading">
         <h2 id="automation-title">Tự động và bổ sung lịch sử</h2>
-        <button id="automation-close-btn" type="button" aria-label="Đóng bảng tự động">Đóng</button>
+        <button id="automation-close-btn" class="modal-close" type="button" aria-label="Đóng bảng tự động" autofocus>×</button>
       </div>
       <p id="automation-message" class="automation-message" role="status" aria-live="polite"></p>
       <hr />
@@ -107,13 +115,13 @@
 
       <!-- ═══════════════ APP HEADER ═══════════════ -->
       <header class="hero">
-        <a class="app-brand" href="/" aria-label="Về trang tổng quan">
+        <a class="app-brand" href="/" data-route="overview" aria-label="Về trang tổng quan">
           <span class="app-brand-mark">
             <img src="/img/backgroud.jpg" alt="XSMB Lab logo" class="brand-logo-img" />
           </span>
           <span class="app-brand-copy">
             <strong>XSMB Lab</strong>
-            <small>Personal Data Research</small>
+            <small>Không gian nghiên cứu dữ liệu</small>
           </span>
         </a>
 
@@ -124,8 +132,8 @@
           <a href="/ket-qua" data-page-link="results">
             <span class="nav-icon"><img class="nav-logo" src="/img/chip.png" alt="" /></span><span class="nav-label">Kết quả</span>
           </a>
-          <a href="/du-doan-2-so" data-page-link="two-digit">
-            <span class="nav-icon"><img class="nav-logo nav-logo-art" src="/img/casino-chip.png" alt="" /></span><span class="nav-label">Dự đoán 2 số</span>
+          <a href="/du-doan-n-1" data-page-link="two-digit">
+            <span class="nav-icon"><img class="nav-logo" src="/img/win.png" alt="" /></span><span class="nav-label"></span>Dự đoán N-1</span>
           </a>
           <a href="/du-doan-than-tai" data-page-link="fortune-two-digit">
             <span class="nav-icon"><img class="nav-logo" src="/img/travel.png" alt="" /></span><span class="nav-label">Thần Tài</span>
@@ -142,30 +150,38 @@
 
         <div class="hero-right">
           <div class="status-stack">
-            <span id="health-pill" class="pill neutral">Đang kết nối…</span>
+            <span id="health-pill" class="pill neutral" role="status">Đang kết nối…</span>
             <button id="scheduler-pill" type="button" class="pill subtle">Tự động</button>
           </div>
-          <button id="automation-open-btn" class="pill neutral" type="button">Tự động</button>
-          <!-- Sky Toggle: kéo cloud che sun = dark, che moon = light -->
+          <button id="automation-open-btn" class="pill neutral" type="button" aria-haspopup="dialog" aria-controls="automation-dialog"><span aria-hidden="true">⚙</span> Tự động</button>
+          <!-- Native button supports click, Enter and Space. -->
           <div class="sky-toggle-wrap">
-            <div class="sky-toggle" id="sky-toggle" role="button" tabindex="0" aria-label="Chuyển giao diện sáng/tối" title="Kéo mây để chuyển sáng/tối">
+            <button class="sky-toggle" id="sky-toggle" type="button" aria-label="Chuyển giao diện sáng/tối" aria-pressed="false" title="Chuyển giao diện sáng/tối">
               <img class="sky-moon" src="/img/moon.png" alt="Mặt trăng" />
               <img class="sky-sun"  src="/img/sun.png"  alt="Mặt trời" />
               <img class="sky-cloud" id="sky-cloud" src="/img/cloud.png" alt="Mây" />
-            </div>
+            </button>
             <div class="sky-arrow" id="sky-arrow" aria-hidden="true"></div>
           </div>
         </div>
       </header>
 
-      <main>
+      <main id="main-content" tabindex="-1">
 
         <div class="page-heading-bar">
           <div>
             <p id="page-eyebrow" class="eyebrow">OVERVIEW</p>
-            <h2 id="page-title">Tổng quan hệ thống</h2>
+            <h1 id="page-title" tabindex="-1">Tổng quan hệ thống</h1>
             <p id="page-description">Theo dõi trạng thái dữ liệu, dự đoán và kết quả mới nhất.</p>
           </div>
+          <div class="page-heading-actions">
+            <span id="page-update-status" class="update-status" role="status">Đang chuẩn bị dữ liệu</span>
+            <button id="refresh-page-btn" class="button secondary refresh-button" type="button"><span aria-hidden="true">↻</span> Làm mới</button>
+          </div>
+        </div>
+        <div id="page-feedback" class="page-feedback" role="status" hidden>
+          <span id="page-feedback-message"></span>
+          <button id="retry-page-btn" class="button secondary" type="button">Thử lại</button>
         </div>
 
         <aside class="page-sticker sticker-overview page-view" data-page-view="overview" aria-hidden="true"><img src="/img/star.png" alt="" /></aside>
@@ -208,11 +224,54 @@
           </article>
         </section>
 
+        <section class="workspace-shortcuts page-view" data-page-view="overview" aria-labelledby="workspace-shortcuts-title">
+          <div class="workspace-section-title"><div><p class="eyebrow">KHÔNG GIAN PHÂN TÍCH</p><h2 id="workspace-shortcuts-title">Chọn mô hình nghiên cứu</h2></div><span>3 mô hình · cùng một nguồn dữ liệu</span></div>
+          <div class="model-shortcuts">
+            <a href="/du-doan-n-1" data-route="two-digit" class="model-shortcut">
+              <span class="model-monogram" aria-hidden="true">A</span><span><strong>Dự đoán N-1</strong><small>Mô hình tần suất · Top 60–80</small></span><span class="shortcut-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a href="/du-doan-than-tai" data-route="fortune-two-digit" class="model-shortcut model-shortcut-gold">
+              <span class="model-monogram" aria-hidden="true">B</span><span><strong>Thần Tài · Logistic</strong><small>Đối chiếu độc lập với mô hình A</small></span><span class="shortcut-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a href="/du-doan-catboost-2-so" data-route="one-digit" class="model-shortcut model-shortcut-teal">
+              <span class="model-monogram" aria-hidden="true">C</span><span><strong>CatBoost</strong><small>Kiểm chứng chéo cả ba mô hình</small></span><span class="shortcut-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+
         <!-- ═══════════════ DATA CONTROL ═══════════════ -->
-        <section class="panel control-panel page-view" data-page-view="results">
+        <section class="panel results-archive page-view" data-page-view="results" aria-labelledby="results-archive-title">
+          <div class="section-heading results-archive-heading">
+            <div>
+              <p class="eyebrow">SỔ LƯU TRỮ · XSMB</p>
+              <h2 id="results-archive-title">Kết quả kỳ quay</h2>
+              <p class="results-archive-description">Theo dõi từng kỳ quay, đối chiếu từng con số.</p>
+            </div>
+            <span class="results-order-label">Mới nhất → Cũ hơn</span>
+          </div>
+          <div class="table-wrap results-table-frame">
+            <table class="results-table">
+              <caption class="sr-only">Kết quả XSMB theo ngày, sắp xếp từ mới nhất. Dùng nút Xem thêm để tải các ngày trước.</caption>
+              <thead><tr><th scope="col">Ngày quay</th><th scope="col">Giải đặc biệt</th><th scope="col">Hai số cuối</th><th scope="col">Trạng thái</th><th scope="col">Mô hình A · B · C</th></tr></thead>
+              <tbody id="result-history"><tr><td colspan="5" class="results-empty">Đang tải kết quả…</td></tr></tbody>
+            </table>
+          </div>
+          <div class="results-model-legend" aria-label="Chú thích mô hình">
+            <span><strong>A</strong> = Dự đoán N-1</span><span><strong>B</strong> = Thần Tài</span><span><strong>C</strong> = CatBoost</span>
+            <span id="results-model-count">Bộ dự đoán tự động</span>
+          </div>
+          <div class="results-model-key"><span class="model-hit">✓ Đúng</span><span class="model-miss">× Sai</span><span>— Chưa đánh giá / cần đối chiếu</span><span>HK: hồi kiểm</span></div>
+          <div class="results-archive-footer">
+            <p id="results-range" class="results-range" role="status" aria-live="polite">Hiển thị 6 ngày gần nhất</p>
+            <button id="results-more-btn" class="button results-more-button" type="button" aria-controls="result-history" hidden>Xem thêm 6 ngày <span aria-hidden="true">↓</span></button>
+          </div>
+        </section>
+
+        <div class="results-workspace page-view" data-page-view="results">
+        <section class="panel control-panel results-sync-panel">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">DATA PIPELINE</p>
+              <p class="eyebrow">QUẢN LÝ BỘ SƯU TẬP DỮ LIỆU</p>
               <h2>Đồng bộ và đối chiếu kết quả</h2>
             </div>
             <p id="action-status" class="action-status">Sẵn sàng</p>
@@ -220,28 +279,61 @@
 
           <div class="control-group standalone-control">
             <h3>Dữ liệu kết quả</h3>
-            <p>Backfill nhanh chỉ tải năm còn thiếu và luôn cập nhật năm hiện tại. Các nguồn được tải song song, dữ liệu MongoDB được ghi theo lô rồi tự đánh giá prediction pending.</p>
+            <p>Bổ sung các năm còn thiếu, cập nhật kỳ quay mới và đối chiếu dự đoán đang chờ với kết quả thực tế.</p>
             <div class="button-row">
-              <button id="backfill-btn" class="button secondary">⬇ Bổ sung dữ liệu 2019–nay</button>
-              <button id="sync-btn" class="button primary">🔄 Đồng bộ năm hiện tại</button>
-              <button id="evaluate-btn" class="button ghost">✓ Đối chiếu pending</button>
+              <button id="sync-btn" class="button primary">Đồng bộ năm hiện tại <span aria-hidden="true">↻</span></button>
+              <button id="backfill-btn" class="button secondary">Bổ sung dữ liệu 2019–nay</button>
+              <button id="evaluate-btn" class="button ghost">Đối chiếu dự đoán đang chờ</button>
             </div>
           </div>
         </section>
-
-        <!-- ═══════════════ TWO-DIGIT CONTROL ═══════════════ -->
-        <section class="panel control-panel page-view" data-page-view="two-digit">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">TWO DIGITS · 00–99</p>
-              <h2>Tạo dự đoán hai số cuối</h2>
+        <figure class="results-gallery" aria-labelledby="results-gallery-caption">
+          <div class="gallery-picture-light" aria-hidden="true"></div>
+          <div class="gallery-frame">
+            <div class="gallery-mat">
+              <img class="gallery-artwork" src="/img/backgroud.jpg" width="1024" height="676" loading="lazy" decoding="async" alt="Tranh minh họa nhiều màu: xe hơi xanh, sách, tượng, vàng và các bức tranh xếp thành một bộ sưu tập." />
             </div>
           </div>
-          <form id="prediction-form" class="control-group standalone-control">
-            <p>Ngày dự đoán được chọn tự động: dùng hôm nay, hoặc ngày mai nếu kết quả hôm nay đã có. Snapshot được khóa và không thể sửa.</p>
+          <figcaption id="results-gallery-caption" class="gallery-placard">
+            <span class="gallery-exhibit-number" aria-hidden="true">01</span>
+            <div><span class="gallery-collection">GÓC TRƯNG BÀY</span><strong>HikingArtist</strong><span class="gallery-medium">Tranh minh họa</span></div>
+          </figcaption>
+        </figure>
+        </div>
+
+        <!-- ═══════════════ TWO-DIGIT CONTROL ═══════════════ -->
+        <section class="n1-hero page-view" data-page-view="two-digit" aria-labelledby="n1-hero-title">
+          <figure class="n1-hero-artwork">
+            <img class="n1-hero-art" src="/img/only-change-is-real-hikingartist.jpg" alt="Tranh minh họa những cột đồng xu giữa sóng biển của HikingArtist" width="1410" height="1083" decoding="async" loading="lazy" />
+            <figcaption>Only change is real <span>· HikingArtist</span></figcaption>
+          </figure>
+          <div class="n1-hero-copy">
+            <p class="n1-kicker">N-1 TERMINAL / MÔ HÌNH A</p>
+            <h2 id="n1-hero-title">Đọc dữ liệu.<br /><span>Giữ kỷ luật.</span></h2>
+            <p>Bảng phân tích 100 số theo mô hình tần suất. Xếp hạng từ lịch sử, khóa lựa chọn trước kỳ quay và theo dõi kết quả từng ngày.</p>
+            <div class="n1-hero-tags"><span>00–99</span><span>TOP 60–80</span><span>SNAPSHOT ĐÃ KHÓA</span></div>
+          </div>
+        </section>
+
+        <section class="panel control-panel n1-controls page-view" data-page-view="two-digit">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">01 / THIẾT LẬP PHIÊN</p>
+              <h2>Tạo dự đoán N-1</h2>
+            </div>
+            <span class="n1-section-code">MODEL A</span>
+          </div>
+          <div class="n1-control-layout">
+          <div class="n1-process" aria-label="Quy trình dự đoán">
+            <div><b>01</b><span><strong>Đọc lịch sử</strong><small>Phân tích tần suất qua nhiều cửa sổ dữ liệu.</small></span></div>
+            <div><b>02</b><span><strong>Xếp hạng 00–99</strong><small>Chọn số lượng Top phù hợp để theo dõi.</small></span></div>
+            <div><b>03</b><span><strong>Khóa và đối chiếu</strong><small>Giữ nguyên dự đoán, đánh giá sau kỳ quay.</small></span></div>
+          </div>
+          <form id="prediction-form" class="control-group standalone-control n1-order-form">
+            <p class="n1-form-caption">CẤU HÌNH DỰ ĐOÁN</p>
             <div class="field-row">
               <label>
-                Số lượng
+                Số lượng được chọn
                 <select id="selected-count">
                   <option value="60">60 số</option>
                   <option value="65" selected>65 số</option>
@@ -251,8 +343,10 @@
                 </select>
               </label>
             </div>
-            <button class="button violet" type="submit">🔒 Tạo và khóa dự đoán</button>
+            <button class="button violet" type="submit">Tạo và khóa N-1 <span aria-hidden="true">↗</span></button>
+            <p class="n1-form-note">Ngày dự đoán được chọn tự động: hôm nay hoặc ngày mai nếu đã có kết quả. Dự đoán được khóa sau khi tạo.</p>
           </form>
+          </div>
         </section>
 
         <!-- ═══════════════ LATEST RESULT ═══════════════ -->
@@ -270,7 +364,7 @@
         <section class="panel prediction-panel page-view" data-page-view="two-digit">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">LOCKED SNAPSHOT</p>
+              <p class="eyebrow">SNAPSHOT ĐÃ KHÓA</p>
               <h2>Dự đoán gần nhất</h2>
             </div>
             <div id="prediction-meta" class="meta-cluster"></div>
@@ -279,13 +373,13 @@
           <!-- Tab bar -->
           <div class="tab-bar" role="tablist">
             <button class="tab-btn active" id="tab-all" role="tab" data-tab="all">
-              📊 Tất cả 100 số
+              Tất cả 100 số
             </button>
             <button class="tab-btn" id="tab-selected" role="tab" data-tab="selected">
-              ✅ Được chọn (<span id="tab-selected-count">—</span>)
+              Được chọn (<span id="tab-selected-count">—</span>)
             </button>
             <button class="tab-btn" id="tab-excluded" role="tab" data-tab="excluded">
-              ❌ Bị loại + Lý do (<span id="tab-excluded-count">—</span>)
+              Bị loại (<span id="tab-excluded-count">—</span>)
             </button>
           </div>
 
@@ -293,15 +387,15 @@
           <div class="grid-toolbar" id="grid-toolbar">
             <div class="sort-group">
               <span class="sort-label">Sắp xếp:</span>
-              <button class="sort-btn active" data-sort="rank">Theo rank</button>
+              <button class="sort-btn active" data-sort="rank">Thứ hạng</button>
               <button class="sort-btn" data-sort="number">Theo số</button>
-              <button class="sort-btn" data-sort="days">Theo ngày gan</button>
+              <button class="sort-btn" data-sort="days" aria-describedby="sort-days-help" title="Sắp xếp theo số ngày từ lần xuất hiện gần nhất, lâu nhất lên trước">Lâu chưa xuất hiện</button>
             </div>
             <div class="exclude-recent-group">
               <label class="exclude-toggle-label" for="exclude-recent-toggle">
                 <input type="checkbox" id="exclude-recent-toggle" />
                 <span class="exclude-toggle-track"></span>
-                <span class="exclude-toggle-text">🚫 Loại số trúng ngày gần nhất</span>
+                <span class="exclude-toggle-text">Loại số trúng gần nhất</span>
               </label>
               <div id="exclude-recent-days-wrap" style="display:none">
                 <select id="exclude-recent-days" class="exclude-days-select" aria-label="Số ngày loại trừ">
@@ -316,6 +410,8 @@
             </div>
             <div class="cutoff-info" id="cutoff-info"></div>
           </div>
+
+          <p id="sort-days-help" class="n1-sort-help">“Lâu chưa xuất hiện”: số ngày từ lần gần nhất có mặt ở 2 số cuối giải đặc biệt đến ngày dự đoán; số lâu nhất lên trước.</p>
 
           <!-- Export bar -->
           <div class="export-bar" id="export-bar" style="display:none;">
@@ -339,7 +435,7 @@
             </div>
             <button id="copy-selected-btn" class="button copy-btn copy-btn-red" type="button" aria-label="Copy dãy số vào clipboard">
               <span class="copy-btn-icon">⧉</span>
-              Copy
+              Sao chép
             </button>
           </div>
 
@@ -358,6 +454,7 @@
             <span><i class="legend-dot recent"></i>Vừa ra trong 3 ngày qua</span>
             <span id="legend-excluded-recent" style="display:none"><i class="legend-dot excluded-recent"></i>Bị loại (trúng gần nhất)</span>
           </div>
+          <p class="n1-board-note">Màu thể hiện trạng thái lựa chọn và kết quả. Thứ hạng mô hình không bảo đảm kết quả kỳ tiếp theo.</p>
         </section>
 
         <!-- ═══════════════ FACTORIZED LOGISTIC / THẦN TÀI ═══════════════ -->
@@ -672,8 +769,8 @@
         <section class="panel page-view" data-page-view="two-digit">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">DAILY AUDIT</p>
-              <h2>Lịch sử dự đoán</h2>
+              <p class="eyebrow">03 / NHẬT KÝ ĐỐI CHIẾU</p>
+              <h2>Lịch sử dự đoán N-1</h2>
             </div>
           </div>
           <div class="table-wrap">
@@ -776,44 +873,20 @@
           </div>
         </section>
 
-        <!-- ═══════════════ DRAW RESULTS TABLE ═══════════════ -->
-        <section class="panel page-view" data-page-view="results">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">MONGODB · draw_results</p>
-              <h2>Kết quả kỳ quay gần đây</h2>
-            </div>
-            <span class="inline-note">DB: <code>xsmb_research</code></span>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Ngày</th>
-                  <th>Giải đặc biệt</th>
-                  <th>Hai số cuối</th>
-                  <th>Trạng thái</th>
-                  <th>Nguồn</th>
-                </tr>
-              </thead>
-              <tbody id="result-history"></tbody>
-            </table>
-          </div>
-        </section>
-
       </main>
 
-      <div id="prediction-detail-modal" class="modal-backdrop" hidden>
-        <section class="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-modal-title">
+      <dialog id="prediction-detail-modal" class="detail-dialog" aria-labelledby="detail-modal-title" data-dismissible="true">
+        <section class="detail-modal">
           <header class="detail-modal-header">
             <div>
               <p class="eyebrow">IMMUTABLE SNAPSHOT</p>
               <h2 id="detail-modal-title">Chi tiết dự đoán</h2>
             </div>
-            <button id="detail-modal-close" class="modal-close" type="button" aria-label="Đóng chi tiết">×</button>
+            <button id="detail-modal-close" class="modal-close" type="button" aria-label="Đóng chi tiết" autofocus>×</button>
           </header>
 
-          <div id="prediction-detail-loading" class="empty-state">Đang tải prediction…</div>
+          <div id="prediction-detail-loading" class="empty-state" role="status">Đang tải chi tiết dự đoán…</div>
+          <button id="detail-retry-btn" class="button secondary" type="button" hidden>Thử tải lại</button>
           <div id="prediction-detail-content" hidden>
             <div id="prediction-detail-summary" class="detail-summary-grid"></div>
 
@@ -852,7 +925,7 @@
             </div>
           </div>
         </section>
-      </div>
+      </dialog>
 
       <footer>
         <span>XSMB Research Lab · Kết quả phân tích cần được kiểm chứng độc lập. Không cam kết lợi nhuận.</span>
@@ -861,8 +934,9 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="/static/usage-rules.js?v=20260928-1" defer></script>
+    <script src="/static/ui.js?v=20261016-2" defer></script>
+    <script src="/static/usage-rules.js?v=20261016-2" defer></script>
     <script src="/static/result-refresh.js?v=20261012-1" defer></script>
-    <script src="/static/app.js?v=20261016-1" defer></script>
+    <script src="/static/app.js?v=20261017-3" defer></script>
   </body>
 </html>
